@@ -1255,6 +1255,9 @@ components:
         skipDelete:
           nullable: true
           type: boolean
+        skipNoOpUpdates:
+          nullable: true
+          type: boolean
         softPartitioning:
           $ref: '#/components/schemas/PayloadsSoftPartitioning'
         streamARN:
@@ -1607,11 +1610,6 @@ components:
         partitionType:
           type: string
       type: object
-    PayloadsPartitionRegex:
-      properties:
-        pattern:
-          type: string
-      type: object
     PayloadsPipelineAdvancedSettings:
       properties:
         appendOnly:
@@ -1949,8 +1947,6 @@ components:
         oneTopicPerSchema:
           nullable: true
           type: boolean
-        partitionRegex:
-          $ref: '#/components/schemas/PayloadsPartitionRegex'
         publicationAutoCreateMode:
           nullable: true
           type: string
@@ -1976,9 +1972,6 @@ components:
           nullable: true
           type: boolean
         useNumericTypesForMoney:
-          nullable: true
-          type: boolean
-        useReaderForPostgresStreaming:
           nullable: true
           type: boolean
       type: object
@@ -2147,6 +2140,8 @@ components:
           nullable: true
           type: boolean
         skipDelete:
+          type: boolean
+        skipNoOpUpdates:
           type: boolean
         softPartitioning:
           $ref: '#/components/schemas/PayloadsSoftPartitioning'
