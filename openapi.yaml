@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.2
+  version: v1.0.3
 servers:
 - url: https://api.artie.com
 security:
@@ -1281,6 +1281,9 @@ components:
         shouldBackfillHistoryTable:
           nullable: true
           type: boolean
+        skipBackfill:
+          nullable: true
+          type: boolean
         skipDelete:
           nullable: true
           type: boolean
@@ -2213,6 +2216,8 @@ components:
           $ref: '#/components/schemas/PayloadsRangeSettings'
         shouldBackfillHistoryTable:
           nullable: true
+          type: boolean
+        skipBackfill:
           type: boolean
         skipDelete:
           type: boolean
