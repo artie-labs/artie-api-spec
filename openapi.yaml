@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.1
+  version: v1.0.2
 servers:
 - url: https://api.artie.com
 security:
@@ -273,6 +273,26 @@ paths:
       summary: Ping a connector
       tags:
       - Connectors
+  /data-catalog/search:
+    post:
+      description: Searches across the company's data catalog using full-text search.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayloadsDataCatalogSearchRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBodyDataCatalogMatch'
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: Search the data catalog
+      tags:
+      - Data Catalog
   /encryption-keys:
     get:
       description: Lists all encryption keys for the authenticated company.
@@ -1084,6 +1104,15 @@ components:
       - paused
       - running
       type: string
+    ListResponseBodyDataCatalogMatch:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PayloadsDataCatalogMatch'
+          type: array
+      required:
+      - items
+      type: object
     ListResponseBodyEncryptionKey:
       properties:
         items:
@@ -1323,6 +1352,52 @@ components:
         type:
           type: string
         uuid:
+          type: string
+      type: object
+    PayloadsDataCatalogDatabase:
+      properties:
+        name:
+          type: string
+      type: object
+    PayloadsDataCatalogMatch:
+      properties:
+        connectorUUID:
+          format: uuid
+          type: string
+        object:
+          $ref: '#/components/schemas/PayloadsDataCatalogMatchedObject'
+        score:
+          format: double
+          type: number
+      type: object
+    PayloadsDataCatalogMatchedObject:
+      properties:
+        database:
+          $ref: '#/components/schemas/PayloadsDataCatalogDatabase'
+        schema:
+          $ref: '#/components/schemas/PayloadsDataCatalogSchema'
+        table:
+          $ref: '#/components/schemas/PayloadsDataCatalogTable'
+      type: object
+    PayloadsDataCatalogSchema:
+      properties:
+        databaseName:
+          type: string
+        name:
+          type: string
+      type: object
+    PayloadsDataCatalogSearchRequest:
+      properties:
+        query:
+          type: string
+      type: object
+    PayloadsDataCatalogTable:
+      properties:
+        databaseName:
+          type: string
+        name:
+          type: string
+        schemaName:
           type: string
       type: object
     PayloadsDynamoDBSnapshotConfig:
