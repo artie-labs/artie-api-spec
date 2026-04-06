@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.3
+  version: v1.0.4
 servers:
 - url: https://api.artie.com
 security:
@@ -2177,6 +2177,8 @@ components:
           type: array
         ctidSettings:
           $ref: '#/components/schemas/PayloadsCTIDSettings'
+        endingPrimaryKey:
+          type: string
         excludeColumns:
           items:
             type: string
@@ -2225,6 +2227,8 @@ components:
           type: boolean
         softPartitioning:
           $ref: '#/components/schemas/PayloadsSoftPartitioning'
+        startingPrimaryKey:
+          type: string
         streamARN:
           type: string
         unifyAcrossDatabases:
