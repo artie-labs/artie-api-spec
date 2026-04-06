@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.3
+  version: v1.0.5
 servers:
 - url: https://api.artie.com
 security:
@@ -2177,6 +2177,8 @@ components:
           type: array
         ctidSettings:
           $ref: '#/components/schemas/PayloadsCTIDSettings'
+        endingPrimaryKey:
+          type: string
         excludeColumns:
           items:
             type: string
@@ -2225,6 +2227,8 @@ components:
           type: boolean
         softPartitioning:
           $ref: '#/components/schemas/PayloadsSoftPartitioning'
+        startingPrimaryKey:
+          type: string
         streamARN:
           type: string
         unifyAcrossDatabases:
@@ -2256,6 +2260,82 @@ components:
           format: uuid
           type: string
       type: object
+    PayloadsWebhookDeliveryMetadata:
+      properties:
+        attempt:
+          description: 1-based delivery attempt number for this event.
+          type: integer
+      required:
+      - attempt
+      type: object
+    PayloadsWebhookEventProperties:
+      additionalProperties: true
+      description: Event-specific fields included in the `properties` object of a
+        webhook delivery. The set of keys depends on the event type. Every field is
+        optional; omitted keys should be treated as absent. Artie may add new fields
+        at any time—clients must tolerate unknown keys and should not assume a fixed
+        schema beyond this contract.
+      type: object
+    PayloadsWebhookOutgoingPayload:
+      properties:
+        delivery_metadata:
+          $ref: '#/components/schemas/PayloadsWebhookDeliveryMetadata'
+        destination:
+          description: Destination connector type (e.g. bigquery).
+          type: string
+        event:
+          description: Event type identifier (e.g. replication.failed).
+          type: string
+        message:
+          description: Human-readable summary of the event.
+          type: string
+        pipelines:
+          items:
+            $ref: '#/components/schemas/PayloadsWebhookPipelineInfo'
+          type: array
+        properties:
+          $ref: '#/components/schemas/PayloadsWebhookEventProperties'
+        severity:
+          $ref: '#/components/schemas/PayloadsWebhookSeverity'
+        source:
+          description: Source connector type (e.g. postgresql).
+          type: string
+        source_reader_uuid:
+          format: uuid
+          type: string
+        timestamp:
+          description: Time the event occurred (RFC 3339).
+          format: date-time
+          type: string
+      required:
+      - event
+      - message
+      - severity
+      - timestamp
+      - properties
+      - delivery_metadata
+      - source_reader_uuid
+      - pipelines
+      - source
+      - destination
+      type: object
+    PayloadsWebhookPipelineInfo:
+      properties:
+        name:
+          type: string
+        uuid:
+          format: uuid
+          type: string
+      required:
+      - uuid
+      - name
+      type: object
+    PayloadsWebhookSeverity:
+      enum:
+      - info
+      - warning
+      - error
+      type: string
     RouterConnectorCreateDatabaseRequest:
       properties:
         connector:
