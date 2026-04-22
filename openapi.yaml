@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.5
+  version: v1.0.6
 servers:
 - url: https://api.artie.com
 security:
@@ -1186,6 +1186,10 @@ components:
         includeSourceMetadataColumn:
           nullable: true
           type: boolean
+        maxConcurrentSnapshots:
+          minimum: 0
+          nullable: true
+          type: integer
         splitEventsByType:
           nullable: true
           type: boolean
@@ -1726,6 +1730,9 @@ components:
           type: boolean
         includeSourceMetadataColumn:
           type: boolean
+        maxConcurrentSnapshots:
+          minimum: 0
+          type: integer
         nullOutInvalidValues:
           type: boolean
         reuseStagingTable:
