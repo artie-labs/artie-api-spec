@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.7
+  version: v1.0.8
 servers:
 - url: https://api.artie.com
 security:
@@ -111,6 +111,38 @@ paths:
         "500":
           description: Internal Server Error
       summary: Update a column hashing salt
+      tags:
+      - Column Hashing Salts
+  /column-hashing-salts/{uuid}/preview:
+    post:
+      description: Hashes a sample string value with this salt using the same function
+        used by Artie's pipelines (HMAC-SHA256 keyed on the salt, or SHA-256 if the
+        salt is empty). Returns the hex-encoded hash.
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterPreviewColumnHashingSaltRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouterPreviewColumnHashingSaltResponse'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Preview a column hashing salt
       tags:
       - Column Hashing Salts
   /connectors:
@@ -2800,6 +2832,20 @@ components:
       required:
       - validateTables
       - tables
+      type: object
+    RouterPreviewColumnHashingSaltRequest:
+      properties:
+        value:
+          type: string
+      required:
+      - value
+      type: object
+    RouterPreviewColumnHashingSaltResponse:
+      properties:
+        hash:
+          type: string
+      required:
+      - hash
       type: object
     RouterPrivateLinkConnectionCreateRequest:
       properties:
