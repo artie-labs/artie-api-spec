@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.9
+  version: v1.0.10
 servers:
 - url: https://api.artie.com
 security:
@@ -2650,7 +2650,6 @@ components:
           type: string
       required:
       - name
-      - salt
       type: object
     RouterCreateColumnHashingSaltResponse:
       properties:
