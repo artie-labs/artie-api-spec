@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.8
+  version: v1.0.9
 servers:
 - url: https://api.artie.com
 security:
@@ -1709,6 +1709,10 @@ components:
       properties:
         advancedSettings:
           $ref: '#/components/schemas/PayloadsPipelineAdvancedSettings'
+        columnHashingSaltUUID:
+          format: uuid
+          nullable: true
+          type: string
         companyUUID:
           format: uuid
           type: string
@@ -1812,6 +1816,10 @@ components:
       type: object
     PayloadsLightPipeline:
       properties:
+        columnHashingSaltUUID:
+          format: uuid
+          nullable: true
+          type: string
         companyUUID:
           format: uuid
           type: string
@@ -1965,6 +1973,10 @@ components:
       properties:
         advancedSettings:
           $ref: '#/components/schemas/PayloadsAdvancedPipelineSettingsPayload'
+        columnHashingSaltUUID:
+          format: uuid
+          nullable: true
+          type: string
         dataPlaneName:
           type: string
         destinationUUID:
