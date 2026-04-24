@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.10
+  version: v1.0.11
 servers:
 - url: https://api.artie.com
 security:
