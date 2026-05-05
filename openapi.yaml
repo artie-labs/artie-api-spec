@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.13
+  version: v1.0.14
 servers:
 - url: https://api.artie.com
 security:
@@ -2283,6 +2283,9 @@ components:
           nullable: true
           type: boolean
         disableFullDocumentBeforeChange:
+          nullable: true
+          type: boolean
+        disableNoCursorTimeout:
           nullable: true
           type: boolean
         enableClientSideFullDocumentLookup:
