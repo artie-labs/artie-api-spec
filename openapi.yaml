@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.14
+  version: v1.0.15
 servers:
 - url: https://api.artie.com
 security:
@@ -2796,6 +2796,8 @@ components:
     RouterPipelineCreateFromSourceRequest:
       properties:
         dataPlaneName:
+          type: string
+        destinationType:
           type: string
         environmentUUID:
           format: uuid
