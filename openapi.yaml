@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.16
+  version: v1.0.17
 servers:
 - url: https://api.artie.com
 security:
@@ -2445,6 +2445,9 @@ components:
       type: object
     PayloadsSourceReaderSettingsPayload:
       properties:
+        allowMSSQLCaptureInstancesViaReader:
+          nullable: true
+          type: boolean
         azureBlobStorageConfig:
           $ref: '#/components/schemas/PayloadsAzureBlobStorageConfig'
         backfillBatchSize:
