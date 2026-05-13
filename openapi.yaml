@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.17
+  version: v1.0.18
 servers:
 - url: https://api.artie.com
 security:
@@ -456,6 +456,30 @@ paths:
         "400":
           description: Bad Request
       summary: Ping a connector
+      tags:
+      - Connectors
+  /connectors/postgres-publications:
+    post:
+      description: Lists logical replication publications on a PostgreSQL source using
+        an unsaved connector configuration. Useful during connector setup to let users
+        select an existing publication.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterConnectorFetchPostgresPublicationsRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBodyPostgresPublication'
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: List PostgreSQL publications for an unsaved connector
       tags:
       - Connectors
   /connectors/schemas:
@@ -1441,6 +1465,15 @@ components:
       required:
       - items
       type: object
+    ListResponseBodyPostgresPublication:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PayloadsPostgresPublication'
+          type: array
+      required:
+      - items
+      type: object
     PayloadsAdvancedPipelineSettingsPayload:
       properties:
         appendOnly:
@@ -2247,6 +2280,17 @@ components:
           nullable: true
           type: array
       type: object
+    PayloadsPostgresPublication:
+      properties:
+        allTables:
+          type: boolean
+        name:
+          type: string
+        publishViaPartitionRoot:
+          type: boolean
+      required:
+      - name
+      type: object
     PayloadsPrivateLinkConnection:
       properties:
         availabilityZoneIds:
@@ -2834,6 +2878,16 @@ components:
           type: string
       required:
       - slotName
+      type: object
+    RouterConnectorFetchPostgresPublicationsRequest:
+      properties:
+        connector:
+          $ref: '#/components/schemas/PayloadsConnectorPayload'
+        databaseName:
+          type: string
+      required:
+      - connector
+      - databaseName
       type: object
     RouterConnectorFetchSchemasRequest:
       properties:
