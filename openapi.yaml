@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.18
+  version: v1.0.19
 servers:
 - url: https://api.artie.com
 security:
@@ -1800,8 +1800,6 @@ components:
           format: date-time
           nullable: true
           type: string
-        isPartitioned:
-          type: boolean
         isView:
           type: boolean
         metadata:
@@ -2562,8 +2560,6 @@ components:
           items:
             type: string
           type: array
-        isPartitioned:
-          type: boolean
         name:
           type: string
         schema:
@@ -2628,8 +2624,6 @@ components:
         historyTableStatus:
           type: string
         individualDeployment:
-          type: boolean
-        isPartitioned:
           type: boolean
         name:
           type: string
@@ -2747,8 +2741,6 @@ components:
           type: boolean
         individualDeployment:
           nullable: true
-          type: boolean
-        isPartitioned:
           type: boolean
         name:
           type: string
@@ -2983,8 +2975,6 @@ components:
           format: date-time
           nullable: true
           type: string
-        isPartitioned:
-          type: boolean
         isView:
           type: boolean
         metadata:
