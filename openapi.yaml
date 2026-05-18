@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.19
+  version: v1.0.20
 servers:
 - url: https://api.artie.com
 security:
@@ -1479,6 +1479,9 @@ components:
         appendOnly:
           nullable: true
           type: boolean
+        autoEnableHistoryForNewTables:
+          nullable: true
+          type: boolean
         autoReplicateIgnoreRegex:
           nullable: true
           type: string
@@ -2164,6 +2167,8 @@ components:
     PayloadsPipelineAdvancedSettings:
       properties:
         appendOnly:
+          type: boolean
+        autoEnableHistoryForNewTables:
           type: boolean
         autoReplicateIgnoreRegex:
           type: string
