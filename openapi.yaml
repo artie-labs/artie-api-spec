@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.20
+  version: v1.0.21
 servers:
 - url: https://api.artie.com
 security:
@@ -850,6 +850,28 @@ paths:
         "500":
           description: Internal Server Error
       summary: Cancel backfill
+      tags:
+      - Pipelines
+  /pipelines/{uuid}/detect-schema-changes:
+    post:
+      description: Enqueues a background job that checks the pipeline's source database
+        for new, removed, or altered tables. If the pipeline has auto-replicate or
+        auto-history mode enabled, any newly discovered tables will be added to the
+        pipeline automatically. An email summary is sent if changes are detected.
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Detect schema changes
       tags:
       - Pipelines
   /pipelines/{uuid}/start:
