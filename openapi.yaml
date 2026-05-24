@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.22
+  version: v1.0.23
 servers:
 - url: https://api.artie.com
 security:
@@ -2031,6 +2031,8 @@ components:
         environmentUUID:
           format: uuid
           type: string
+        hasBackfillingTables:
+          type: boolean
         hasUndeployedChanges:
           type: boolean
         isDeploying:
@@ -2138,6 +2140,8 @@ components:
         environmentUUID:
           format: uuid
           type: string
+        hasBackfillingTables:
+          type: boolean
         hasUndeployedChanges:
           type: boolean
         isDeploying:
