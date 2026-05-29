@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.23
+  version: v1.0.24
 servers:
 - url: https://api.artie.com
 security:
@@ -1802,10 +1802,18 @@ components:
           type: string
         label:
           type: string
+        privateLinkUUID:
+          format: uuid
+          nullable: true
+          type: string
         sharedConfig:
           additionalProperties: {}
           nullable: true
           type: object
+        snapshotPrivateLinkUUID:
+          format: uuid
+          nullable: true
+          type: string
         sshTunnelUUID:
           format: uuid
           nullable: true
@@ -1981,7 +1989,15 @@ components:
           type: boolean
         label:
           type: string
+        privateLinkUUID:
+          format: uuid
+          nullable: true
+          type: string
         sharedConfig: {}
+        snapshotPrivateLinkUUID:
+          format: uuid
+          nullable: true
+          type: string
         sshTunnelUUID:
           format: uuid
           nullable: true
