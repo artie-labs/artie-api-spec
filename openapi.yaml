@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.26
+  version: v1.0.27
 servers:
 - url: https://api.artie.com
 security:
@@ -1423,6 +1423,7 @@ components:
       - mssql
       - mysql
       - oracle
+      - planetscale
       - postgresql
       - redis
       - redshift
