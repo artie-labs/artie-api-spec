@@ -2549,6 +2549,9 @@ components:
           minimum: 0
           nullable: true
           type: integer
+        compositeTypesAsText:
+          nullable: true
+          type: boolean
         databasesToSync:
           items:
             type: string
