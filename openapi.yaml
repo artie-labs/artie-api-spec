@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.28
+  version: v1.0.29
 servers:
 - url: https://api.artie.com
 security:
@@ -2339,6 +2339,10 @@ components:
       type: object
     PayloadsPrivateLinkConnection:
       properties:
+        approvedAt:
+          format: date-time
+          nullable: true
+          type: string
         availabilityZoneIds:
           items:
             type: string
@@ -2348,6 +2352,8 @@ components:
           type: string
         createdAt:
           format: date-time
+          type: string
+        createdBy:
           type: string
         dataPlaneName:
           nullable: true
