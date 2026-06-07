@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.29
+  version: v1.0.30
 servers:
 - url: https://api.artie.com
 security:
@@ -2364,6 +2364,8 @@ components:
           format: uuid
           type: string
         name:
+          type: string
+        provisioningError:
           type: string
         region:
           type: string
