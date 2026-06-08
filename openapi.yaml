@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.31
+  version: v1.0.32
 servers:
 - url: https://api.artie.com
 security:
@@ -1101,9 +1101,10 @@ paths:
       tags:
       - PrivateLink Connections
     post:
-      description: Updates an existing PrivateLink connection by UUID. You can modify
-        the name, VPC service name, and availability zones while the connection is
-        under review.
+      description: Updates an existing PrivateLink connection by UUID. The name can
+        always be updated. The config fields (region / VPC service name / data plane
+        / availability zones) are only mutable while the connection is under review
+        or errored — once it is being provisioned or live they are immutable.
       parameters:
       - in: path
         name: uuid
