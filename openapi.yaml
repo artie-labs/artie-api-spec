@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.30
+  version: v1.0.31
 servers:
 - url: https://api.artie.com
 security:
@@ -1414,6 +1414,7 @@ components:
       - cockroach
       - databricks
       - documentdb
+      - delta
       - dynamodb
       - gcs
       - iceberg
@@ -2649,6 +2650,8 @@ components:
       properties:
         bucketName:
           type: string
+        checkpointInterval:
+          type: integer
         containerName:
           type: string
         database:
