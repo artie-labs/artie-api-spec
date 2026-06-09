@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.32
+  version: v1.0.33
 servers:
 - url: https://api.artie.com
 security:
@@ -2586,6 +2586,12 @@ components:
         enableSchemaHistoryCompaction:
           nullable: true
           type: boolean
+        messageCompression:
+          enum:
+          - gzip
+          - ""
+          nullable: true
+          type: string
         mssqlReplicationMethod:
           nullable: true
           type: string
