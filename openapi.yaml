@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.33
+  version: v1.0.34
 servers:
 - url: https://api.artie.com
 security:
@@ -2545,9 +2545,6 @@ components:
       type: object
     PayloadsSourceReaderSettingsPayload:
       properties:
-        allowMSSQLCaptureInstancesViaReader:
-          nullable: true
-          type: boolean
         archiveLogPassword:
           nullable: true
           type: string
