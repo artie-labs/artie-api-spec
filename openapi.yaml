@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.40
+  version: v1.0.42
 servers:
 - url: https://api.artie.com
 security:
@@ -1522,6 +1522,9 @@ components:
         defaultSourceSchema:
           nullable: true
           type: string
+        disableAlerts:
+          nullable: true
+          type: boolean
         dropDeletedColumns:
           nullable: true
           type: boolean
@@ -2228,6 +2231,8 @@ components:
           type: integer
         defaultSourceSchema:
           type: string
+        disableAlerts:
+          type: boolean
         dropDeletedColumns:
           type: boolean
         dynamoDBBackfillConfig:
