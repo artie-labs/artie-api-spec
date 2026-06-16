@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.39
+  version: v1.0.40
 servers:
 - url: https://api.artie.com
 security:
@@ -2714,6 +2714,8 @@ components:
       properties:
         advancedSettings:
           $ref: '#/components/schemas/PayloadsTableAdvancedSettings'
+        backfillStage:
+          type: string
         createdAt:
           format: date-time
           type: string
@@ -2723,6 +2725,8 @@ components:
           type: boolean
         enableHistoryMode:
           type: boolean
+        historyTableBackfillStage:
+          type: string
         historyTableStatus:
           type: string
         individualDeployment:
