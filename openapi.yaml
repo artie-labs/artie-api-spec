@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.44
+  version: v1.0.45
 servers:
 - url: https://api.artie.com
 paths:
@@ -3622,6 +3622,17 @@ components:
         destination:
           description: Destination connector type (e.g. bigquery).
           type: string
+        environment_name:
+          description: Human-readable name of the environment. Omitted when the event
+            has no environment.
+          type: string
+        environment_uuid:
+          description: UUID of the environment the event belongs to. Omitted when
+            the event has no environment.
+          format: uuid
+          type:
+          - "null"
+          - string
         event:
           description: Event type identifier (e.g. replication.failed).
           type: string
