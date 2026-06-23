@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.46
+  version: v1.0.47
 servers:
 - url: https://api.artie.com
 paths:
@@ -1978,6 +1978,22 @@ components:
       - name
       - salt
       type: object
+    PayloadsCompactionConfig:
+      properties:
+        enabled:
+          type: boolean
+        everySeconds:
+          type: integer
+        quietWindow:
+          $ref: '#/components/schemas/PayloadsCompactionQuietWindow'
+      type: object
+    PayloadsCompactionQuietWindow:
+      properties:
+        end:
+          type: string
+        start:
+          type: string
+      type: object
     PayloadsConnectorColumn:
       properties:
         metadata:
@@ -2970,6 +2986,8 @@ components:
           type: string
         checkpointInterval:
           type: integer
+        compaction:
+          $ref: '#/components/schemas/PayloadsCompactionConfig'
         containerName:
           type: string
         database:
