@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.44
+  version: v1.0.46
 servers:
 - url: https://api.artie.com
 paths:
@@ -3191,6 +3191,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: backfill.completed
         message: Backfill completed
         pipelines:
@@ -3241,6 +3243,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: backfill.failed
         message: Backfill failed
         pipelines:
@@ -3284,6 +3288,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: backfill.started
         message: Backfill started
         pipelines:
@@ -3323,6 +3329,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: connection.failed
         message: Connection failed
         pipelines:
@@ -3366,6 +3374,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: ddl.applied
         message: DDL applied
         pipelines:
@@ -3411,6 +3421,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: ddl.seen
         message: DDL seen
         pipelines:
@@ -3460,6 +3472,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: dedupe.completed
         message: Deduplication completed
         pipelines:
@@ -3507,6 +3521,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: dedupe.failed
         message: Deduplication failed
         pipelines:
@@ -3549,6 +3565,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: dedupe.started
         message: Deduplication started
         pipelines:
@@ -3593,6 +3611,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: dek.generated
         message: Data Encryption Key (DEK) generated
         pipelines:
@@ -3622,6 +3642,17 @@ components:
         destination:
           description: Destination connector type (e.g. bigquery).
           type: string
+        environment_name:
+          description: Human-readable name of the environment. Omitted when the event
+            has no environment.
+          type: string
+        environment_uuid:
+          description: UUID of the environment the event belongs to. Omitted when
+            the event has no environment.
+          format: uuid
+          type:
+          - "null"
+          - string
         event:
           description: Event type identifier (e.g. replication.failed).
           type: string
@@ -3743,6 +3774,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: replication.error
         message: Replication error
         pipelines:
@@ -3782,6 +3815,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: replication.failed
         message: Replication failed
         pipelines:
@@ -3813,6 +3848,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: replication.started
         message: Replication started
         pipelines:
@@ -3856,6 +3893,8 @@ components:
       - delivery_metadata:
           attempt: 1
         destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
         event: row.skipped
         message: Row skipped
         pipelines:
