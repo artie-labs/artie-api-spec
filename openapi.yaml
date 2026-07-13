@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.50
+  version: v1.0.51
 servers:
 - url: https://api.artie.com
 paths:
@@ -1791,6 +1791,10 @@ components:
           type:
           - "null"
           - integer
+        snowpipeStreamingMaxChannels:
+          type:
+          - "null"
+          - integer
         splitEventsByType:
           type:
           - "null"
@@ -1830,6 +1834,10 @@ components:
           - "null"
           - boolean
         useNewStringMethod:
+          type:
+          - "null"
+          - boolean
+        useSnowpipeStreaming:
           type:
           - "null"
           - boolean
