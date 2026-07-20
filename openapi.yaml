@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.51
+  version: v1.0.52
 servers:
 - url: https://api.artie.com
 paths:
@@ -544,6 +544,7 @@ paths:
       summary: Search the data catalog
       tags:
       - Data Catalog
+      x-artie-mcp: {}
   /encryption-keys:
     get:
       description: Lists all encryption keys for the authenticated company.
