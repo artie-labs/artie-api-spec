@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.52
+  version: v1.0.53
 servers:
 - url: https://api.artie.com
 paths:
@@ -21,6 +21,11 @@ paths:
       summary: List column hashing salts
       tags:
       - Column Hashing Salts
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
     post:
       description: Creates a new column hashing salt for the authenticated company.
       requestBody:
@@ -42,6 +47,11 @@ paths:
       summary: Create a column hashing salt
       tags:
       - Column Hashing Salts
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /column-hashing-salts/{uuid}:
     delete:
       description: Deletes a column hashing salt by UUID.
@@ -61,6 +71,11 @@ paths:
       summary: Delete a column hashing salt
       tags:
       - Column Hashing Salts
+      x-artie-mcp:
+        destructiveHint: true
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
     get:
       description: Retrieves a column hashing salt by UUID, including the decrypted
         salt. Requires company admin.
@@ -84,6 +99,11 @@ paths:
       summary: Get a column hashing salt
       tags:
       - Column Hashing Salts
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
     post:
       description: Updates the name and description of a column hashing salt.
       parameters:
@@ -111,6 +131,11 @@ paths:
       summary: Update a column hashing salt
       tags:
       - Column Hashing Salts
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /column-hashing-salts/{uuid}/preview:
     post:
       description: Hashes a sample string value with this salt using the same function
@@ -143,6 +168,11 @@ paths:
       summary: Preview a column hashing salt
       tags:
       - Column Hashing Salts
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
   /connectors:
     post:
       description: Creates a new source or destination connector for your Artie deployment.
@@ -166,6 +196,11 @@ paths:
       summary: Create a connector
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /connectors/{uuid}:
     delete:
       description: Permanently removes a connector and its associated configuration.
@@ -186,6 +221,11 @@ paths:
       summary: Delete a connector
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: true
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
     get:
       description: Retrieves the full configuration and status of a connector by its
         unique identifier, including connection settings and current replication state.
@@ -209,6 +249,11 @@ paths:
       summary: Get a connector
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
     post:
       description: Updates the configuration of an existing source or destination
         connector. Modify connection settings, credentials, or replication parameters
@@ -238,6 +283,11 @@ paths:
       summary: Update a connector
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /connectors/{uuid}/detail:
     get:
       description: Returns detailed metadata for a specific table on the saved connector.
@@ -262,6 +312,11 @@ paths:
       summary: Fetch table detail for a saved connector
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: true
+        readOnlyHint: true
   /connectors/{uuid}/generate-shadow-script:
     post:
       description: Generates the SQL script to create shadow tables required for Oracle
@@ -292,6 +347,11 @@ paths:
       summary: Generate Oracle shadow table script
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
   /connectors/{uuid}/postgres-drop-replication-slot:
     post:
       description: Drops a PostgreSQL replication slot that is inactive or orphaned.
@@ -320,6 +380,11 @@ paths:
       summary: Drop a PostgreSQL replication slot
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: true
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
   /connectors/{uuid}/start-dynamodb-export:
     post:
       description: Initiates a point-in-time export from Amazon DynamoDB for the specified
@@ -348,6 +413,11 @@ paths:
       summary: Start a DynamoDB export
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
   /connectors/databases:
     post:
       description: Lists available databases on the target using an unsaved connector
@@ -372,6 +442,11 @@ paths:
       summary: Fetch databases for an unsaved connector
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: true
+        readOnlyHint: true
   /connectors/new-database:
     post:
       description: Creates a new database on the target destination using a connector
@@ -392,6 +467,11 @@ paths:
       summary: Create a database on an unsaved connector
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
   /connectors/new-schema:
     post:
       description: Creates a new schema on the target destination using a connector
@@ -412,6 +492,11 @@ paths:
       summary: Create a schema on an unsaved connector
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
   /connectors/new-snowflake-warehouse:
     post:
       description: Creates a new Snowflake virtual warehouse using an unsaved connector
@@ -432,6 +517,11 @@ paths:
       summary: Create a Snowflake warehouse on an unsaved connector
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
   /connectors/ping:
     post:
       description: Tests network connectivity and authentication for a connector configuration
@@ -456,6 +546,11 @@ paths:
       summary: Ping a connector
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: true
+        readOnlyHint: true
   /connectors/postgres-publications:
     post:
       description: Lists logical replication publications on a PostgreSQL source using
@@ -480,6 +575,11 @@ paths:
       summary: List PostgreSQL publications for an unsaved connector
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: true
+        readOnlyHint: true
   /connectors/schemas:
     post:
       description: Lists available schemas in a specific database using an unsaved
@@ -500,6 +600,11 @@ paths:
       summary: Fetch schemas for an unsaved connector
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: true
+        readOnlyHint: true
   /connectors/tables:
     post:
       description: Lists available tables in a specific database and schema using
@@ -524,6 +629,11 @@ paths:
       summary: Fetch tables for an unsaved connector
       tags:
       - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: true
+        readOnlyHint: true
   /data-catalog/search:
     post:
       description: Searches across the company's data catalog using full-text search.
@@ -544,7 +654,11 @@ paths:
       summary: Search the data catalog
       tags:
       - Data Catalog
-      x-artie-mcp: {}
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
   /encryption-keys:
     get:
       description: Lists all encryption keys for the authenticated company.
@@ -560,6 +674,11 @@ paths:
       summary: List encryption keys
       tags:
       - Encryption Keys
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
     post:
       description: Creates a new encryption key for the authenticated company.
       requestBody:
@@ -581,6 +700,11 @@ paths:
       summary: Create an encryption key
       tags:
       - Encryption Keys
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /encryption-keys/{uuid}:
     delete:
       description: Deletes an encryption key by UUID.
@@ -600,6 +724,11 @@ paths:
       summary: Delete an encryption key
       tags:
       - Encryption Keys
+      x-artie-mcp:
+        destructiveHint: true
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
     get:
       description: Retrieves an encryption key by UUID, including the decrypted key.
         Requires company admin.
@@ -623,6 +752,11 @@ paths:
       summary: Get an encryption key
       tags:
       - Encryption Keys
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
     post:
       description: Updates the name and description of an encryption key.
       parameters:
@@ -650,6 +784,11 @@ paths:
       summary: Update an encryption key
       tags:
       - Encryption Keys
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /ingestion-api-keys:
     post:
       description: Creates a new ingestion API key for a source reader. Returns the
@@ -673,6 +812,11 @@ paths:
       summary: Create an ingestion API key
       tags:
       - Ingestion API Keys
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /ingestion-api-keys/{uuid}:
     delete:
       description: Deletes an ingestion API key by UUID.
@@ -690,6 +834,11 @@ paths:
       summary: Delete an ingestion API key
       tags:
       - Ingestion API Keys
+      x-artie-mcp:
+        destructiveHint: true
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
     post:
       description: Updates an existing ingestion API key by UUID.
       parameters:
@@ -717,6 +866,11 @@ paths:
       summary: Update an ingestion API key
       tags:
       - Ingestion API Keys
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /pipelines:
     get:
       description: Returns pipelines for the authenticated company, optionally filtered
@@ -733,6 +887,11 @@ paths:
       summary: List pipelines
       tags:
       - Pipelines
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
     post:
       description: Creates a new pipeline from a pipeline payload.
       requestBody:
@@ -754,6 +913,11 @@ paths:
       summary: Create a pipeline
       tags:
       - Pipelines
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /pipelines/{uuid}:
     delete:
       description: Deletes a pipeline by UUID.
@@ -771,6 +935,11 @@ paths:
       summary: Delete pipeline
       tags:
       - Pipelines
+      x-artie-mcp:
+        destructiveHint: true
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
     get:
       description: Returns pipeline detail. With query includeRelatedObjects=true
         returns pipeline, sourceReader, sourceConnector, and optional destinationConnector;
@@ -799,6 +968,11 @@ paths:
       summary: Get pipeline by UUID
       tags:
       - Pipelines
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
     post:
       description: Updates an existing pipeline by UUID.
       parameters:
@@ -826,6 +1000,11 @@ paths:
       summary: Update pipeline
       tags:
       - Pipelines
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /pipelines/{uuid}/backfill/cancel:
     post:
       description: Cancels backfilling for the given table UUIDs and/or history table
@@ -851,6 +1030,11 @@ paths:
       summary: Cancel backfill
       tags:
       - Pipelines
+      x-artie-mcp:
+        destructiveHint: true
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
   /pipelines/{uuid}/detect-schema-changes:
     post:
       description: Enqueues a background job that checks the pipeline's source database
@@ -873,6 +1057,11 @@ paths:
       summary: Detect schema changes
       tags:
       - Pipelines
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
   /pipelines/{uuid}/start:
     post:
       description: 'Starts or resumes a pipeline. Optional body: keepPaused, disableBackFill.'
@@ -899,6 +1088,11 @@ paths:
       summary: Start pipeline
       tags:
       - Pipelines
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
   /pipelines/{uuid}/status:
     post:
       description: Changes the status of a pipeline (e.g. running, paused). Validates
@@ -932,6 +1126,11 @@ paths:
       summary: Update pipeline status
       tags:
       - Pipelines
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
   /pipelines/{uuid}/update-with-source-reader:
     post:
       description: Updates pipeline and optionally its source reader in one request.
@@ -961,6 +1160,11 @@ paths:
       summary: Update pipeline with source reader
       tags:
       - Pipelines
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /pipelines/create-from-source:
     post:
       description: Creates a new pipeline from a source type or existing source connector
@@ -984,6 +1188,11 @@ paths:
       summary: Create pipeline from source
       tags:
       - Pipelines
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /pipelines/validate-unsaved-destination:
     post:
       description: Validates destination configuration without persisting. Returns
@@ -1009,6 +1218,11 @@ paths:
       summary: Validate unsaved destination
       tags:
       - Pipelines
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: true
+        readOnlyHint: true
   /pipelines/validate-unsaved-source:
     post:
       description: Validates source reader and connector configuration without persisting.
@@ -1034,6 +1248,11 @@ paths:
       summary: Validate unsaved source
       tags:
       - Pipelines
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: true
+        readOnlyHint: true
   /privatelink-connections:
     post:
       description: Creates a new PrivateLink connection for the authenticated company.
@@ -1056,6 +1275,11 @@ paths:
       summary: Create a PrivateLink connection
       tags:
       - PrivateLink Connections
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
   /privatelink-connections/{uuid}:
     delete:
       description: Permanently deletes a PrivateLink connection by UUID. This action
@@ -1076,6 +1300,11 @@ paths:
       summary: Delete a PrivateLink connection
       tags:
       - PrivateLink Connections
+      x-artie-mcp:
+        destructiveHint: true
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
     get:
       description: Retrieves the details of a PrivateLink connection by UUID, including
         its status, VPC service name, region, DNS entry, and availability zones.
@@ -1099,6 +1328,11 @@ paths:
       summary: Get a PrivateLink connection
       tags:
       - PrivateLink Connections
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
     post:
       description: Updates an existing PrivateLink connection by UUID. The name can
         always be updated. The config fields (region / VPC service name / data plane
@@ -1129,6 +1363,11 @@ paths:
       summary: Update a PrivateLink connection
       tags:
       - PrivateLink Connections
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /source-readers:
     get:
       description: Lists all source readers for the authenticated company.
@@ -1146,6 +1385,11 @@ paths:
       summary: List source readers
       tags:
       - Source Readers
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
     post:
       description: Creates a new source reader for the authenticated company.
       requestBody:
@@ -1167,6 +1411,11 @@ paths:
       summary: Create a source reader
       tags:
       - Source Readers
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /source-readers/{uuid}:
     delete:
       description: Permanently deletes a source reader by UUID. The source reader
@@ -1187,6 +1436,11 @@ paths:
       summary: Delete a source reader
       tags:
       - Source Readers
+      x-artie-mcp:
+        destructiveHint: true
+        idempotentHint: true
+        openWorldHint: true
+        readOnlyHint: false
     get:
       description: Retrieves the details of a source reader by UUID, including its
         configuration, status, connector association, and table settings.
@@ -1210,6 +1464,11 @@ paths:
       summary: Get a source reader
       tags:
       - Source Readers
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
     post:
       description: Updates an existing source reader by UUID. You can modify the name,
         settings, table configuration, and shared status of the source reader.
@@ -1238,6 +1497,11 @@ paths:
       summary: Update a source reader
       tags:
       - Source Readers
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /source-readers/{uuid}/deploy:
     post:
       description: Deploys a shared source reader to the data plane. The source reader
@@ -1258,6 +1522,11 @@ paths:
       summary: Deploy a source reader
       tags:
       - Source Readers
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
   /source-readers/{uuid}/status:
     post:
       description: Changes the status of a shared source reader (e.g. running, paused).
@@ -1288,6 +1557,11 @@ paths:
       summary: Update source reader status
       tags:
       - Source Readers
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: true
+        readOnlyHint: false
   /source-readers/validate-unsaved:
     post:
       description: Validates a source reader configuration without persisting it.
@@ -1310,6 +1584,11 @@ paths:
       summary: Validate an unsaved source reader
       tags:
       - Source Readers
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: true
+        readOnlyHint: true
   /ssh-tunnels:
     post:
       description: Creates a new SSH tunnel for the authenticated company.
@@ -1332,6 +1611,11 @@ paths:
       summary: Create an SSH tunnel
       tags:
       - SSH Tunnels
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
   /ssh-tunnels/{uuid}:
     delete:
       description: Permanently deletes an SSH tunnel by UUID. The tunnel must not
@@ -1352,6 +1636,11 @@ paths:
       summary: Delete an SSH tunnel
       tags:
       - SSH Tunnels
+      x-artie-mcp:
+        destructiveHint: true
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
     get:
       description: Retrieves the details of an SSH tunnel by UUID, including its host,
         port, username, public key, and whether it is currently in use.
@@ -1375,6 +1664,11 @@ paths:
       summary: Get an SSH tunnel
       tags:
       - SSH Tunnels
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: true
+        openWorldHint: false
+        readOnlyHint: true
     post:
       description: Updates an existing SSH tunnel by UUID. You can modify the name,
         host, port, and username. Changes will mark associated pipelines as having
@@ -1404,6 +1698,11 @@ paths:
       summary: Update an SSH tunnel
       tags:
       - SSH Tunnels
+      x-artie-mcp:
+        destructiveHint: false
+        idempotentHint: false
+        openWorldHint: false
+        readOnlyHint: false
 webhooks:
   backfill.completed:
     post:
