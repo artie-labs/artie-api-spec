@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.55
+  version: v1.0.56
 servers:
 - url: https://api.artie.com
 paths:
@@ -24,10 +24,16 @@ paths:
       - Column Hashing Salts
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: column_hashing_salt_list
+        outputSensitivity: none
         readOnlyHint: true
+        requiredScopes:
+        - column_hashing_salts:read
+        retrySemantics: safe
         title: List column hashing salts
         triggerDescription: Use when you need to list column hashing salts.
     post:
@@ -54,10 +60,19 @@ paths:
       - Column Hashing Salts
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts and returns a column-hashing salt.
+        exposure: excluded
         idempotentHint: false
+        inputSensitivity: restricted-credentials
         openWorldHint: false
         operationId: column_hashing_salt_create
+        outputSensitivity: restricted-credentials
         readOnlyHint: false
+        remediation: Create column-hashing salts through the authenticated Dashboard
+          setup flow.
+        requiredScopes:
+        - column_hashing_salts:write
+        retrySemantics: unsafe
         title: Create a column hashing salt
         triggerDescription: Use when you need to create a column hashing salt.
   /column-hashing-salts/{uuid}:
@@ -82,10 +97,16 @@ paths:
       - Column Hashing Salts
       x-artie-mcp:
         destructiveHint: true
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: column_hashing_salt_delete
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - column_hashing_salts:write
+        retrySemantics: safe-after-state-check
         title: Delete a column hashing salt
         triggerDescription: Use when you need to delete a column hashing salt.
     get:
@@ -114,10 +135,18 @@ paths:
       - Column Hashing Salts
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Returns the decrypted column-hashing salt.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: column_hashing_salt_detail
+        outputSensitivity: restricted-credentials
         readOnlyHint: true
+        remediation: Use column_hashing_salt_list for non-secret salt references.
+        requiredScopes:
+        - column_hashing_salts:read
+        retrySemantics: safe
         title: Get a column hashing salt
         triggerDescription: Use when you need to get a column hashing salt.
     post:
@@ -150,10 +179,16 @@ paths:
       - Column Hashing Salts
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: column_hashing_salt_update
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - column_hashing_salts:write
+        retrySemantics: unsafe
         title: Update a column hashing salt
         triggerDescription: Use when you need to update a column hashing salt.
   /column-hashing-salts/{uuid}/preview:
@@ -191,10 +226,16 @@ paths:
       - Column Hashing Salts
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: column_hashing_salt_preview
+        outputSensitivity: none
         readOnlyHint: true
+        requiredScopes:
+        - column_hashing_salts:read
+        retrySemantics: safe
         title: Preview a column hashing salt
         triggerDescription: Use when you need to preview a column hashing salt.
   /connectors:
@@ -909,10 +950,16 @@ paths:
       - Encryption Keys
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: encryption_key_list
+        outputSensitivity: none
         readOnlyHint: true
+        requiredScopes:
+        - encryption_keys:read
+        retrySemantics: safe
         title: List encryption keys
         triggerDescription: Use when you need to list encryption keys.
     post:
@@ -939,10 +986,19 @@ paths:
       - Encryption Keys
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Returns a newly generated encryption key.
+        exposure: excluded
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: encryption_key_create
+        outputSensitivity: restricted-credentials
         readOnlyHint: false
+        remediation: Create encryption keys through the authenticated Dashboard setup
+          flow.
+        requiredScopes:
+        - encryption_keys:write
+        retrySemantics: unsafe
         title: Create an encryption key
         triggerDescription: Use when you need to create an encryption key.
   /encryption-keys/{uuid}:
@@ -967,10 +1023,16 @@ paths:
       - Encryption Keys
       x-artie-mcp:
         destructiveHint: true
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: encryption_key_delete
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - encryption_keys:write
+        retrySemantics: safe-after-state-check
         title: Delete an encryption key
         triggerDescription: Use when you need to delete an encryption key.
     get:
@@ -999,10 +1061,18 @@ paths:
       - Encryption Keys
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Returns the decrypted encryption key.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: encryption_key_detail
+        outputSensitivity: restricted-credentials
         readOnlyHint: true
+        remediation: Use encryption_key_list for non-secret key references.
+        requiredScopes:
+        - encryption_keys:read
+        retrySemantics: safe
         title: Get an encryption key
         triggerDescription: Use when you need to get an encryption key.
     post:
@@ -1035,10 +1105,16 @@ paths:
       - Encryption Keys
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: encryption_key_update
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - encryption_keys:write
+        retrySemantics: unsafe
         title: Update an encryption key
         triggerDescription: Use when you need to update an encryption key.
   /ingestion-api-keys:
@@ -1067,10 +1143,19 @@ paths:
       - Ingestion API Keys
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Returns an ingestion API key secret that is shown only once.
+        exposure: excluded
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: ingestion_api_key_create
+        outputSensitivity: restricted-credentials
         readOnlyHint: false
+        remediation: Create ingestion API keys through the authenticated Dashboard
+          setup flow.
+        requiredScopes:
+        - ingestion_api_keys:write
+        retrySemantics: unsafe
         title: Create an ingestion API key
         triggerDescription: Use when you need to create an ingestion API key.
   /ingestion-api-keys/{uuid}:
@@ -1093,10 +1178,16 @@ paths:
       - Ingestion API Keys
       x-artie-mcp:
         destructiveHint: true
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: ingestion_api_key_delete
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - ingestion_api_keys:write
+        retrySemantics: safe-after-state-check
         title: Delete an ingestion API key
         triggerDescription: Use when you need to delete an ingestion API key.
     post:
@@ -1129,10 +1220,16 @@ paths:
       - Ingestion API Keys
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: ingestion_api_key_update
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - ingestion_api_keys:write
+        retrySemantics: unsafe
         title: Update an ingestion API key
         triggerDescription: Use when you need to update an ingestion API key.
   /pipelines:
@@ -1687,10 +1784,16 @@ paths:
       - PrivateLink Connections
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: true
         operationId: private_link_connection_create
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - private_link_connections:write
+        retrySemantics: unsafe
         title: Create a PrivateLink connection
         triggerDescription: Use when you need to create a PrivateLink connection.
   /privatelink-connections/{uuid}:
@@ -1716,10 +1819,16 @@ paths:
       - PrivateLink Connections
       x-artie-mcp:
         destructiveHint: true
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: true
         operationId: private_link_connection_delete
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - private_link_connections:write
+        retrySemantics: safe-after-state-check
         title: Delete a PrivateLink connection
         triggerDescription: Use when you need to delete a PrivateLink connection.
     get:
@@ -1748,10 +1857,16 @@ paths:
       - PrivateLink Connections
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: private_link_connection_detail
+        outputSensitivity: none
         readOnlyHint: true
+        requiredScopes:
+        - private_link_connections:read
+        retrySemantics: safe
         title: Get a PrivateLink connection
         triggerDescription: Use when you need to get a PrivateLink connection.
     post:
@@ -1787,10 +1902,16 @@ paths:
       - PrivateLink Connections
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: private_link_connection_update
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - private_link_connections:write
+        retrySemantics: unsafe
         title: Update a PrivateLink connection
         triggerDescription: Use when you need to update a PrivateLink connection.
   /source-readers:
@@ -1813,10 +1934,19 @@ paths:
       - Source Readers
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Returns source-reader configuration that can contain credentials.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: source_reader_list
+        outputSensitivity: restricted-credentials
         readOnlyHint: true
+        remediation: Use safe pipeline metadata tools and manage source-reader credentials
+          outside MCP.
+        requiredScopes:
+        - source_readers:read
+        retrySemantics: safe
         title: List source readers
         triggerDescription: Use when you need to list source readers.
     post:
@@ -1843,10 +1973,20 @@ paths:
       - Source Readers
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts and returns source-reader configuration that can
+          contain credentials.
+        exposure: excluded
         idempotentHint: false
+        inputSensitivity: restricted-credentials
         openWorldHint: false
         operationId: source_reader_create
+        outputSensitivity: restricted-credentials
         readOnlyHint: false
+        remediation: Create source readers through the authenticated Dashboard setup
+          flow.
+        requiredScopes:
+        - source_readers:write
+        retrySemantics: unsafe
         title: Create a source reader
         triggerDescription: Use when you need to create a source reader.
   /source-readers/{uuid}:
@@ -1872,10 +2012,16 @@ paths:
       - Source Readers
       x-artie-mcp:
         destructiveHint: true
+        exposure: exposed
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: true
         operationId: source_reader_delete
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - source_readers:write
+        retrySemantics: safe-after-state-check
         title: Delete a source reader
         triggerDescription: Use when you need to delete a source reader.
     get:
@@ -1904,10 +2050,19 @@ paths:
       - Source Readers
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Returns source-reader configuration that can contain credentials.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: source_reader_detail
+        outputSensitivity: restricted-credentials
         readOnlyHint: true
+        remediation: Use safe pipeline metadata tools and manage source-reader credentials
+          outside MCP.
+        requiredScopes:
+        - source_readers:read
+        retrySemantics: safe
         title: Get a source reader
         triggerDescription: Use when you need to get a source reader.
     post:
@@ -1941,10 +2096,20 @@ paths:
       - Source Readers
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts and returns source-reader configuration that can
+          contain credentials.
+        exposure: excluded
         idempotentHint: false
+        inputSensitivity: restricted-credentials
         openWorldHint: false
         operationId: source_reader_update
+        outputSensitivity: restricted-credentials
         readOnlyHint: false
+        remediation: Update source readers through the authenticated Dashboard setup
+          flow.
+        requiredScopes:
+        - source_readers:write
+        retrySemantics: unsafe
         title: Update a source reader
         triggerDescription: Use when you need to update a source reader.
   /source-readers/{uuid}/deploy:
@@ -1970,10 +2135,16 @@ paths:
       - Source Readers
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: true
         operationId: source_reader_deploy
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - source_readers:write
+        retrySemantics: safe-after-state-check
         title: Deploy a source reader
         triggerDescription: Use when you need to deploy a source reader.
   /source-readers/{uuid}/status:
@@ -2009,10 +2180,19 @@ paths:
       - Source Readers
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Returns source-reader configuration that can contain credentials.
+        exposure: excluded
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: true
         operationId: source_reader_update_status
+        outputSensitivity: restricted-credentials
         readOnlyHint: false
+        remediation: Change source-reader status through the authenticated Dashboard
+          setup flow.
+        requiredScopes:
+        - source_readers:write
+        retrySemantics: safe-after-state-check
         title: Update source reader status
         triggerDescription: Use when you need to update source reader status.
   /source-readers/validate-unsaved:
@@ -2040,10 +2220,20 @@ paths:
       - Source Readers
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts unsaved source-reader configuration that can contain
+          credentials.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: restricted-credentials
         openWorldHint: true
         operationId: source_reader_validate_unsaved
+        outputSensitivity: none
         readOnlyHint: true
+        remediation: Validate source-reader credentials through the authenticated
+          Dashboard setup flow.
+        requiredScopes:
+        - source_readers:read
+        retrySemantics: safe
         title: Validate an unsaved source reader
         triggerDescription: Use when you need to validate an unsaved source reader.
   /ssh-tunnels:
@@ -2071,10 +2261,16 @@ paths:
       - SSH Tunnels
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: ssh_tunnel_create
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - ssh_tunnels:write
+        retrySemantics: unsafe
         title: Create an SSH tunnel
         triggerDescription: Use when you need to create an SSH tunnel.
   /ssh-tunnels/{uuid}:
@@ -2100,10 +2296,16 @@ paths:
       - SSH Tunnels
       x-artie-mcp:
         destructiveHint: true
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: ssh_tunnel_delete
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - ssh_tunnels:write
+        retrySemantics: safe-after-state-check
         title: Delete an SSH tunnel
         triggerDescription: Use when you need to delete an SSH tunnel.
     get:
@@ -2132,10 +2334,16 @@ paths:
       - SSH Tunnels
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: ssh_tunnel_detail
+        outputSensitivity: none
         readOnlyHint: true
+        requiredScopes:
+        - ssh_tunnels:read
+        retrySemantics: safe
         title: Get an SSH tunnel
         triggerDescription: Use when you need to get an SSH tunnel.
     post:
@@ -2170,10 +2378,16 @@ paths:
       - SSH Tunnels
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: ssh_tunnel_update
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - ssh_tunnels:write
+        retrySemantics: unsafe
         title: Update an SSH tunnel
         triggerDescription: Use when you need to update an SSH tunnel.
 webhooks:
