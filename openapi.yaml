@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.54
+  version: v1.0.55
 servers:
 - url: https://api.artie.com
 paths:
@@ -223,10 +223,18 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts connector configuration that can contain credentials.
+        exposure: excluded
         idempotentHint: false
+        inputSensitivity: restricted-credentials
         openWorldHint: false
         operationId: connector_create
+        outputSensitivity: restricted-credentials
         readOnlyHint: false
+        remediation: Create connectors through the authenticated Dashboard setup flow.
+        requiredScopes:
+        - connectors:write
+        retrySemantics: unsafe
         title: Create a connector
         triggerDescription: Use when you need to create a connector.
   /connectors/{uuid}:
@@ -252,10 +260,16 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: true
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: connector_delete
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - connectors:write
+        retrySemantics: safe-after-state-check
         title: Delete a connector
         triggerDescription: Use when you need to delete a connector.
     get:
@@ -284,10 +298,19 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Returns connector configuration that can contain credentials.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: connector_detail
+        outputSensitivity: restricted-credentials
         readOnlyHint: true
+        remediation: Use connector_fetch_table_detail or the authenticated Dashboard
+          for connector configuration.
+        requiredScopes:
+        - connectors:read
+        retrySemantics: safe
         title: Get a connector
         triggerDescription: Use when you need to get a connector.
     post:
@@ -322,10 +345,20 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts and returns connector configuration that can contain
+          credentials.
+        exposure: excluded
         idempotentHint: false
+        inputSensitivity: restricted-credentials
         openWorldHint: false
         operationId: connector_update
+        outputSensitivity: restricted-credentials
         readOnlyHint: false
+        remediation: Update connector credentials through the authenticated Dashboard
+          setup flow.
+        requiredScopes:
+        - connectors:write
+        retrySemantics: unsafe
         title: Update a connector
         triggerDescription: Use when you need to update a connector.
   /connectors/{uuid}/detail:
@@ -355,10 +388,16 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: true
         operationId: connector_fetch_table_detail
+        outputSensitivity: none
         readOnlyHint: true
+        requiredScopes:
+        - connectors:read
+        retrySemantics: safe
         title: Fetch table detail for a saved connector
         triggerDescription: Use when you need to fetch table detail for a saved connector.
   /connectors/{uuid}/generate-shadow-script:
@@ -394,10 +433,16 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: connector_generate_shadow_script
+        outputSensitivity: none
         readOnlyHint: true
+        requiredScopes:
+        - connectors:read
+        retrySemantics: safe
         title: Generate Oracle shadow table script
         triggerDescription: Use when you need to generate Oracle shadow table script.
   /connectors/{uuid}/postgres-drop-replication-slot:
@@ -431,10 +476,16 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: true
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: true
         operationId: connector_drop_postgres_replication_slot
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - connectors:write
+        retrySemantics: unsafe
         title: Drop a PostgreSQL replication slot
         triggerDescription: Use when you need to drop a PostgreSQL replication slot.
   /connectors/{uuid}/start-dynamodb-export:
@@ -468,10 +519,16 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: true
         operationId: connector_start_dynamo_db_export
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - connectors:write
+        retrySemantics: unsafe
         title: Start a DynamoDB export
         triggerDescription: Use when you need to start a DynamoDB export.
   /connectors/databases:
@@ -501,10 +558,19 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts an unsaved connector configuration that can contain
+          credentials.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: restricted-credentials
         openWorldHint: true
         operationId: unsaved_connector_fetch_databases
+        outputSensitivity: none
         readOnlyHint: true
+        remediation: Save the connector before discovering databases.
+        requiredScopes:
+        - connectors:read
+        retrySemantics: safe
         title: Fetch databases for an unsaved connector
         triggerDescription: Use when you need to fetch databases for an unsaved connector.
   /connectors/new-database:
@@ -530,10 +596,20 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts an unsaved connector configuration that can contain
+          credentials.
+        exposure: excluded
         idempotentHint: false
+        inputSensitivity: restricted-credentials
         openWorldHint: true
         operationId: unsaved_connector_create_database
+        outputSensitivity: none
         readOnlyHint: false
+        remediation: Create the database through the authenticated Dashboard setup
+          flow.
+        requiredScopes:
+        - connectors:write
+        retrySemantics: unsafe
         title: Create a database on an unsaved connector
         triggerDescription: Use when you need to create a database on an unsaved connector.
   /connectors/new-schema:
@@ -559,10 +635,19 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts an unsaved connector configuration that can contain
+          credentials.
+        exposure: excluded
         idempotentHint: false
+        inputSensitivity: restricted-credentials
         openWorldHint: true
         operationId: unsaved_connector_create_schema
+        outputSensitivity: none
         readOnlyHint: false
+        remediation: Create the schema through the authenticated Dashboard setup flow.
+        requiredScopes:
+        - connectors:write
+        retrySemantics: unsafe
         title: Create a schema on an unsaved connector
         triggerDescription: Use when you need to create a schema on an unsaved connector.
   /connectors/new-snowflake-warehouse:
@@ -588,10 +673,20 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts an unsaved connector configuration that can contain
+          credentials.
+        exposure: excluded
         idempotentHint: false
+        inputSensitivity: restricted-credentials
         openWorldHint: true
         operationId: unsaved_connector_create_snowflake_warehouse
+        outputSensitivity: none
         readOnlyHint: false
+        remediation: Create the warehouse through the authenticated Dashboard setup
+          flow.
+        requiredScopes:
+        - connectors:write
+        retrySemantics: unsafe
         title: Create a Snowflake warehouse on an unsaved connector
         triggerDescription: Use when you need to create a Snowflake warehouse on an
           unsaved connector.
@@ -622,10 +717,20 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts an unsaved connector configuration that can contain
+          credentials.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: restricted-credentials
         openWorldHint: true
         operationId: unsaved_connector_ping
+        outputSensitivity: none
         readOnlyHint: true
+        remediation: Validate credentials through the authenticated Dashboard setup
+          flow.
+        requiredScopes:
+        - connectors:read
+        retrySemantics: safe
         title: Ping a connector
         triggerDescription: Use when you need to ping a connector.
   /connectors/postgres-publications:
@@ -655,10 +760,19 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts an unsaved connector configuration that can contain
+          credentials.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: restricted-credentials
         openWorldHint: true
         operationId: unsaved_connector_fetch_postgres_publications
+        outputSensitivity: none
         readOnlyHint: true
+        remediation: Save the connector before discovering PostgreSQL publications.
+        requiredScopes:
+        - connectors:read
+        retrySemantics: safe
         title: List PostgreSQL publications for an unsaved connector
         triggerDescription: Use when you need to list PostgreSQL publications for
           an unsaved connector.
@@ -685,10 +799,19 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts an unsaved connector configuration that can contain
+          credentials.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: restricted-credentials
         openWorldHint: true
         operationId: unsaved_connector_fetch_schemas
+        outputSensitivity: none
         readOnlyHint: true
+        remediation: Save the connector before discovering schemas.
+        requiredScopes:
+        - connectors:read
+        retrySemantics: safe
         title: Fetch schemas for an unsaved connector
         triggerDescription: Use when you need to fetch schemas for an unsaved connector.
   /connectors/tables:
@@ -718,10 +841,19 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts an unsaved connector configuration that can contain
+          credentials.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: restricted-credentials
         openWorldHint: true
         operationId: unsaved_connector_fetch_tables
+        outputSensitivity: none
         readOnlyHint: true
+        remediation: Save the connector before discovering tables.
+        requiredScopes:
+        - connectors:read
+        retrySemantics: safe
         title: Fetch tables for an unsaved connector
         triggerDescription: Use when you need to fetch tables for an unsaved connector.
   /data-catalog/search:
@@ -747,10 +879,16 @@ paths:
       - Data Catalog
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: data_catalog_search
+        outputSensitivity: none
         readOnlyHint: true
+        requiredScopes:
+        - data_catalog:read
+        retrySemantics: safe
         title: Search the data catalog
         triggerDescription: Use when you need to search the data catalog.
   /encryption-keys:
@@ -1016,10 +1154,16 @@ paths:
       - Pipelines
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: pipeline_list
+        outputSensitivity: none
         readOnlyHint: true
+        requiredScopes:
+        - pipelines:read
+        retrySemantics: safe
         title: List pipelines
         triggerDescription: Use when you need to list pipelines.
     post:
@@ -1046,10 +1190,16 @@ paths:
       - Pipelines
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: pipeline_create
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - pipelines:write
+        retrySemantics: unsafe
         title: Create a pipeline
         triggerDescription: Use when you need to create a pipeline.
   /pipelines/{uuid}:
@@ -1072,10 +1222,16 @@ paths:
       - Pipelines
       x-artie-mcp:
         destructiveHint: true
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: true
         operationId: pipeline_delete
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - pipelines:write
+        retrySemantics: safe-after-state-check
         title: Delete pipeline
         triggerDescription: Use when you need to delete pipeline.
     get:
@@ -1109,10 +1265,19 @@ paths:
       - Pipelines
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Returns source, destination, and source-reader configuration
+          that can contain credentials.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: none
         openWorldHint: false
         operationId: pipeline_detail
+        outputSensitivity: restricted-credentials
         readOnlyHint: true
+        remediation: Use pipeline_list for non-secret pipeline metadata.
+        requiredScopes:
+        - pipelines:read
+        retrySemantics: safe
         title: Get pipeline by UUID
         triggerDescription: Use when you need to get pipeline by UUID.
     post:
@@ -1145,10 +1310,16 @@ paths:
       - Pipelines
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: pipeline_update
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - pipelines:write
+        retrySemantics: unsafe
         title: Update pipeline
         triggerDescription: Use when you need to update pipeline.
   /pipelines/{uuid}/backfill/cancel:
@@ -1179,10 +1350,16 @@ paths:
       - Pipelines
       x-artie-mcp:
         destructiveHint: true
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: true
         operationId: pipeline_cancel_backfill_tables
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - pipelines:write
+        retrySemantics: safe-after-state-check
         title: Cancel backfill
         triggerDescription: Use when you need to cancel backfill.
   /pipelines/{uuid}/detect-schema-changes:
@@ -1210,10 +1387,16 @@ paths:
       - Pipelines
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: true
         operationId: pipeline_detect_schema_changes
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - pipelines:write
+        retrySemantics: unsafe
         title: Detect schema changes
         triggerDescription: Use when you need to detect schema changes.
   /pipelines/{uuid}/start:
@@ -1245,10 +1428,16 @@ paths:
       - Pipelines
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: true
         operationId: pipeline_start
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - pipelines:write
+        retrySemantics: unsafe
         title: Start pipeline
         triggerDescription: Use when you need to start pipeline.
   /pipelines/{uuid}/status:
@@ -1287,10 +1476,16 @@ paths:
       - Pipelines
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: true
         operationId: pipeline_update_status
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - pipelines:write
+        retrySemantics: safe-after-state-check
         title: Update pipeline status
         triggerDescription: Use when you need to update pipeline status.
   /pipelines/{uuid}/update-with-source-reader:
@@ -1325,10 +1520,20 @@ paths:
       - Pipelines
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts and returns source-reader configuration that can
+          contain credentials.
+        exposure: excluded
         idempotentHint: false
+        inputSensitivity: restricted-credentials
         openWorldHint: false
         operationId: pipeline_update_with_source_reader
+        outputSensitivity: restricted-credentials
         readOnlyHint: false
+        remediation: Update the pipeline separately and manage source-reader credentials
+          outside MCP.
+        requiredScopes:
+        - pipelines:write
+        retrySemantics: unsafe
         title: Update pipeline with source reader
         triggerDescription: Use when you need to update pipeline with source reader.
   /pipelines/create-from-source:
@@ -1357,10 +1562,16 @@ paths:
       - Pipelines
       x-artie-mcp:
         destructiveHint: false
+        exposure: exposed
         idempotentHint: false
+        inputSensitivity: none
         openWorldHint: false
         operationId: pipeline_create_from_source
+        outputSensitivity: none
         readOnlyHint: false
+        requiredScopes:
+        - pipelines:write
+        retrySemantics: unsafe
         title: Create pipeline from source
         triggerDescription: Use when you need to create pipeline from source.
   /pipelines/validate-unsaved-destination:
@@ -1391,10 +1602,20 @@ paths:
       - Pipelines
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts an unsaved destination connector configuration that
+          can contain credentials.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: restricted-credentials
         openWorldHint: true
         operationId: pipeline_validate_unsaved_destination
+        outputSensitivity: none
         readOnlyHint: true
+        remediation: Save the destination connector first, then use a safe pipeline
+          tool.
+        requiredScopes:
+        - pipelines:read
+        retrySemantics: safe
         title: Validate unsaved destination
         triggerDescription: Use when you need to validate unsaved destination.
   /pipelines/validate-unsaved-source:
@@ -1425,10 +1646,20 @@ paths:
       - Pipelines
       x-artie-mcp:
         destructiveHint: false
+        exclusionReason: Accepts an unsaved source connector and source-reader configuration
+          that can contain credentials.
+        exposure: excluded
         idempotentHint: true
+        inputSensitivity: restricted-credentials
         openWorldHint: true
         operationId: pipeline_validate_unsaved_source
+        outputSensitivity: none
         readOnlyHint: true
+        remediation: Save the source configuration first, then use the safe pipeline
+          tools.
+        requiredScopes:
+        - pipelines:read
+        retrySemantics: safe
         title: Validate unsaved source
         triggerDescription: Use when you need to validate unsaved source.
   /privatelink-connections:
