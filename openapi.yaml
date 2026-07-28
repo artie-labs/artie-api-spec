@@ -2,13 +2,14 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.53
+  version: v1.0.54
 servers:
 - url: https://api.artie.com
 paths:
   /column-hashing-salts:
     get:
       description: Lists all column hashing salts for the authenticated company.
+      operationId: column_hashing_salt_list
       responses:
         "200":
           content:
@@ -25,9 +26,13 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: column_hashing_salt_list
         readOnlyHint: true
+        title: List column hashing salts
+        triggerDescription: Use when you need to list column hashing salts.
     post:
       description: Creates a new column hashing salt for the authenticated company.
+      operationId: column_hashing_salt_create
       requestBody:
         content:
           application/json:
@@ -51,10 +56,14 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: column_hashing_salt_create
         readOnlyHint: false
+        title: Create a column hashing salt
+        triggerDescription: Use when you need to create a column hashing salt.
   /column-hashing-salts/{uuid}:
     delete:
       description: Deletes a column hashing salt by UUID.
+      operationId: column_hashing_salt_delete
       parameters:
       - in: path
         name: uuid
@@ -75,10 +84,14 @@ paths:
         destructiveHint: true
         idempotentHint: false
         openWorldHint: false
+        operationId: column_hashing_salt_delete
         readOnlyHint: false
+        title: Delete a column hashing salt
+        triggerDescription: Use when you need to delete a column hashing salt.
     get:
       description: Retrieves a column hashing salt by UUID, including the decrypted
         salt. Requires company admin.
+      operationId: column_hashing_salt_detail
       parameters:
       - in: path
         name: uuid
@@ -103,9 +116,13 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: column_hashing_salt_detail
         readOnlyHint: true
+        title: Get a column hashing salt
+        triggerDescription: Use when you need to get a column hashing salt.
     post:
       description: Updates the name and description of a column hashing salt.
+      operationId: column_hashing_salt_update
       parameters:
       - in: path
         name: uuid
@@ -135,12 +152,16 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: column_hashing_salt_update
         readOnlyHint: false
+        title: Update a column hashing salt
+        triggerDescription: Use when you need to update a column hashing salt.
   /column-hashing-salts/{uuid}/preview:
     post:
       description: Hashes a sample string value with this salt using the same function
         used by Artie's pipelines (HMAC-SHA256 keyed on the salt, or SHA-256 if the
         salt is empty). Returns the hex-encoded hash.
+      operationId: column_hashing_salt_preview
       parameters:
       - in: path
         name: uuid
@@ -172,11 +193,15 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: column_hashing_salt_preview
         readOnlyHint: true
+        title: Preview a column hashing salt
+        triggerDescription: Use when you need to preview a column hashing salt.
   /connectors:
     post:
       description: Creates a new source or destination connector for your Artie deployment.
         Configure database connections, authentication, and replication settings programmatically.
+      operationId: connector_create
       requestBody:
         content:
           application/json:
@@ -200,11 +225,15 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: connector_create
         readOnlyHint: false
+        title: Create a connector
+        triggerDescription: Use when you need to create a connector.
   /connectors/{uuid}:
     delete:
       description: Permanently removes a connector and its associated configuration.
         This stops any active replication pipelines that depend on the connector.
+      operationId: connector_delete
       parameters:
       - in: path
         name: uuid
@@ -225,10 +254,14 @@ paths:
         destructiveHint: true
         idempotentHint: false
         openWorldHint: false
+        operationId: connector_delete
         readOnlyHint: false
+        title: Delete a connector
+        triggerDescription: Use when you need to delete a connector.
     get:
       description: Retrieves the full configuration and status of a connector by its
         unique identifier, including connection settings and current replication state.
+      operationId: connector_detail
       parameters:
       - in: path
         name: uuid
@@ -253,11 +286,15 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: connector_detail
         readOnlyHint: true
+        title: Get a connector
+        triggerDescription: Use when you need to get a connector.
     post:
       description: Updates the configuration of an existing source or destination
         connector. Modify connection settings, credentials, or replication parameters
         for a running pipeline.
+      operationId: connector_update
       parameters:
       - in: path
         name: uuid
@@ -287,11 +324,15 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: connector_update
         readOnlyHint: false
+        title: Update a connector
+        triggerDescription: Use when you need to update a connector.
   /connectors/{uuid}/detail:
     get:
       description: Returns detailed metadata for a specific table on the saved connector.
         Requires 'schemaName' and 'tableName' query parameters; 'isView' is optional.
+      operationId: connector_fetch_table_detail
       parameters:
       - in: path
         name: uuid
@@ -316,12 +357,16 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: true
+        operationId: connector_fetch_table_detail
         readOnlyHint: true
+        title: Fetch table detail for a saved connector
+        triggerDescription: Use when you need to fetch table detail for a saved connector.
   /connectors/{uuid}/generate-shadow-script:
     post:
       description: Generates the SQL script to create shadow tables required for Oracle
         change data capture (CDC). Run this script on your Oracle source before starting
         replication.
+      operationId: connector_generate_shadow_script
       parameters:
       - in: path
         name: uuid
@@ -351,12 +396,16 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: connector_generate_shadow_script
         readOnlyHint: true
+        title: Generate Oracle shadow table script
+        triggerDescription: Use when you need to generate Oracle shadow table script.
   /connectors/{uuid}/postgres-drop-replication-slot:
     post:
       description: Drops a PostgreSQL replication slot that is inactive or orphaned.
         Use this to clean up stale replication slots that may be preventing WAL cleanup
         on the source.
+      operationId: connector_drop_postgres_replication_slot
       parameters:
       - in: path
         name: uuid
@@ -384,12 +433,16 @@ paths:
         destructiveHint: true
         idempotentHint: false
         openWorldHint: true
+        operationId: connector_drop_postgres_replication_slot
         readOnlyHint: false
+        title: Drop a PostgreSQL replication slot
+        triggerDescription: Use when you need to drop a PostgreSQL replication slot.
   /connectors/{uuid}/start-dynamodb-export:
     post:
       description: Initiates a point-in-time export from Amazon DynamoDB for the specified
         connector. Use this to backfill your destination with existing DynamoDB table
         data.
+      operationId: connector_start_dynamo_db_export
       parameters:
       - in: path
         name: uuid
@@ -417,12 +470,16 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: true
+        operationId: connector_start_dynamo_db_export
         readOnlyHint: false
+        title: Start a DynamoDB export
+        triggerDescription: Use when you need to start a DynamoDB export.
   /connectors/databases:
     post:
       description: Lists available databases on the target using an unsaved connector
         configuration. Useful during connector setup to discover existing databases.
         Response metadata may include Iceberg S3 table bucket maintenance defaults.
+      operationId: unsaved_connector_fetch_databases
       requestBody:
         content:
           application/json:
@@ -446,12 +503,16 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: true
+        operationId: unsaved_connector_fetch_databases
         readOnlyHint: true
+        title: Fetch databases for an unsaved connector
+        triggerDescription: Use when you need to fetch databases for an unsaved connector.
   /connectors/new-database:
     post:
       description: Creates a new database on the target destination using a connector
         configuration that has not yet been saved. Useful during initial setup to
         prepare the destination.
+      operationId: unsaved_connector_create_database
       requestBody:
         content:
           application/json:
@@ -471,12 +532,16 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: true
+        operationId: unsaved_connector_create_database
         readOnlyHint: false
+        title: Create a database on an unsaved connector
+        triggerDescription: Use when you need to create a database on an unsaved connector.
   /connectors/new-schema:
     post:
       description: Creates a new schema on the target destination using a connector
         configuration that has not yet been saved. Useful during initial setup to
         organize destination tables.
+      operationId: unsaved_connector_create_schema
       requestBody:
         content:
           application/json:
@@ -496,12 +561,16 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: true
+        operationId: unsaved_connector_create_schema
         readOnlyHint: false
+        title: Create a schema on an unsaved connector
+        triggerDescription: Use when you need to create a schema on an unsaved connector.
   /connectors/new-snowflake-warehouse:
     post:
       description: Creates a new Snowflake virtual warehouse using an unsaved connector
         configuration. Useful during initial setup to provision compute resources
         for data replication.
+      operationId: unsaved_connector_create_snowflake_warehouse
       requestBody:
         content:
           application/json:
@@ -521,12 +590,17 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: true
+        operationId: unsaved_connector_create_snowflake_warehouse
         readOnlyHint: false
+        title: Create a Snowflake warehouse on an unsaved connector
+        triggerDescription: Use when you need to create a Snowflake warehouse on an
+          unsaved connector.
   /connectors/ping:
     post:
       description: Tests network connectivity and authentication for a connector configuration
         before saving it. Use this to validate connection settings during connector
         setup.
+      operationId: unsaved_connector_ping
       requestBody:
         content:
           application/json:
@@ -550,12 +624,16 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: true
+        operationId: unsaved_connector_ping
         readOnlyHint: true
+        title: Ping a connector
+        triggerDescription: Use when you need to ping a connector.
   /connectors/postgres-publications:
     post:
       description: Lists logical replication publications on a PostgreSQL source using
         an unsaved connector configuration. Useful during connector setup to let users
         select an existing publication.
+      operationId: unsaved_connector_fetch_postgres_publications
       requestBody:
         content:
           application/json:
@@ -579,12 +657,17 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: true
+        operationId: unsaved_connector_fetch_postgres_publications
         readOnlyHint: true
+        title: List PostgreSQL publications for an unsaved connector
+        triggerDescription: Use when you need to list PostgreSQL publications for
+          an unsaved connector.
   /connectors/schemas:
     post:
       description: Lists available schemas in a specific database using an unsaved
         connector configuration. Useful during connector setup to discover existing
         schemas.
+      operationId: unsaved_connector_fetch_schemas
       requestBody:
         content:
           application/json:
@@ -604,12 +687,16 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: true
+        operationId: unsaved_connector_fetch_schemas
         readOnlyHint: true
+        title: Fetch schemas for an unsaved connector
+        triggerDescription: Use when you need to fetch schemas for an unsaved connector.
   /connectors/tables:
     post:
       description: Lists available tables in a specific database and schema using
         an unsaved connector configuration. Results are cached when a connector UUID
         is provided.
+      operationId: unsaved_connector_fetch_tables
       requestBody:
         content:
           application/json:
@@ -633,10 +720,14 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: true
+        operationId: unsaved_connector_fetch_tables
         readOnlyHint: true
+        title: Fetch tables for an unsaved connector
+        triggerDescription: Use when you need to fetch tables for an unsaved connector.
   /data-catalog/search:
     post:
       description: Searches across the company's data catalog using full-text search.
+      operationId: data_catalog_search
       requestBody:
         content:
           application/json:
@@ -658,10 +749,14 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: data_catalog_search
         readOnlyHint: true
+        title: Search the data catalog
+        triggerDescription: Use when you need to search the data catalog.
   /encryption-keys:
     get:
       description: Lists all encryption keys for the authenticated company.
+      operationId: encryption_key_list
       responses:
         "200":
           content:
@@ -678,9 +773,13 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: encryption_key_list
         readOnlyHint: true
+        title: List encryption keys
+        triggerDescription: Use when you need to list encryption keys.
     post:
       description: Creates a new encryption key for the authenticated company.
+      operationId: encryption_key_create
       requestBody:
         content:
           application/json:
@@ -704,10 +803,14 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: encryption_key_create
         readOnlyHint: false
+        title: Create an encryption key
+        triggerDescription: Use when you need to create an encryption key.
   /encryption-keys/{uuid}:
     delete:
       description: Deletes an encryption key by UUID.
+      operationId: encryption_key_delete
       parameters:
       - in: path
         name: uuid
@@ -728,10 +831,14 @@ paths:
         destructiveHint: true
         idempotentHint: false
         openWorldHint: false
+        operationId: encryption_key_delete
         readOnlyHint: false
+        title: Delete an encryption key
+        triggerDescription: Use when you need to delete an encryption key.
     get:
       description: Retrieves an encryption key by UUID, including the decrypted key.
         Requires company admin.
+      operationId: encryption_key_detail
       parameters:
       - in: path
         name: uuid
@@ -756,9 +863,13 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: encryption_key_detail
         readOnlyHint: true
+        title: Get an encryption key
+        triggerDescription: Use when you need to get an encryption key.
     post:
       description: Updates the name and description of an encryption key.
+      operationId: encryption_key_update
       parameters:
       - in: path
         name: uuid
@@ -788,11 +899,15 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: encryption_key_update
         readOnlyHint: false
+        title: Update an encryption key
+        triggerDescription: Use when you need to update an encryption key.
   /ingestion-api-keys:
     post:
       description: Creates a new ingestion API key for a source reader. Returns the
         key and its secret (only shown once).
+      operationId: ingestion_api_key_create
       requestBody:
         content:
           application/json:
@@ -816,10 +931,14 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: ingestion_api_key_create
         readOnlyHint: false
+        title: Create an ingestion API key
+        triggerDescription: Use when you need to create an ingestion API key.
   /ingestion-api-keys/{uuid}:
     delete:
       description: Deletes an ingestion API key by UUID.
+      operationId: ingestion_api_key_delete
       parameters:
       - in: path
         name: uuid
@@ -838,9 +957,13 @@ paths:
         destructiveHint: true
         idempotentHint: false
         openWorldHint: false
+        operationId: ingestion_api_key_delete
         readOnlyHint: false
+        title: Delete an ingestion API key
+        triggerDescription: Use when you need to delete an ingestion API key.
     post:
       description: Updates an existing ingestion API key by UUID.
+      operationId: ingestion_api_key_update
       parameters:
       - in: path
         name: uuid
@@ -870,11 +993,15 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: ingestion_api_key_update
         readOnlyHint: false
+        title: Update an ingestion API key
+        triggerDescription: Use when you need to update an ingestion API key.
   /pipelines:
     get:
       description: Returns pipelines for the authenticated company, optionally filtered
         by environment.
+      operationId: pipeline_list
       responses:
         "200":
           content:
@@ -891,9 +1018,13 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: pipeline_list
         readOnlyHint: true
+        title: List pipelines
+        triggerDescription: Use when you need to list pipelines.
     post:
       description: Creates a new pipeline from a pipeline payload.
+      operationId: pipeline_create
       requestBody:
         content:
           application/json:
@@ -917,10 +1048,14 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: pipeline_create
         readOnlyHint: false
+        title: Create a pipeline
+        triggerDescription: Use when you need to create a pipeline.
   /pipelines/{uuid}:
     delete:
       description: Deletes a pipeline by UUID.
+      operationId: pipeline_delete
       parameters:
       - in: path
         name: uuid
@@ -939,11 +1074,15 @@ paths:
         destructiveHint: true
         idempotentHint: false
         openWorldHint: true
+        operationId: pipeline_delete
         readOnlyHint: false
+        title: Delete pipeline
+        triggerDescription: Use when you need to delete pipeline.
     get:
       description: Returns pipeline detail. With query includeRelatedObjects=true
         returns pipeline, sourceReader, sourceConnector, and optional destinationConnector;
         otherwise returns FullPipeline only.
+      operationId: pipeline_detail
       parameters:
       - in: path
         name: uuid
@@ -972,9 +1111,13 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: pipeline_detail
         readOnlyHint: true
+        title: Get pipeline by UUID
+        triggerDescription: Use when you need to get pipeline by UUID.
     post:
       description: Updates an existing pipeline by UUID.
+      operationId: pipeline_update
       parameters:
       - in: path
         name: uuid
@@ -1004,11 +1147,15 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: pipeline_update
         readOnlyHint: false
+        title: Update pipeline
+        triggerDescription: Use when you need to update pipeline.
   /pipelines/{uuid}/backfill/cancel:
     post:
       description: Cancels backfilling for the given table UUIDs and/or history table
         UUIDs.
+      operationId: pipeline_cancel_backfill_tables
       parameters:
       - in: path
         name: uuid
@@ -1034,13 +1181,17 @@ paths:
         destructiveHint: true
         idempotentHint: false
         openWorldHint: true
+        operationId: pipeline_cancel_backfill_tables
         readOnlyHint: false
+        title: Cancel backfill
+        triggerDescription: Use when you need to cancel backfill.
   /pipelines/{uuid}/detect-schema-changes:
     post:
       description: Enqueues a background job that checks the pipeline's source database
         for new, removed, or altered tables. If the pipeline has auto-replicate or
         auto-history mode enabled, any newly discovered tables will be added to the
         pipeline automatically. An email summary is sent if changes are detected.
+      operationId: pipeline_detect_schema_changes
       parameters:
       - in: path
         name: uuid
@@ -1061,10 +1212,14 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: true
+        operationId: pipeline_detect_schema_changes
         readOnlyHint: false
+        title: Detect schema changes
+        triggerDescription: Use when you need to detect schema changes.
   /pipelines/{uuid}/start:
     post:
       description: 'Starts or resumes a pipeline. Optional body: keepPaused, disableBackFill.'
+      operationId: pipeline_start
       parameters:
       - in: path
         name: uuid
@@ -1092,11 +1247,15 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: true
+        operationId: pipeline_start
         readOnlyHint: false
+        title: Start pipeline
+        triggerDescription: Use when you need to start pipeline.
   /pipelines/{uuid}/status:
     post:
       description: Changes the status of a pipeline (e.g. running, paused). Validates
         the pipeline before resuming and deploys the configuration change.
+      operationId: pipeline_update_status
       parameters:
       - in: path
         name: uuid
@@ -1130,11 +1289,15 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: true
+        operationId: pipeline_update_status
         readOnlyHint: false
+        title: Update pipeline status
+        triggerDescription: Use when you need to update pipeline status.
   /pipelines/{uuid}/update-with-source-reader:
     post:
       description: Updates pipeline and optionally its source reader in one request.
         Accepts gzip-encoded body.
+      operationId: pipeline_update_with_source_reader
       parameters:
       - in: path
         name: uuid
@@ -1164,11 +1327,15 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: pipeline_update_with_source_reader
         readOnlyHint: false
+        title: Update pipeline with source reader
+        triggerDescription: Use when you need to update pipeline with source reader.
   /pipelines/create-from-source:
     post:
       description: Creates a new pipeline from a source type or existing source connector
         UUID.
+      operationId: pipeline_create_from_source
       requestBody:
         content:
           application/json:
@@ -1192,11 +1359,15 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: pipeline_create_from_source
         readOnlyHint: false
+        title: Create pipeline from source
+        triggerDescription: Use when you need to create pipeline from source.
   /pipelines/validate-unsaved-destination:
     post:
       description: Validates destination configuration without persisting. Returns
         204 on success or 200 with error message on validation failure.
+      operationId: pipeline_validate_unsaved_destination
       requestBody:
         content:
           application/json:
@@ -1222,11 +1393,15 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: true
+        operationId: pipeline_validate_unsaved_destination
         readOnlyHint: true
+        title: Validate unsaved destination
+        triggerDescription: Use when you need to validate unsaved destination.
   /pipelines/validate-unsaved-source:
     post:
       description: Validates source reader and connector configuration without persisting.
         Returns 204 on success or 200 with error message on validation failure.
+      operationId: pipeline_validate_unsaved_source
       requestBody:
         content:
           application/json:
@@ -1252,10 +1427,14 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: true
+        operationId: pipeline_validate_unsaved_source
         readOnlyHint: true
+        title: Validate unsaved source
+        triggerDescription: Use when you need to validate unsaved source.
   /privatelink-connections:
     post:
       description: Creates a new PrivateLink connection for the authenticated company.
+      operationId: private_link_connection_create
       requestBody:
         content:
           application/json:
@@ -1279,11 +1458,15 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: true
+        operationId: private_link_connection_create
         readOnlyHint: false
+        title: Create a PrivateLink connection
+        triggerDescription: Use when you need to create a PrivateLink connection.
   /privatelink-connections/{uuid}:
     delete:
       description: Permanently deletes a PrivateLink connection by UUID. This action
         cannot be undone and will remove the connection from your account.
+      operationId: private_link_connection_delete
       parameters:
       - in: path
         name: uuid
@@ -1304,10 +1487,14 @@ paths:
         destructiveHint: true
         idempotentHint: false
         openWorldHint: true
+        operationId: private_link_connection_delete
         readOnlyHint: false
+        title: Delete a PrivateLink connection
+        triggerDescription: Use when you need to delete a PrivateLink connection.
     get:
       description: Retrieves the details of a PrivateLink connection by UUID, including
         its status, VPC service name, region, DNS entry, and availability zones.
+      operationId: private_link_connection_detail
       parameters:
       - in: path
         name: uuid
@@ -1332,12 +1519,16 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: private_link_connection_detail
         readOnlyHint: true
+        title: Get a PrivateLink connection
+        triggerDescription: Use when you need to get a PrivateLink connection.
     post:
       description: Updates an existing PrivateLink connection by UUID. The name can
         always be updated. The config fields (region / VPC service name / data plane
         / availability zones) are only mutable while the connection is under review
         or errored — once it is being provisioned or live they are immutable.
+      operationId: private_link_connection_update
       parameters:
       - in: path
         name: uuid
@@ -1367,10 +1558,14 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: private_link_connection_update
         readOnlyHint: false
+        title: Update a PrivateLink connection
+        triggerDescription: Use when you need to update a PrivateLink connection.
   /source-readers:
     get:
       description: Lists all source readers for the authenticated company.
+      operationId: source_reader_list
       responses:
         "200":
           content:
@@ -1389,9 +1584,13 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: source_reader_list
         readOnlyHint: true
+        title: List source readers
+        triggerDescription: Use when you need to list source readers.
     post:
       description: Creates a new source reader for the authenticated company.
+      operationId: source_reader_create
       requestBody:
         content:
           application/json:
@@ -1415,11 +1614,15 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: source_reader_create
         readOnlyHint: false
+        title: Create a source reader
+        triggerDescription: Use when you need to create a source reader.
   /source-readers/{uuid}:
     delete:
       description: Permanently deletes a source reader by UUID. The source reader
         must not be associated with any active pipelines before deletion.
+      operationId: source_reader_delete
       parameters:
       - in: path
         name: uuid
@@ -1440,10 +1643,14 @@ paths:
         destructiveHint: true
         idempotentHint: true
         openWorldHint: true
+        operationId: source_reader_delete
         readOnlyHint: false
+        title: Delete a source reader
+        triggerDescription: Use when you need to delete a source reader.
     get:
       description: Retrieves the details of a source reader by UUID, including its
         configuration, status, connector association, and table settings.
+      operationId: source_reader_detail
       parameters:
       - in: path
         name: uuid
@@ -1468,10 +1675,14 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: source_reader_detail
         readOnlyHint: true
+        title: Get a source reader
+        triggerDescription: Use when you need to get a source reader.
     post:
       description: Updates an existing source reader by UUID. You can modify the name,
         settings, table configuration, and shared status of the source reader.
+      operationId: source_reader_update
       parameters:
       - in: path
         name: uuid
@@ -1501,11 +1712,15 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: source_reader_update
         readOnlyHint: false
+        title: Update a source reader
+        triggerDescription: Use when you need to update a source reader.
   /source-readers/{uuid}/deploy:
     post:
       description: Deploys a shared source reader to the data plane. The source reader
         must be shared and pass validation before it can be deployed.
+      operationId: source_reader_deploy
       parameters:
       - in: path
         name: uuid
@@ -1526,12 +1741,16 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: true
+        operationId: source_reader_deploy
         readOnlyHint: false
+        title: Deploy a source reader
+        triggerDescription: Use when you need to deploy a source reader.
   /source-readers/{uuid}/status:
     post:
       description: Changes the status of a shared source reader (e.g. running, paused).
         Only shared source readers are supported; for non-shared source readers, use
         the pipeline status endpoint instead.
+      operationId: source_reader_update_status
       parameters:
       - in: path
         name: uuid
@@ -1561,10 +1780,14 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: true
+        operationId: source_reader_update_status
         readOnlyHint: false
+        title: Update source reader status
+        triggerDescription: Use when you need to update source reader status.
   /source-readers/validate-unsaved:
     post:
       description: Validates a source reader configuration without persisting it.
+      operationId: source_reader_validate_unsaved
       requestBody:
         content:
           application/json:
@@ -1588,10 +1811,14 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: true
+        operationId: source_reader_validate_unsaved
         readOnlyHint: true
+        title: Validate an unsaved source reader
+        triggerDescription: Use when you need to validate an unsaved source reader.
   /ssh-tunnels:
     post:
       description: Creates a new SSH tunnel for the authenticated company.
+      operationId: ssh_tunnel_create
       requestBody:
         content:
           application/json:
@@ -1615,11 +1842,15 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: ssh_tunnel_create
         readOnlyHint: false
+        title: Create an SSH tunnel
+        triggerDescription: Use when you need to create an SSH tunnel.
   /ssh-tunnels/{uuid}:
     delete:
       description: Permanently deletes an SSH tunnel by UUID. The tunnel must not
         be in use by any connectors or pipelines before it can be deleted.
+      operationId: ssh_tunnel_delete
       parameters:
       - in: path
         name: uuid
@@ -1640,10 +1871,14 @@ paths:
         destructiveHint: true
         idempotentHint: false
         openWorldHint: false
+        operationId: ssh_tunnel_delete
         readOnlyHint: false
+        title: Delete an SSH tunnel
+        triggerDescription: Use when you need to delete an SSH tunnel.
     get:
       description: Retrieves the details of an SSH tunnel by UUID, including its host,
         port, username, public key, and whether it is currently in use.
+      operationId: ssh_tunnel_detail
       parameters:
       - in: path
         name: uuid
@@ -1668,11 +1903,15 @@ paths:
         destructiveHint: false
         idempotentHint: true
         openWorldHint: false
+        operationId: ssh_tunnel_detail
         readOnlyHint: true
+        title: Get an SSH tunnel
+        triggerDescription: Use when you need to get an SSH tunnel.
     post:
       description: Updates an existing SSH tunnel by UUID. You can modify the name,
         host, port, and username. Changes will mark associated pipelines as having
         undeployed changes.
+      operationId: ssh_tunnel_update
       parameters:
       - in: path
         name: uuid
@@ -1702,7 +1941,10 @@ paths:
         destructiveHint: false
         idempotentHint: false
         openWorldHint: false
+        operationId: ssh_tunnel_update
         readOnlyHint: false
+        title: Update an SSH tunnel
+        triggerDescription: Use when you need to update an SSH tunnel.
 webhooks:
   backfill.completed:
     post:
