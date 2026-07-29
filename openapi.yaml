@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.56
+  version: v1.0.57
 servers:
 - url: https://api.artie.com
 paths:
@@ -96,6 +96,7 @@ paths:
       tags:
       - Column Hashing Salts
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: false
@@ -300,6 +301,7 @@ paths:
       tags:
       - Connectors
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: false
@@ -516,6 +518,7 @@ paths:
       tags:
       - Connectors
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: false
@@ -636,6 +639,7 @@ paths:
       tags:
       - Connectors
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: false
         exclusionReason: Accepts an unsaved connector configuration that can contain
           credentials.
@@ -675,6 +679,7 @@ paths:
       tags:
       - Connectors
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: false
         exclusionReason: Accepts an unsaved connector configuration that can contain
           credentials.
@@ -713,6 +718,7 @@ paths:
       tags:
       - Connectors
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: false
         exclusionReason: Accepts an unsaved connector configuration that can contain
           credentials.
@@ -757,6 +763,7 @@ paths:
       tags:
       - Connectors
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: false
         exclusionReason: Accepts an unsaved connector configuration that can contain
           credentials.
@@ -1022,6 +1029,7 @@ paths:
       tags:
       - Encryption Keys
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: false
@@ -1177,6 +1185,7 @@ paths:
       tags:
       - Ingestion API Keys
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: false
@@ -1318,6 +1327,7 @@ paths:
       tags:
       - Pipelines
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: false
@@ -1446,6 +1456,7 @@ paths:
       tags:
       - Pipelines
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: false
@@ -1483,6 +1494,7 @@ paths:
       tags:
       - Pipelines
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: false
         exposure: exposed
         idempotentHint: false
@@ -1524,6 +1536,7 @@ paths:
       tags:
       - Pipelines
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: false
         exposure: exposed
         idempotentHint: false
@@ -1698,6 +1711,7 @@ paths:
       tags:
       - Pipelines
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: false
         exclusionReason: Accepts an unsaved destination connector configuration that
           can contain credentials.
@@ -1742,6 +1756,7 @@ paths:
       tags:
       - Pipelines
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: false
         exclusionReason: Accepts an unsaved source connector and source-reader configuration
           that can contain credentials.
@@ -1818,6 +1833,7 @@ paths:
       tags:
       - PrivateLink Connections
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: false
@@ -2011,6 +2027,7 @@ paths:
       tags:
       - Source Readers
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: true
@@ -2134,6 +2151,7 @@ paths:
       tags:
       - Source Readers
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: false
         exposure: exposed
         idempotentHint: false
@@ -2219,6 +2237,7 @@ paths:
       tags:
       - Source Readers
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: false
         exclusionReason: Accepts unsaved source-reader configuration that can contain
           credentials.
@@ -2295,6 +2314,7 @@ paths:
       tags:
       - SSH Tunnels
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: false
