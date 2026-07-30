@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.60
+  version: v1.0.61
 servers:
 - url: https://api.artie.com
 paths:
@@ -5397,22 +5397,36 @@ components:
     RouterPipelineBackfillRequest:
       properties:
         backfillFromDatabases:
+          description: Optional source databases to backfill for regular-table backfills.
+            Requires beforeBackfill to be the empty-string do-nothing option.
           items:
             type: string
           type:
           - array
           - "null"
         backfillFromSchemas:
+          description: Optional source schemas to backfill for regular-table backfills.
+            Requires beforeBackfill to be the empty-string do-nothing option.
           items:
             type: string
           type:
           - array
           - "null"
         beforeBackfill:
+          description: 'Destination handling before the backfill: empty string leaves
+            existing data unchanged, truncate_table truncates the destination table,
+            and drop_table drops it.'
+          enum:
+          - ""
+          - truncate_table
+          - drop_table
           type: string
         historyMode:
+          description: When true, backfill the selected history tables instead of
+            the regular tables.
           type: boolean
         tableUUIDs:
+          description: UUIDs of the regular or history tables to backfill.
           items:
             format: uuid
             type: string
