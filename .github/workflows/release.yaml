@@ -47,7 +47,7 @@ jobs:
         run: |
           gh release view "$RELEASE_TAG" --json assets --jq '.assets[] | select(.name == "openapi.yaml") | .url' | grep -q .
       - name: Dispatch MCP policy update
-        if: steps.check.outputs.EXISTS == 'false' || github.event_name == 'workflow_dispatch'
+        if: success() && (steps.check.outputs.EXISTS == 'false' || github.event_name == 'workflow_dispatch')
         env:
           GH_TOKEN: ${{ secrets.GIT_PERSONAL_ACCESS_TOKEN }}
           RELEASE_TAG: ${{ steps.version.outputs.VERSION }}
