@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.58
+  version: v1.0.59
 servers:
 - url: https://api.artie.com
 paths:
@@ -106,7 +106,7 @@ paths:
         outputSensitivity: none
         readOnlyHint: false
         requiredScopes:
-        - column_hashing_salts:write
+        - column_hashing_salts:delete
         retrySemantics: safe-after-state-check
         title: Delete a column hashing salt
         triggerDescription: Use when you need to delete a column hashing salt.
@@ -311,7 +311,7 @@ paths:
         outputSensitivity: none
         readOnlyHint: false
         requiredScopes:
-        - connectors:write
+        - connectors:delete
         retrySemantics: safe-after-state-check
         title: Delete a connector
         triggerDescription: Use when you need to delete a connector.
@@ -1039,7 +1039,7 @@ paths:
         outputSensitivity: none
         readOnlyHint: false
         requiredScopes:
-        - encryption_keys:write
+        - encryption_keys:delete
         retrySemantics: safe-after-state-check
         title: Delete an encryption key
         triggerDescription: Use when you need to delete an encryption key.
@@ -1195,7 +1195,7 @@ paths:
         outputSensitivity: none
         readOnlyHint: false
         requiredScopes:
-        - ingestion_api_keys:write
+        - ingestion_api_keys:delete
         retrySemantics: safe-after-state-check
         title: Delete an ingestion API key
         triggerDescription: Use when you need to delete an ingestion API key.
@@ -1337,7 +1337,7 @@ paths:
         outputSensitivity: none
         readOnlyHint: false
         requiredScopes:
-        - pipelines:write
+        - pipelines:delete
         retrySemantics: safe-after-state-check
         title: Delete pipeline
         triggerDescription: Use when you need to delete pipeline.
@@ -1843,7 +1843,7 @@ paths:
         outputSensitivity: none
         readOnlyHint: false
         requiredScopes:
-        - private_link_connections:write
+        - private_link_connections:delete
         retrySemantics: safe-after-state-check
         title: Delete a PrivateLink connection
         triggerDescription: Use when you need to delete a PrivateLink connection.
@@ -2037,7 +2037,7 @@ paths:
         outputSensitivity: none
         readOnlyHint: false
         requiredScopes:
-        - source_readers:write
+        - source_readers:delete
         retrySemantics: safe-after-state-check
         title: Delete a source reader
         triggerDescription: Use when you need to delete a source reader.
@@ -2324,7 +2324,7 @@ paths:
         outputSensitivity: none
         readOnlyHint: false
         requiredScopes:
-        - ssh_tunnels:write
+        - ssh_tunnels:delete
         retrySemantics: safe-after-state-check
         title: Delete an SSH tunnel
         triggerDescription: Use when you need to delete an SSH tunnel.
