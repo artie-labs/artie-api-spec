@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.59
+  version: v1.0.60
 servers:
 - url: https://api.artie.com
 paths:
@@ -1429,6 +1429,50 @@ paths:
         retrySemantics: unsafe
         title: Update pipeline
         triggerDescription: Use when you need to update pipeline.
+  /pipelines/{uuid}/backfill:
+    post:
+      description: Triggers a backfill for specified tables in the pipeline. Supports
+        options for pre-backfill behavior (drop, truncate, or do nothing) and schema/database
+        filtering.
+      operationId: pipeline_backfill_tables
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterPipelineBackfillRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+        "500":
+          description: Internal Server Error
+      summary: Backfill pipeline tables
+      tags:
+      - Pipelines
+      x-artie-mcp:
+        bodilessSuccess: true
+        destructiveHint: true
+        exposure: exposed
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: true
+        operationId: pipeline_backfill_tables
+        outputSensitivity: none
+        readOnlyHint: false
+        requiredScopes:
+        - pipelines:write
+        retrySemantics: unsafe
+        title: Backfill pipeline tables
+        triggerDescription: Use when you need to backfill pipeline tables.
   /pipelines/{uuid}/backfill/cancel:
     post:
       description: Cancels backfilling for the given table UUIDs and/or history table
@@ -5349,6 +5393,33 @@ components:
       required:
       - ingestionAPIKey
       - secret
+      type: object
+    RouterPipelineBackfillRequest:
+      properties:
+        backfillFromDatabases:
+          items:
+            type: string
+          type:
+          - array
+          - "null"
+        backfillFromSchemas:
+          items:
+            type: string
+          type:
+          - array
+          - "null"
+        beforeBackfill:
+          type: string
+        historyMode:
+          type: boolean
+        tableUUIDs:
+          items:
+            format: uuid
+            type: string
+          type: array
+      required:
+      - tableUUIDs
+      - beforeBackfill
       type: object
     RouterPipelineCancelBackfillRequest:
       properties:
