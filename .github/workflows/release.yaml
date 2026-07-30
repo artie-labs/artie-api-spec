@@ -43,6 +43,7 @@ jobs:
       - name: Dispatch MCP policy update
         if: steps.check.outputs.EXISTS == 'false'
         env:
+          GH_TOKEN: ${{ secrets.GIT_PERSONAL_ACCESS_TOKEN }}
           RELEASE_TAG: ${{ steps.version.outputs.VERSION }}
           ASSET_URL: https://github.com/artie-labs/artie-api-spec/releases/download/${{ steps.version.outputs.VERSION }}/openapi.yaml
         run: |
