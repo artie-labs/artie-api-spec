@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.61
+  version: v1.0.62
 servers:
 - url: https://api.artie.com
 paths:
@@ -2919,6 +2919,10 @@ components:
           items:
             type: string
           type: array
+        columnsToTrim:
+          items:
+            type: string
+          type: array
         ctidSettings:
           $ref: '#/components/schemas/PayloadsCTIDSettings'
         encryptJSONBColumns:
@@ -4186,6 +4190,10 @@ components:
             type: string
           type: array
         columnsToHash:
+          items:
+            type: string
+          type: array
+        columnsToTrim:
           items:
             type: string
           type: array
