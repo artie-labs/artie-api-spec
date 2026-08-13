@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.63
+  version: v1.0.64
 servers:
 - url: https://api.artie.com
 paths:
@@ -747,7 +747,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PayloadsConnectorPayload'
+              $ref: '#/components/schemas/RouterConnectorPingRequest'
       responses:
         "200":
           content:
@@ -5270,6 +5270,48 @@ components:
           type: string
       required:
       - script
+      type: object
+    RouterConnectorPingRequest:
+      properties:
+        connectionRole:
+          type: string
+        dataPlaneName:
+          type: string
+        defaultDatabase:
+          type:
+          - "null"
+          - string
+        environmentUUID:
+          format: uuid
+          type:
+          - "null"
+          - string
+        label:
+          type: string
+        privateLinkUUID:
+          format: uuid
+          type:
+          - "null"
+          - string
+        sharedConfig:
+          additionalProperties: {}
+          type:
+          - object
+          - "null"
+        snapshotPrivateLinkUUID:
+          format: uuid
+          type:
+          - "null"
+          - string
+        sshTunnelUUID:
+          format: uuid
+          type:
+          - "null"
+          - string
+        type:
+          type: string
+        uuid:
+          type: string
       type: object
     RouterConnectorPingResponse:
       properties:
