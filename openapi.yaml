@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.66
+  version: v1.0.67
 servers:
 - url: https://api.artie.com
 paths:
@@ -239,6 +239,37 @@ paths:
         retrySemantics: safe
         title: Preview a column hashing salt
         triggerDescription: Use when you need to preview a column hashing salt.
+  /company/automatic-schema-changes:
+    post:
+      description: Enqueues automatic schema changes for all eligible running pipelines
+        in the authenticated company. The request is accepted before reconciliation
+        completes.
+      operationId: company_trigger_automatic_schema_changes
+      responses:
+        "202":
+          description: Accepted
+        "403":
+          description: Forbidden
+        "500":
+          description: Internal Server Error
+      summary: Trigger automatic schema changes
+      tags:
+      - Company
+      x-artie-mcp:
+        destructiveHint: true
+        exposure: exposed
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: true
+        operationId: company_trigger_automatic_schema_changes
+        outputSensitivity: none
+        readOnlyHint: false
+        requiredScopes:
+        - pipelines:write
+        retrySemantics: safe-after-state-check
+        title: Trigger automatic schema changes for a company
+        triggerDescription: Use when you need to trigger automatic schema changes
+          for all eligible pipelines in a company.
   /connectors:
     post:
       description: Creates a new source or destination connector for your Artie deployment.
@@ -1495,6 +1526,44 @@ paths:
         retrySemantics: unsafe
         title: Update pipeline
         triggerDescription: Use when you need to update pipeline.
+  /pipelines/{uuid}/automatic-schema-changes:
+    post:
+      description: Enqueues automatic schema changes for one eligible pipeline. The
+        request is accepted before reconciliation completes.
+      operationId: pipeline_trigger_automatic_schema_changes
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Accepted
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Trigger automatic schema changes
+      tags:
+      - Pipelines
+      x-artie-mcp:
+        destructiveHint: true
+        exposure: exposed
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: true
+        operationId: pipeline_trigger_automatic_schema_changes
+        outputSensitivity: none
+        readOnlyHint: false
+        requiredScopes:
+        - pipelines:write
+        retrySemantics: safe-after-state-check
+        title: Trigger automatic schema changes for a pipeline
+        triggerDescription: Use when you need to trigger automatic schema changes
+          for one eligible pipeline.
   /pipelines/{uuid}/backfill:
     post:
       description: Triggers a backfill for specified tables in the pipeline. Supports
