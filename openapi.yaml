@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.71
+  version: v1.0.72
 servers:
 - url: https://api.artie.com
 paths:
@@ -3314,7 +3314,7 @@ components:
         key:
           type: string
         value:
-          type: string
+          $ref: '#/components/schemas/PayloadsJSONValue'
       type: object
     PayloadsColumnHashingSalt:
       properties:
@@ -3626,7 +3626,8 @@ components:
           type:
           - "null"
           - string
-        sharedConfig: {}
+        sharedConfig:
+          $ref: '#/components/schemas/PayloadsJSONValue'
         snapshotPrivateLinkUUID:
           format: uuid
           type:
@@ -3772,6 +3773,34 @@ components:
       - sourceReaderUUID
       - companyUUID
       type: object
+    PayloadsJSONValue:
+      anyOf:
+      - $ref: '#/components/schemas/PayloadsJsonValueString'
+      - $ref: '#/components/schemas/PayloadsJsonValueNumber'
+      - $ref: '#/components/schemas/PayloadsJsonValueBoolean'
+      - $ref: '#/components/schemas/PayloadsJsonValueObject'
+      - $ref: '#/components/schemas/PayloadsJsonValueArray'
+      - $ref: '#/components/schemas/PayloadsJsonValueNull'
+    PayloadsJsonValueArray:
+      items:
+        $ref: '#/components/schemas/PayloadsJSONValue'
+      type: array
+    PayloadsJsonValueBoolean:
+      oneOf:
+      - type: boolean
+    PayloadsJsonValueNull:
+      oneOf:
+      - type: "null"
+    PayloadsJsonValueNumber:
+      oneOf:
+      - type: number
+    PayloadsJsonValueObject:
+      additionalProperties:
+        $ref: '#/components/schemas/PayloadsJSONValue'
+      type: object
+    PayloadsJsonValueString:
+      oneOf:
+      - type: string
     PayloadsLightConnector:
       properties:
         companyUUID:
