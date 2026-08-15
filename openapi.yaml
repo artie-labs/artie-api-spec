@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.70
+  version: v1.0.71
 servers:
 - url: https://api.artie.com
 paths:
@@ -3313,7 +3313,8 @@ components:
           type: boolean
         key:
           type: string
-        value: {}
+        value:
+          type: string
       type: object
     PayloadsColumnHashingSalt:
       properties:
