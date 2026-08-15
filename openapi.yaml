@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.72
+  version: v1.0.73
 servers:
 - url: https://api.artie.com
 paths:
@@ -3788,12 +3788,15 @@ components:
     PayloadsJsonValueBoolean:
       oneOf:
       - type: boolean
+      type: boolean
     PayloadsJsonValueNull:
       oneOf:
       - type: "null"
+      type: "null"
     PayloadsJsonValueNumber:
       oneOf:
       - type: number
+      type: number
     PayloadsJsonValueObject:
       additionalProperties:
         $ref: '#/components/schemas/PayloadsJSONValue'
@@ -3801,6 +3804,7 @@ components:
     PayloadsJsonValueString:
       oneOf:
       - type: string
+      type: string
     PayloadsLightConnector:
       properties:
         companyUUID:
