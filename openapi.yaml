@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.73
+  version: v1.0.74
 servers:
 - url: https://api.artie.com
 paths:
@@ -3783,8 +3783,15 @@ components:
       - $ref: '#/components/schemas/PayloadsJsonValueNull'
     PayloadsJsonValueArray:
       items:
-        $ref: '#/components/schemas/PayloadsJSONValue'
+        $ref: '#/components/schemas/PayloadsJsonValueArrayItem'
       type: array
+    PayloadsJsonValueArrayItem:
+      anyOf:
+      - $ref: '#/components/schemas/PayloadsJsonValueString'
+      - $ref: '#/components/schemas/PayloadsJsonValueNumber'
+      - $ref: '#/components/schemas/PayloadsJsonValueBoolean'
+      - $ref: '#/components/schemas/PayloadsJsonValueObject'
+      - $ref: '#/components/schemas/PayloadsJsonValueNull'
     PayloadsJsonValueBoolean:
       oneOf:
       - type: boolean
@@ -3798,8 +3805,7 @@ components:
       - type: number
       type: number
     PayloadsJsonValueObject:
-      additionalProperties:
-        $ref: '#/components/schemas/PayloadsJSONValue'
+      additionalProperties: true
       type: object
     PayloadsJsonValueString:
       oneOf:
