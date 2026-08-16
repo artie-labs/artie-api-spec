@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.74
+  version: v1.0.75
 servers:
 - url: https://api.artie.com
 paths:
@@ -1642,8 +1642,9 @@ paths:
         triggerDescription: Use when you need to update pipeline.
   /pipelines/{uuid}/automatic-schema-changes:
     post:
-      description: Enqueues automatic schema changes for one eligible pipeline. The
-        request is accepted before reconciliation completes.
+      description: Enqueues automatic schema changes for one eligible pipeline. Set
+        forceRefresh to bypass the two-hour cooldown for this execution. The request
+        is accepted before reconciliation completes.
       operationId: pipeline_trigger_automatic_schema_changes
       parameters:
       - in: path
@@ -1651,6 +1652,10 @@ paths:
         required: true
         schema:
           type: string
+      - in: query
+        name: forceRefresh
+        schema:
+          type: boolean
       responses:
         "202":
           description: Accepted
