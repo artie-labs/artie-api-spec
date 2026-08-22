@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.75
+  version: v1.0.76
 servers:
 - url: https://api.artie.com
 paths:
@@ -4371,6 +4371,7 @@ components:
           enum:
           - gzip
           - ""
+          - null
           type:
           - "null"
           - string
