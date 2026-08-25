@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.76
+  version: v1.0.77
 servers:
 - url: https://api.artie.com
 paths:
@@ -673,6 +673,10 @@ paths:
           type: string
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBodySchemaResponse'
           description: OK
         "400":
           description: Bad Request
@@ -3025,6 +3029,15 @@ components:
       required:
       - items
       type: object
+    ListResponseBodySchemaResponse:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PayloadsSchemaResponse'
+          type: array
+      required:
+      - items
+      type: object
     PayloadsAdvancedPipelineSettingsPayload:
       properties:
         appendOnly:
@@ -4211,6 +4224,15 @@ components:
       - port
       - publicKey
       - username
+      type: object
+    PayloadsSchemaResponse:
+      properties:
+        name:
+          type: string
+        unreadable:
+          type: boolean
+        unreadableReason:
+          type: string
       type: object
     PayloadsSeenTableColumn:
       properties:
