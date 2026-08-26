@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.78
+  version: v1.0.79
 servers:
 - url: https://api.artie.com
 paths:
@@ -515,7 +515,8 @@ paths:
     get:
       description: Returns detailed metadata for a specific table on the saved connector.
         tableName is required; databaseName defaults to the connector's configured
-        database, and schemaName and isView are optional.
+        database, schemaName defaults to the connector type's default schema, and
+        isView is optional.
       operationId: connector_fetch_table_detail
       parameters:
       - in: path
@@ -747,7 +748,8 @@ paths:
     get:
       description: Lists available tables on the target using a saved connector's
         configuration. databaseName defaults to the connector's configured database;
-        schemaName is optional.
+        schemaName defaults to the connector type's default schema (e.g. 'public'
+        for Postgres, 'dbo' for SQL Server).
       operationId: connector_fetch_tables
       parameters:
       - in: path
