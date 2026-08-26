@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.77
+  version: v1.0.78
 servers:
 - url: https://api.artie.com
 paths:
@@ -256,6 +256,7 @@ paths:
       tags:
       - Company
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: false
@@ -1673,6 +1674,7 @@ paths:
       tags:
       - Pipelines
       x-artie-mcp:
+        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: false
