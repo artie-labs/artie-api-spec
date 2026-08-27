@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.80
+  version: v1.0.81
 servers:
 - url: https://api.artie.com
 paths:
@@ -1512,7 +1512,9 @@ paths:
         title: List pipelines
         triggerDescription: Use when you need to list pipelines.
     post:
-      description: Creates a new pipeline from a pipeline payload.
+      description: Creates a pipeline attached to an existing source reader (pipeline.sourceReaderUUID).
+        The reader must have no pipeline yet, or be shared. To start a new capture
+        from a source connector, use POST /pipelines/create-from-source.
       operationId: pipeline_create
       requestBody:
         content:
@@ -1531,7 +1533,7 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
-      summary: Create a pipeline
+      summary: Create a pipeline on an existing source reader
       tags:
       - Pipelines
       x-artie-mcp:
@@ -1546,8 +1548,10 @@ paths:
         requiredScopes:
         - pipelines:write
         retrySemantics: unsafe
-        title: Create a pipeline
-        triggerDescription: Use when you need to create a pipeline.
+        title: Create a pipeline on an existing source reader
+        triggerDescription: 'Attaches a new pipeline to an existing sourceReaderUUID.
+          The reader must be unused or already shared (fan-out: one CDC capture, many
+          destinations). To start a new capture from a source connector, use pipeline_create_from_source.'
   /pipelines/{uuid}:
     delete:
       description: Deletes a pipeline by UUID.
@@ -1981,8 +1985,11 @@ paths:
         triggerDescription: Use when you need to update pipeline with source reader.
   /pipelines/create-from-source:
     post:
-      description: Creates a new pipeline from a source type or existing source connector
-        UUID.
+      description: Creates a draft pipeline and a dedicated source reader. Provide
+        sourceConnectorUUID to use an existing source, or sourceType to create a stub
+        source connector. Optional destinationType creates a stub destination. To
+        attach another pipeline to the same reader, use POST /pipelines with a shared
+        sourceReaderUUID.
       operationId: pipeline_create_from_source
       requestBody:
         content:
@@ -2001,7 +2008,7 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
-      summary: Create pipeline from source
+      summary: Create a new pipeline from a source
       tags:
       - Pipelines
       x-artie-mcp:
@@ -2016,8 +2023,11 @@ paths:
         requiredScopes:
         - pipelines:write
         retrySemantics: unsafe
-        title: Create pipeline from source
-        triggerDescription: Use when you need to create pipeline from source.
+        title: Create a new pipeline from a source
+        triggerDescription: Creates a draft pipeline plus a new dedicated (non-shared)
+          source reader. Pass sourceConnectorUUID to reuse a saved source; sourceType
+          alone inserts an empty connector. For a second destination on the same capture,
+          use pipeline_create on a shared reader.
   /pipelines/validate-unsaved-destination:
     post:
       description: Validates destination configuration without persisting. Returns
@@ -5951,18 +5961,27 @@ components:
         dataPlaneName:
           type: string
         destinationType:
+          description: Optional destination type (e.g. snowflake). Creates a stub
+            destination connector with empty credentials.
           type: string
         environmentUUID:
+          description: Environment for a new stub connector. Used when sourceType
+            is set; ignored when sourceConnectorUUID is set.
           format: uuid
           type:
           - "null"
           - string
         sourceConnectorUUID:
+          description: UUID of an existing source connector. Creates a dedicated reader
+            and draft pipeline against that source.
           format: uuid
           type:
           - "null"
           - string
         sourceType:
+          description: Source type to bootstrap (e.g. postgresql). Creates a stub
+            connector with empty credentials. Prefer sourceConnectorUUID when the
+            source already exists.
           type: string
       type: object
     RouterPipelineCreateRequest:
