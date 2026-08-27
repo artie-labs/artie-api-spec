@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.81
+  version: v1.0.82
 servers:
 - url: https://api.artie.com
 paths:
@@ -35,7 +35,7 @@ paths:
         - column_hashing_salts:read
         retrySemantics: safe
         title: List column hashing salts
-        triggerDescription: Use when you need to list column hashing salts.
+        triggerDescription: Lists column hashing salt names and UUIDs (no secret).
     post:
       description: Creates a new column hashing salt for the authenticated company.
       operationId: column_hashing_salt_create
@@ -110,7 +110,8 @@ paths:
         - column_hashing_salts:delete
         retrySemantics: safe-after-state-check
         title: Delete a column hashing salt
-        triggerDescription: Use when you need to delete a column hashing salt.
+        triggerDescription: Deletes a column hashing salt by UUID. Does not unhash
+          already-landed columns.
     get:
       description: Retrieves a column hashing salt by UUID, including the decrypted
         salt. Requires company admin.
@@ -193,7 +194,8 @@ paths:
         - column_hashing_salts:write
         retrySemantics: unsafe
         title: Update a column hashing salt
-        triggerDescription: Use when you need to update a column hashing salt.
+        triggerDescription: Updates the name and description of an existing column
+          hashing salt. Does not rotate the secret.
   /column-hashing-salts/{uuid}/preview:
     post:
       description: Hashes a sample string value with this salt using the same function
@@ -241,7 +243,8 @@ paths:
         - column_hashing_salts:read
         retrySemantics: safe
         title: Preview a column hashing salt
-        triggerDescription: Use when you need to preview a column hashing salt.
+        triggerDescription: Hashes a sample string with this salt and returns the
+          hex digest.
   /company/automatic-schema-changes:
     post:
       description: Enqueues automatic schema changes for all eligible running pipelines
@@ -272,8 +275,8 @@ paths:
         - pipelines:write
         retrySemantics: safe-after-state-check
         title: Trigger automatic schema changes for a company
-        triggerDescription: Use when you need to trigger automatic schema changes
-          for all eligible pipelines in a company.
+        triggerDescription: Enqueues automatic schema changes for all eligible running
+          pipelines. For one pipeline, use pipeline_trigger_automatic_schema_changes.
   /connectors:
     get:
       description: Returns all destination connectors for the authenticated company.
@@ -309,7 +312,8 @@ paths:
         - connectors:read
         retrySemantics: safe
         title: List connectors
-        triggerDescription: Use when you need to list connectors.
+        triggerDescription: Lists saved connectors. Defaults to destinations; pass
+          includeSourceConnectors=true for sources.
     post:
       description: Creates a new source or destination connector for your Artie deployment.
         Configure database connections, authentication, and replication settings programmatically.
@@ -385,7 +389,8 @@ paths:
         - connectors:delete
         retrySemantics: safe-after-state-check
         title: Delete a connector
-        triggerDescription: Use when you need to delete a connector.
+        triggerDescription: Permanently deletes a saved connector by UUID and stops
+          pipelines that depend on it.
     get:
       description: Retrieves the full configuration and status of a connector by its
         unique identifier, including connection settings and current replication state.
@@ -515,7 +520,7 @@ paths:
         - connectors:read
         retrySemantics: safe
         title: Fetch databases for a saved connector
-        triggerDescription: Use when you need to fetch databases for a saved connector.
+        triggerDescription: Lists database names a saved source can see.
   /connectors/{uuid}/detail:
     get:
       description: Returns detailed metadata for a specific table on the saved connector.
@@ -573,7 +578,8 @@ paths:
         - connectors:read
         retrySemantics: safe
         title: Fetch table detail for a saved connector
-        triggerDescription: Use when you need to fetch table detail for a saved connector.
+        triggerDescription: Returns columns and metadata for one table on a saved
+          connector.
   /connectors/{uuid}/generate-shadow-script:
     post:
       description: Generates the SQL script to create shadow tables required for Oracle
@@ -619,7 +625,8 @@ paths:
         - connectors:read
         retrySemantics: safe
         title: Generate Oracle shadow table script
-        triggerDescription: Use when you need to generate Oracle shadow table script.
+        triggerDescription: Returns SQL to create Oracle shadow tables for CDC. Oracle
+          sources only.
   /connectors/{uuid}/postgres-drop-replication-slot:
     post:
       description: Drops a PostgreSQL replication slot that is inactive or orphaned.
@@ -664,7 +671,8 @@ paths:
         - connectors:write
         retrySemantics: unsafe
         title: Drop a PostgreSQL replication slot
-        triggerDescription: Use when you need to drop a PostgreSQL replication slot.
+        triggerDescription: Drops an inactive PostgreSQL replication slot. Confirm
+          the slot is unused.
   /connectors/{uuid}/schemas:
     get:
       description: Lists available schemas on the target using a saved connector's
@@ -707,7 +715,8 @@ paths:
         - connectors:read
         retrySemantics: safe
         title: Fetch schemas for a saved connector
-        triggerDescription: Use when you need to fetch schemas for a saved connector.
+        triggerDescription: Lists schemas on a saved connector. Pass schemaName into
+          connector_fetch_tables when the destination requires it.
   /connectors/{uuid}/start-dynamodb-export:
     post:
       description: Initiates a point-in-time export from Amazon DynamoDB for the specified
@@ -751,7 +760,8 @@ paths:
         - connectors:write
         retrySemantics: unsafe
         title: Start a DynamoDB export
-        triggerDescription: Use when you need to start a DynamoDB export.
+        triggerDescription: Starts a DynamoDB point-in-time export. DynamoDB sources
+          only; for SQL CDC use pipeline_start.
   /connectors/{uuid}/tables:
     get:
       description: Lists available tables on the target using a saved connector's
@@ -800,7 +810,8 @@ paths:
         - connectors:read
         retrySemantics: safe
         title: Fetch tables for a saved connector
-        triggerDescription: Use when you need to fetch tables for a saved connector.
+        triggerDescription: Lists tables on a saved connector. Use to choose names
+          for pipeline_update.tables.
   /connectors/databases:
     post:
       description: Lists available databases on the target using an unsaved connector
@@ -1173,7 +1184,8 @@ paths:
         - data_catalog:read
         retrySemantics: safe
         title: Search the data catalog
-        triggerDescription: Use when you need to search the data catalog.
+        triggerDescription: Searches ingested catalog metadata. For live source tables,
+          use connector_fetch_tables.
   /encryption-keys:
     get:
       description: Lists all encryption keys for the authenticated company.
@@ -1203,7 +1215,7 @@ paths:
         - encryption_keys:read
         retrySemantics: safe
         title: List encryption keys
-        triggerDescription: Use when you need to list encryption keys.
+        triggerDescription: Lists encryption key names and UUIDs (no secret material).
     post:
       description: Creates a new encryption key for the authenticated company.
       operationId: encryption_key_create
@@ -1278,7 +1290,8 @@ paths:
         - encryption_keys:delete
         retrySemantics: safe-after-state-check
         title: Delete an encryption key
-        triggerDescription: Use when you need to delete an encryption key.
+        triggerDescription: Deletes an encryption key by UUID. Does not decrypt already-landed
+          columns.
     get:
       description: Retrieves an encryption key by UUID, including the decrypted key.
         Requires company admin.
@@ -1361,7 +1374,8 @@ paths:
         - encryption_keys:write
         retrySemantics: unsafe
         title: Update an encryption key
-        triggerDescription: Use when you need to update an encryption key.
+        triggerDescription: Updates the name and description of an existing encryption
+          key. Does not rotate the key material.
   /ingestion-api-keys:
     post:
       description: Creates a new ingestion API key for a source reader. Returns the
@@ -1436,7 +1450,7 @@ paths:
         - ingestion_api_keys:delete
         retrySemantics: safe-after-state-check
         title: Delete an ingestion API key
-        triggerDescription: Use when you need to delete an ingestion API key.
+        triggerDescription: Deletes an ingestion API key by UUID.
     post:
       description: Updates an existing ingestion API key by UUID.
       operationId: ingestion_api_key_update
@@ -1479,7 +1493,8 @@ paths:
         - ingestion_api_keys:write
         retrySemantics: unsafe
         title: Update an ingestion API key
-        triggerDescription: Use when you need to update an ingestion API key.
+        triggerDescription: Updates metadata on an existing ingestion API key. Does
+          not mint a new key.
   /pipelines:
     get:
       description: Returns pipelines for the authenticated company, optionally filtered
@@ -1510,7 +1525,8 @@ paths:
         - pipelines:read
         retrySemantics: safe
         title: List pipelines
-        triggerDescription: Use when you need to list pipelines.
+        triggerDescription: Lists pipelines with uuid, name, and status. This is not
+          a full configuration — do not send it to pipeline_update.
     post:
       description: Creates a pipeline attached to an existing source reader (pipeline.sourceReaderUUID).
         The reader must have no pipeline yet, or be shared. To start a new capture
@@ -1584,7 +1600,8 @@ paths:
         - pipelines:delete
         retrySemantics: safe-after-state-check
         title: Delete pipeline
-        triggerDescription: Use when you need to delete pipeline.
+        triggerDescription: Permanently deletes a pipeline by UUID. Does not delete
+          connectors.
     get:
       description: Returns pipeline detail. With query includeRelatedObjects=true
         returns pipeline, sourceReader, sourceConnector, and optional destinationConnector;
@@ -1632,7 +1649,10 @@ paths:
         title: Get pipeline by UUID
         triggerDescription: Use when you need to get pipeline by UUID.
     post:
-      description: Updates an existing pipeline by UUID.
+      description: 'Full replace of an existing pipeline by UUID. Omitted fields are
+        written as zero values: missing dataPlaneName 400s, missing tables deletes
+        every table. Clients must echo the last FullPipeline and change only the intended
+        fields.'
       operationId: pipeline_update
       parameters:
       - in: path
@@ -1673,7 +1693,10 @@ paths:
         - pipelines:write
         retrySemantics: unsafe
         title: Update pipeline
-        triggerDescription: Use when you need to update pipeline.
+        triggerDescription: Replaces the full pipeline configuration (not a PATCH).
+          Echo the last FullPipeline — not pipeline_list — and send destinationUUID
+          and tables together; a destination-only body is rejected and omitting tables
+          deletes all tables.
   /pipelines/{uuid}/automatic-schema-changes:
     post:
       description: Enqueues automatic schema changes for one eligible pipeline. Set
@@ -1716,8 +1739,8 @@ paths:
         - pipelines:write
         retrySemantics: safe-after-state-check
         title: Trigger automatic schema changes for a pipeline
-        triggerDescription: Use when you need to trigger automatic schema changes
-          for one eligible pipeline.
+        triggerDescription: Applies detected source DDL on one pipeline. For every
+          eligible pipeline, use company_trigger_automatic_schema_changes.
   /pipelines/{uuid}/backfill:
     post:
       description: Triggers a backfill for specified tables in the pipeline. Supports
@@ -1762,7 +1785,8 @@ paths:
         - pipelines:write
         retrySemantics: unsafe
         title: Backfill pipeline tables
-        triggerDescription: Use when you need to backfill pipeline tables.
+        triggerDescription: Backfills tables already on a running pipeline by table
+          UUID. To attach tables, use pipeline_update.
   /pipelines/{uuid}/backfill/cancel:
     post:
       description: Cancels backfilling for the given table UUIDs and/or history table
@@ -1804,7 +1828,7 @@ paths:
         - pipelines:write
         retrySemantics: safe-after-state-check
         title: Cancel backfill
-        triggerDescription: Use when you need to cancel backfill.
+        triggerDescription: Cancels an in-progress backfill for the given table UUIDs.
   /pipelines/{uuid}/detect-schema-changes:
     post:
       description: Enqueues a background job that checks the pipeline's source database
@@ -1842,10 +1866,13 @@ paths:
         - pipelines:write
         retrySemantics: unsafe
         title: Detect schema changes
-        triggerDescription: Use when you need to detect schema changes.
+        triggerDescription: Checks the source for table or schema drift. To apply
+          destination DDL, use pipeline_trigger_automatic_schema_changes.
   /pipelines/{uuid}/start:
     post:
-      description: 'Starts or resumes a pipeline. Optional body: keepPaused, disableBackFill.'
+      description: 'Starts or resumes a pipeline. Fails if the pipeline has no destination,
+        no tables, or (Postgres/Cockroach/Oracle) a source reader with an empty database.
+        Optional body: keepPaused, disableBackFill.'
       operationId: pipeline_start
       parameters:
       - in: path
@@ -1884,7 +1911,9 @@ paths:
         - pipelines:write
         retrySemantics: unsafe
         title: Start pipeline
-        triggerDescription: Use when you need to start pipeline.
+        triggerDescription: Deploys a draft or resumes a paused pipeline once destination,
+          tables, and (Postgres/Cockroach/Oracle) reader database are set. Do not
+          call immediately after create-from-source.
   /pipelines/{uuid}/status:
     post:
       description: Changes the status of a pipeline (e.g. running, paused). Validates
@@ -1933,7 +1962,8 @@ paths:
         - pipelines:write
         retrySemantics: safe-after-state-check
         title: Update pipeline status
-        triggerDescription: Use when you need to update pipeline status.
+        triggerDescription: Pauses or resumes an already-configured pipeline. For
+          first deploy, use pipeline_start.
   /pipelines/{uuid}/update-with-source-reader:
     post:
       description: Updates pipeline and optionally its source reader in one request.
@@ -2157,7 +2187,8 @@ paths:
         - private_link_connections:write
         retrySemantics: unsafe
         title: Create a PrivateLink connection
-        triggerDescription: Use when you need to create a PrivateLink connection.
+        triggerDescription: Creates an AWS PrivateLink connection. Keep the returned
+          UUID; there is no list tool.
   /privatelink-connections/{uuid}:
     delete:
       description: Permanently deletes a PrivateLink connection by UUID. This action
@@ -2193,7 +2224,7 @@ paths:
         - private_link_connections:delete
         retrySemantics: safe-after-state-check
         title: Delete a PrivateLink connection
-        triggerDescription: Use when you need to delete a PrivateLink connection.
+        triggerDescription: Permanently deletes a PrivateLink connection by UUID.
     get:
       description: Retrieves the details of a PrivateLink connection by UUID, including
         its status, VPC service name, region, DNS entry, and availability zones.
@@ -2231,7 +2262,7 @@ paths:
         - private_link_connections:read
         retrySemantics: safe
         title: Get a PrivateLink connection
-        triggerDescription: Use when you need to get a PrivateLink connection.
+        triggerDescription: Returns one PrivateLink connection by UUID.
     post:
       description: Updates an existing PrivateLink connection by UUID. The name can
         always be updated. The config fields (region / VPC service name / data plane
@@ -2277,7 +2308,8 @@ paths:
         - private_link_connections:write
         retrySemantics: unsafe
         title: Update a PrivateLink connection
-        triggerDescription: Use when you need to update a PrivateLink connection.
+        triggerDescription: Updates a PrivateLink connection. Region, VPC service
+          name, data plane, and AZs are only mutable while under review or errored.
   /source-readers:
     get:
       description: Lists all source readers for the authenticated company.
@@ -2389,7 +2421,8 @@ paths:
         - source_readers:delete
         retrySemantics: safe-after-state-check
         title: Delete a source reader
-        triggerDescription: Use when you need to delete a source reader.
+        triggerDescription: Deletes a source reader unused by any active pipeline.
+          Does not delete the source connector.
     get:
       description: Retrieves the details of a source reader by UUID, including its
         configuration, status, connector association, and table settings.
@@ -2514,7 +2547,8 @@ paths:
         - source_readers:write
         retrySemantics: safe-after-state-check
         title: Deploy a source reader
-        triggerDescription: Use when you need to deploy a source reader.
+        triggerDescription: Deploys a shared, validated source reader. To take a draft
+          pipeline live, use pipeline_start.
   /source-readers/{uuid}/status:
     post:
       description: Changes the status of a shared source reader (e.g. running, paused).
@@ -2644,7 +2678,8 @@ paths:
         - ssh_tunnels:write
         retrySemantics: unsafe
         title: Create an SSH tunnel
-        triggerDescription: Use when you need to create an SSH tunnel.
+        triggerDescription: Creates an SSH tunnel record. Keep the returned UUID;
+          there is no list tool.
   /ssh-tunnels/{uuid}:
     delete:
       description: Permanently deletes an SSH tunnel by UUID. The tunnel must not
@@ -2680,7 +2715,7 @@ paths:
         - ssh_tunnels:delete
         retrySemantics: safe-after-state-check
         title: Delete an SSH tunnel
-        triggerDescription: Use when you need to delete an SSH tunnel.
+        triggerDescription: Deletes an SSH tunnel unused by any connector or pipeline.
     get:
       description: Retrieves the details of an SSH tunnel by UUID, including its host,
         port, username, public key, and whether it is currently in use.
@@ -2718,7 +2753,7 @@ paths:
         - ssh_tunnels:read
         retrySemantics: safe
         title: Get an SSH tunnel
-        triggerDescription: Use when you need to get an SSH tunnel.
+        triggerDescription: Returns one SSH tunnel by UUID (no private key).
     post:
       description: Updates an existing SSH tunnel by UUID. You can modify the name,
         host, port, and username. Changes will mark associated pipelines as having
@@ -2763,7 +2798,8 @@ paths:
         - ssh_tunnels:write
         retrySemantics: unsafe
         title: Update an SSH tunnel
-        triggerDescription: Use when you need to update an SSH tunnel.
+        triggerDescription: Updates name, host, port, or username on an existing SSH
+          tunnel. Does not rotate keys.
 webhooks:
   backfill.completed:
     post:
