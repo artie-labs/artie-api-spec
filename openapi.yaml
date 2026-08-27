@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.82
+  version: v1.0.83
 servers:
 - url: https://api.artie.com
 paths:
@@ -2056,8 +2056,10 @@ paths:
         title: Create a new pipeline from a source
         triggerDescription: Creates a draft pipeline plus a new dedicated (non-shared)
           source reader. Pass sourceConnectorUUID to reuse a saved source; sourceType
-          alone inserts an empty connector. For a second destination on the same capture,
-          use pipeline_create on a shared reader.
+          alone inserts an empty connector. For Postgres, Cockroach, and Oracle, pass
+          database (from connector_fetch_databases) so the new reader can start. For
+          a second destination on the same capture, use pipeline_create on a shared
+          reader.
   /pipelines/validate-unsaved-destination:
     post:
       description: Validates destination configuration without persisting. Returns
@@ -5995,6 +5997,11 @@ components:
     RouterPipelineCreateFromSourceRequest:
       properties:
         dataPlaneName:
+          type: string
+        database:
+          description: Database name written onto the new source reader. Postgres,
+            Cockroach, and Oracle need this before start; discover with connector_fetch_databases.
+            Optional — the dashboard wizard creates without it.
           type: string
         destinationType:
           description: Optional destination type (e.g. snowflake). Creates a stub
