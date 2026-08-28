@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.83
+  version: v1.0.85
 servers:
 - url: https://api.artie.com
 paths:
@@ -313,7 +313,10 @@ paths:
         retrySemantics: safe
         title: List connectors
         triggerDescription: Lists saved connectors. Defaults to destinations; pass
-          includeSourceConnectors=true for sources.
+          includeSourceConnectors=true for sources. Call this before connector_fetch_databases,
+          connector_fetch_schemas, connector_fetch_tables, or connector_fetch_table_detail
+          — those tools need a uuid from this list, not a pipeline uuid or sourceReaderUUID
+          from pipeline_list.
     post:
       description: Creates a new source or destination connector for your Artie deployment.
         Configure database connections, authentication, and replication settings programmatically.
@@ -520,7 +523,9 @@ paths:
         - connectors:read
         retrySemantics: safe
         title: Fetch databases for a saved connector
-        triggerDescription: Lists database names a saved source can see.
+        triggerDescription: Lists database names a saved source can see. uuid must
+          come from connector_list with includeSourceConnectors=true. Do not pass
+          a pipeline uuid or sourceReaderUUID.
   /connectors/{uuid}/detail:
     get:
       description: Returns detailed metadata for a specific table on the saved connector.
@@ -579,7 +584,9 @@ paths:
         retrySemantics: safe
         title: Fetch table detail for a saved connector
         triggerDescription: Returns columns and metadata for one table on a saved
-          connector.
+          connector. uuid must come from connector_list (includeSourceConnectors=true
+          for sources). Do not pass a pipeline uuid or sourceReaderUUID. tableName
+          is required. This is column metadata, not pipeline lag or row counts.
   /connectors/{uuid}/generate-shadow-script:
     post:
       description: Generates the SQL script to create shadow tables required for Oracle
@@ -715,8 +722,9 @@ paths:
         - connectors:read
         retrySemantics: safe
         title: Fetch schemas for a saved connector
-        triggerDescription: Lists schemas on a saved connector. Pass schemaName into
-          connector_fetch_tables when the destination requires it.
+        triggerDescription: Lists schemas on a saved connector. uuid must come from
+          connector_list. Do not pass a pipeline uuid or sourceReaderUUID. Pass schemaName
+          into connector_fetch_tables when the destination requires it.
   /connectors/{uuid}/start-dynamodb-export:
     post:
       description: Initiates a point-in-time export from Amazon DynamoDB for the specified
@@ -810,8 +818,9 @@ paths:
         - connectors:read
         retrySemantics: safe
         title: Fetch tables for a saved connector
-        triggerDescription: Lists tables on a saved connector. Use to choose names
-          for pipeline_update.tables.
+        triggerDescription: Lists tables on a saved connector. uuid must come from
+          connector_list. Do not pass a pipeline uuid or sourceReaderUUID. Use to
+          choose names for pipeline_update.tables.
   /connectors/databases:
     post:
       description: Lists available databases on the target using an unsaved connector
@@ -1526,7 +1535,9 @@ paths:
         retrySemantics: safe
         title: List pipelines
         triggerDescription: Lists pipelines with uuid, name, and status. This is not
-          a full configuration — do not send it to pipeline_update.
+          a full configuration — do not send it to pipeline_update. sourceReaderUUID
+          is not a connector id; call connector_list before connector_fetch_table_detail
+          or other connector_fetch_* tools.
     post:
       description: Creates a pipeline attached to an existing source reader (pipeline.sourceReaderUUID).
         The reader must have no pipeline yet, or be shared. To start a new capture
