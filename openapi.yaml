@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.86
+  version: v1.0.87
 servers:
 - url: https://api.artie.com
 paths:
@@ -395,8 +395,9 @@ paths:
         triggerDescription: Permanently deletes a saved connector by UUID and stops
           pipelines that depend on it.
     get:
-      description: Retrieves the full configuration and status of a connector by its
-        unique identifier, including connection settings and current replication state.
+      description: Retrieves the full configuration of a saved connector by uuid from
+        connector_list, including type, label, and sharedConfig. Sensitive fields
+        may be masked.
       operationId: connector_detail
       parameters:
       - in: path
@@ -415,26 +416,27 @@ paths:
           description: Not Found
         "500":
           description: Internal Server Error
-      summary: Get a connector
+      summary: Get a saved connector
       tags:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Returns connector configuration that can contain credentials.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: connector_detail
         outputSensitivity: restricted-credentials
         readOnlyHint: true
-        remediation: Use connector_fetch_table_detail or the authenticated Dashboard
-          for connector configuration.
         requiredScopes:
         - connectors:read
         retrySemantics: safe
-        title: Get a connector
-        triggerDescription: Use when you need to get a connector.
+        title: Get a saved connector
+        triggerDescription: Returns a saved connector by uuid from connector_list,
+          not a pipeline uuid or sourceReaderUUID. Includes type, label, and sharedConfig.
+          Sensitive fields may be masked placeholders. To ping that connector, pass
+          this payload into unsaved_connector_ping and keep uuid set so stored secrets
+          unmask.
     post:
       description: Updates the configuration of an existing source or destination
         connector. Modify connection settings, credentials, or replication parameters
@@ -2019,6 +2021,61 @@ paths:
         retrySemantics: unsafe
         title: Update pipeline with source reader
         triggerDescription: Use when you need to update pipeline with source reader.
+  /pipelines/{uuid}/usage:
+    get:
+      description: Returns table-level usage statistics for the specified pipeline
+        within a given time range. Requires 'from' and 'to' query parameters in RFC3339
+        format.
+      operationId: pipeline_usage
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: from
+        required: true
+        schema:
+          format: date-time
+          type: string
+      - in: query
+        name: to
+        required: true
+        schema:
+          format: date-time
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouterPipelineUsageResponse'
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get pipeline usage
+      tags:
+      - Pipelines
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: true
+        operationId: pipeline_usage
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - pipelines:read
+        retrySemantics: safe
+        title: Get pipeline usage
+        triggerDescription: Returns per-table ingestion lag and row counts for a saved
+          pipeline over a time range. Pass the pipeline uuid plus from and to as RFC3339
+          timestamps. Use when the user asks about lag, throughput, or rows processed.
+          This is not slot health, warehouse correctness, or pipeline_list status.
   /pipelines/create-from-source:
     post:
       description: Creates a draft pipeline and a dedicated source reader. Provide
@@ -6057,6 +6114,18 @@ components:
         keepPaused:
           type: boolean
       type: object
+    RouterPipelineTableStats:
+      properties:
+        count:
+          format: int64
+          type: integer
+        latency:
+          type:
+          - "null"
+          - number
+        tableName:
+          type: string
+      type: object
     RouterPipelineUpdateRequest:
       properties:
         pipeline:
@@ -6097,6 +6166,15 @@ components:
       required:
       - pipeline
       - sourceReader
+      type: object
+    RouterPipelineUsageResponse:
+      properties:
+        tableStats:
+          items:
+            $ref: '#/components/schemas/RouterPipelineTableStats'
+          type: array
+      required:
+      - tableStats
       type: object
     RouterPipelineValidateUnsavedDestinationRequest:
       properties:
