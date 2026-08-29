@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.85
+  version: v1.0.86
 servers:
 - url: https://api.artie.com
 paths:
@@ -343,20 +343,20 @@ paths:
       - Connectors
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Accepts connector configuration that can contain credentials.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: false
         inputSensitivity: restricted-credentials
         openWorldHint: false
         operationId: connector_create
         outputSensitivity: restricted-credentials
         readOnlyHint: false
-        remediation: Create connectors through the authenticated Dashboard setup flow.
         requiredScopes:
         - connectors:write
         retrySemantics: unsafe
         title: Create a connector
-        triggerDescription: Use when you need to create a connector.
+        triggerDescription: Creates a saved source or destination connector. Pass
+          type, label, and sharedConfig (host, user, password, and type-specific fields).
+          Keep the returned UUID for pipeline_create_from_source.
   /connectors/{uuid}:
     delete:
       description: Permanently removes a connector and its associated configuration.
@@ -990,8 +990,8 @@ paths:
   /connectors/ping:
     post:
       description: Tests network connectivity and authentication for a connector configuration
-        before saving it. Use this to validate connection settings during connector
-        setup.
+        before saving it. Pass type, sharedConfig, and connectionRole. Success is
+        204.
       operationId: unsaved_connector_ping
       requestBody:
         content:
@@ -1000,12 +1000,6 @@ paths:
               $ref: '#/components/schemas/RouterConnectorPingRequest'
         required: true
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RouterConnectorPingResponse'
-          description: OK
         "204":
           description: No Content
         "400":
@@ -1016,22 +1010,23 @@ paths:
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: false
-        exclusionReason: Accepts an unsaved connector configuration that can contain
-          credentials.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: restricted-credentials
         openWorldHint: true
         operationId: unsaved_connector_ping
         outputSensitivity: none
         readOnlyHint: true
-        remediation: Validate credentials through the authenticated Dashboard setup
-          flow.
         requiredScopes:
         - connectors:read
         retrySemantics: safe
         title: Ping a connector
-        triggerDescription: Use when you need to ping a connector.
+        triggerDescription: 'Pings a connector before connector_create. Pass type,
+          sharedConfig (host, user, password, and type-specific fields), and connectionRole
+          (source or destination). This is not a uuid ping — do not pass a pipeline
+          uuid or sourceReaderUUID. Postgres needs a database name, Oracle a service
+          name, S3 a bucket. Success is {"success": true}; a JSON error field means
+          the host or credentials failed.'
   /connectors/postgres-publications:
     post:
       description: Lists logical replication publications on a PostgreSQL source using
@@ -5807,11 +5802,6 @@ components:
         type:
           type: string
         uuid:
-          type: string
-      type: object
-    RouterConnectorPingResponse:
-      properties:
-        error:
           type: string
       type: object
     RouterConnectorShadowScriptTable:
