@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.88
+  version: v1.0.91
 servers:
 - url: https://api.artie.com
 paths:
@@ -1532,9 +1532,10 @@ paths:
         retrySemantics: safe
         title: List pipelines
         triggerDescription: Lists pipelines with uuid, name, and status. This is not
-          a full configuration — do not send it to pipeline_update. sourceReaderUUID
-          is not a connector id; call connector_list before connector_fetch_table_detail
-          or other connector_fetch_* tools.
+          a full configuration — do not send it to pipeline_update. Full config, per-table
+          status, and table UUIDs are pipeline_detail. sourceReaderUUID is not a connector
+          id; call connector_list before connector_fetch_table_detail or other connector_fetch_*
+          tools.
     post:
       description: Creates a pipeline attached to an existing source reader (pipeline.sourceReaderUUID).
         The reader must have no pipeline yet, or be shared. To start a new capture
@@ -1611,9 +1612,10 @@ paths:
         triggerDescription: Permanently deletes a pipeline by UUID. Does not delete
           connectors.
     get:
-      description: Returns pipeline detail. With query includeRelatedObjects=true
-        returns pipeline, sourceReader, sourceConnector, and optional destinationConnector;
-        otherwise returns FullPipeline only.
+      description: Returns FullPipeline for the pipeline uuid (tables with uuid/status,
+        destinationUUID, specificDestCfg, sourceReaderUUID). MCP clients must omit
+        includeRelatedObjects. The Dashboard UI may pass includeRelatedObjects=true
+        to wrap sourceReader and connectors; that body is not the documented 200 schema.
       operationId: pipeline_detail
       parameters:
       - in: path
@@ -1630,32 +1632,35 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RouterPipelineDetailResponse'
+                $ref: '#/components/schemas/PayloadsFullPipeline'
           description: OK
         "404":
           description: Not Found
         "500":
           description: Internal Server Error
-      summary: Get pipeline by UUID
+      summary: Get pipeline configuration
       tags:
       - Pipelines
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Returns source, destination, and source-reader configuration
-          that can contain credentials.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: pipeline_detail
-        outputSensitivity: restricted-credentials
+        outputSensitivity: none
         readOnlyHint: true
-        remediation: Use pipeline_list for non-secret pipeline metadata.
         requiredScopes:
         - pipelines:read
         retrySemantics: safe
-        title: Get pipeline by UUID
-        triggerDescription: Use when you need to get pipeline by UUID.
+        title: Get pipeline configuration
+        triggerDescription: 'Returns FullPipeline for a uuid from pipeline_list: tables
+          (uuid, name, schema, status), destinationUUID, specificDestCfg, and sourceReaderUUID.
+          Echo this into pipeline_update; do not send pipeline_list. Use for per-table
+          status and backfill table UUIDs. sourceReaderUUID is the uuid for source_reader_detail
+          and source_reader_update, not a connector uuid. This is not lag (pipeline_usage).
+          Omit includeRelatedObjects — that Dashboard flag wraps connectors and is
+          not this tool''s success shape.'
     post:
       description: 'Full replace of an existing pipeline by UUID. Omitted fields are
         written as zero values: missing dataPlaneName 400s, missing tables deletes
@@ -1702,9 +1707,10 @@ paths:
         retrySemantics: unsafe
         title: Update pipeline
         triggerDescription: Replaces the full pipeline configuration (not a PATCH).
-          Echo the last FullPipeline — not pipeline_list — and send destinationUUID
-          and tables together; a destination-only body is rejected and omitting tables
-          deletes all tables.
+          Echo the last FullPipeline from pipeline_create_from_source, pipeline_update,
+          or pipeline_detail — not pipeline_list — and send destinationUUID and tables
+          together; a destination-only body is rejected and omitting tables deletes
+          all tables.
   /pipelines/{uuid}/automatic-schema-changes:
     post:
       description: Enqueues automatic schema changes for one eligible pipeline. Set
@@ -1794,7 +1800,8 @@ paths:
         retrySemantics: unsafe
         title: Backfill pipeline tables
         triggerDescription: Backfills tables already on a running pipeline by table
-          UUID. To attach tables, use pipeline_update.
+          UUID from pipeline_detail (not connector_fetch_tables). To attach tables,
+          use pipeline_update.
   /pipelines/{uuid}/backfill/cancel:
     post:
       description: Cancels backfilling for the given table UUIDs and/or history table
@@ -1921,7 +1928,10 @@ paths:
         title: Start pipeline
         triggerDescription: Deploys a draft or resumes a paused pipeline once destination,
           tables, and (Postgres/Cockroach/Oracle) reader database are set. Do not
-          call immediately after create-from-source.
+          call immediately after create-from-source. If start 400s that two source
+          readers share replication slot artie, GET source_reader_detail for sourceReaderUUID
+          from pipeline_detail, set settings.replicationSlotOverride to a unique name,
+          POST source_reader_update with the echoed reader, then retry start.
   /pipelines/{uuid}/status:
     post:
       description: Changes the status of a pipeline (e.g. running, paused). Validates
@@ -2075,7 +2085,8 @@ paths:
         triggerDescription: Returns per-table ingestion lag and row counts for a saved
           pipeline over a time range. Pass the pipeline uuid plus from and to as RFC3339
           timestamps. Use when the user asks about lag, throughput, or rows processed.
-          This is not slot health, warehouse correctness, or pipeline_list status.
+          This is not slot health, warehouse correctness, pipeline_list status, or
+          pipeline_detail table status.
   /pipelines/create-from-source:
     post:
       description: Creates a draft pipeline and a dedicated source reader. Provide
@@ -2489,8 +2500,9 @@ paths:
         triggerDescription: Deletes a source reader unused by any active pipeline.
           Does not delete the source connector.
     get:
-      description: Retrieves the details of a source reader by UUID, including its
-        configuration, status, connector association, and table settings.
+      description: Retrieves a source reader by UUID, including database, settings,
+        and table configuration. Sensitive fields may be present. MCP clients should
+        echo this payload into source_reader_update.
       operationId: source_reader_detail
       parameters:
       - in: path
@@ -2514,24 +2526,29 @@ paths:
       - Source Readers
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Returns source-reader configuration that can contain credentials.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: source_reader_detail
         outputSensitivity: restricted-credentials
         readOnlyHint: true
-        remediation: Use safe pipeline metadata tools and manage source-reader credentials
-          outside MCP.
         requiredScopes:
         - source_readers:read
         retrySemantics: safe
         title: Get a source reader
-        triggerDescription: Use when you need to get a source reader.
+        triggerDescription: Returns a source reader by uuid from pipeline_detail.sourceReaderUUID,
+          not a pipeline uuid or connector uuid. Includes database, tablesConfig,
+          and settings (replicationSlotOverride, publicationNameOverride, heartbeats).
+          Sensitive fields may be present. Echo this into source_reader_update; do
+          not invent a partial body. If pipeline_start 400s that two readers share
+          slot artie, GET this, set settings.replicationSlotOverride to a unique lowercase
+          name (digits and underscores, <=63), POST source_reader_update, then retry
+          start.
     post:
-      description: Updates an existing source reader by UUID. You can modify the name,
-        settings, table configuration, and shared status of the source reader.
+      description: Updates an existing source reader by UUID. Echo the last source_reader_detail
+        payload and change only the intended fields; omitting name, database, or connectorUUID
+        overwrites them with empty values.
       operationId: source_reader_update
       parameters:
       - in: path
@@ -2561,22 +2578,23 @@ paths:
       - Source Readers
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Accepts and returns source-reader configuration that can
-          contain credentials.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: false
         inputSensitivity: restricted-credentials
         openWorldHint: false
         operationId: source_reader_update
         outputSensitivity: restricted-credentials
         readOnlyHint: false
-        remediation: Update source readers through the authenticated Dashboard setup
-          flow.
         requiredScopes:
         - source_readers:write
         retrySemantics: unsafe
         title: Update a source reader
-        triggerDescription: Use when you need to update a source reader.
+        triggerDescription: Applies a SourceReader from source_reader_detail. Echo
+          the last GET and change only the intended fields. Omitting name, database,
+          or connectorUUID blanks them. To fix a duplicate Postgres slot (pipeline_start
+          400 that two readers share artie), set settings.replicationSlotOverride
+          to a unique lowercase name, then pipeline_start. This is not pipeline_update
+          or connector_update.
   /source-readers/{uuid}/deploy:
     post:
       description: Deploys a shared source reader to the data plane. The source reader
@@ -6095,21 +6113,6 @@ components:
           $ref: '#/components/schemas/PayloadsPipelinePayload'
       required:
       - pipeline
-      type: object
-    RouterPipelineDetailResponse:
-      properties:
-        destinationConnector:
-          $ref: '#/components/schemas/PayloadsFullConnector'
-        pipeline:
-          $ref: '#/components/schemas/PayloadsFullPipeline'
-        sourceConnector:
-          $ref: '#/components/schemas/PayloadsFullConnector'
-        sourceReader:
-          $ref: '#/components/schemas/PayloadsSourceReader'
-      required:
-      - pipeline
-      - sourceReader
-      - sourceConnector
       type: object
     RouterPipelineStartRequest:
       properties:
