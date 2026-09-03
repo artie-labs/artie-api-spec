@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.91
+  version: v1.0.92
 servers:
 - url: https://api.artie.com
 paths:
@@ -4628,6 +4628,10 @@ components:
           - "null"
           - string
         useAdvanceOnPrimaryKeepAlive:
+          type:
+          - "null"
+          - boolean
+        useFailoverReplicationSlot:
           type:
           - "null"
           - boolean
