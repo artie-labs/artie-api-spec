@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.92
+  version: v1.0.93
 servers:
 - url: https://api.artie.com
 paths:
@@ -3297,6 +3297,10 @@ components:
           type:
           - "null"
           - boolean
+        jsonAsVarchar:
+          type:
+          - "null"
+          - boolean
         maxConcurrentSnapshots:
           minimum: 0
           type:
@@ -4179,6 +4183,8 @@ components:
         includeFullSourceTableNameColumnAsPrimaryKey:
           type: boolean
         includeSourceMetadataColumn:
+          type: boolean
+        jsonAsVarchar:
           type: boolean
         maxConcurrentSnapshots:
           minimum: 0
