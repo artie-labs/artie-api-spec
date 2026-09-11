@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.93
+  version: v1.0.94
 servers:
 - url: https://api.artie.com
 paths:
@@ -3432,6 +3432,8 @@ components:
           type:
           - "null"
           - integer
+        partitionRangeSettings:
+          $ref: '#/components/schemas/PayloadsPartitionRangeSettings'
         primaryKeysOverride:
           items:
             type: string
@@ -4138,6 +4140,13 @@ components:
         partitionType:
           type: string
       type: object
+    PayloadsPartitionRangeSettings:
+      properties:
+        enabled:
+          type: boolean
+        range:
+          $ref: '#/components/schemas/PayloadsRangeSettings'
+      type: object
     PayloadsPipelineAdvancedSettings:
       properties:
         appendOnly:
@@ -4820,6 +4829,8 @@ components:
         msmFlushCount:
           minimum: 0
           type: integer
+        partitionRangeSettings:
+          $ref: '#/components/schemas/PayloadsPartitionRangeSettings'
         primaryKeysOverride:
           items:
             type: string
