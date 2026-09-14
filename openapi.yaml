@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.93
+  version: v1.0.95
 servers:
 - url: https://api.artie.com
 paths:
@@ -3432,6 +3432,8 @@ components:
           type:
           - "null"
           - integer
+        partitionRangeSettings:
+          $ref: '#/components/schemas/PayloadsPartitionRangeSettings'
         primaryKeysOverride:
           items:
             type: string
@@ -4138,6 +4140,13 @@ components:
         partitionType:
           type: string
       type: object
+    PayloadsPartitionRangeSettings:
+      properties:
+        enabled:
+          type: boolean
+        range:
+          $ref: '#/components/schemas/PayloadsRangeSettings'
+      type: object
     PayloadsPipelineAdvancedSettings:
       properties:
         appendOnly:
@@ -4360,6 +4369,86 @@ components:
         maxParallelism:
           minimum: 0
           type: integer
+      type: object
+    PayloadsS3CSVParser:
+      properties:
+        commentPrefix:
+          type: string
+        delimiter:
+          type: string
+        headers:
+          items:
+            type: string
+          type: array
+        nullValues:
+          items:
+            type: string
+          type: array
+        trimWhitespace:
+          type: boolean
+      type: object
+    PayloadsS3Match:
+      properties:
+        fileNameRegex:
+          type: string
+      type: object
+    PayloadsS3MetadataColumns:
+      properties:
+        columns:
+          items:
+            enum:
+            - artieSourcePath
+            - artieSourceFileName
+            - artieSourceLastModified
+            - artieSourceETag
+            - artieSourceRecordNumber
+            - artieSourceIngestedAt
+            type: string
+          type: array
+      type: object
+    PayloadsS3Parser:
+      properties:
+        columnOrder:
+          items:
+            type: string
+          type: array
+        csv:
+          $ref: '#/components/schemas/PayloadsS3CSVParser'
+        type:
+          enum:
+          - csv
+          - json
+          - parquet
+          - ach
+          type: string
+      required:
+      - type
+      type: object
+    PayloadsS3PathMapping:
+      properties:
+        id:
+          type: string
+        match:
+          $ref: '#/components/schemas/PayloadsS3Match'
+        metadata:
+          $ref: '#/components/schemas/PayloadsS3MetadataColumns'
+        parser:
+          $ref: '#/components/schemas/PayloadsS3Parser'
+        prefix:
+          type: string
+        primaryKey:
+          items:
+            type: string
+          type: array
+        referenceID:
+          type: string
+      required:
+      - id
+      - referenceID
+      - prefix
+      - match
+      - parser
+      - metadata
       type: object
     PayloadsSSHTunnel:
       properties:
@@ -4615,6 +4704,12 @@ components:
           type:
           - "null"
           - string
+        s3PathMappings:
+          items:
+            $ref: '#/components/schemas/PayloadsS3PathMapping'
+          type:
+          - "null"
+          - array
         unifyAcrossDatabases:
           type:
           - "null"
@@ -4820,6 +4915,8 @@ components:
         msmFlushCount:
           minimum: 0
           type: integer
+        partitionRangeSettings:
+          $ref: '#/components/schemas/PayloadsPartitionRangeSettings'
         primaryKeysOverride:
           items:
             type: string
