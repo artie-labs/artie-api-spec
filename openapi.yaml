@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.95
+  version: v1.0.97
 servers:
 - url: https://api.artie.com
 paths:
@@ -2852,7 +2852,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PayloadsSSHTunnel'
+              $ref: '#/components/schemas/RouterSSHTunnelUpdateRequest'
         required: true
       responses:
         "200":
@@ -3401,6 +3401,15 @@ components:
           items:
             type: string
           type: array
+        flattenDocuments:
+          type:
+          - "null"
+          - boolean
+        flattenDocumentsMaxDepth:
+          minimum: 0
+          type:
+          - "null"
+          - integer
         flushIntervalSeconds:
           type:
           - "null"
@@ -4888,6 +4897,11 @@ components:
           items:
             type: string
           type: array
+        flattenDocuments:
+          type: boolean
+        flattenDocumentsMaxDepth:
+          minimum: 0
+          type: integer
         flushIntervalSeconds:
           type: integer
         flushSizeKb:
@@ -6418,6 +6432,22 @@ components:
         username:
           type: string
       required:
+      - host
+      - port
+      - username
+      type: object
+    RouterSSHTunnelUpdateRequest:
+      properties:
+        host:
+          type: string
+        name:
+          type: string
+        port:
+          type: integer
+        username:
+          type: string
+      required:
+      - name
       - host
       - port
       - username
