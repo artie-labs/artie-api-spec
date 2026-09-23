@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.97
+  version: v1.0.98
 servers:
 - url: https://api.artie.com
 paths:
@@ -4723,6 +4723,10 @@ components:
           type:
           - "null"
           - boolean
+        unifyAcrossDatabasesRegex:
+          type:
+          - "null"
+          - string
         unifyAcrossSchemas:
           type:
           - "null"
