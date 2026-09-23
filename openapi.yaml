@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.98
+  version: v1.0.99
 servers:
 - url: https://api.artie.com
 paths:
@@ -3243,6 +3243,10 @@ components:
           type:
           - "null"
           - boolean
+        databricksAutoLiquidClustering:
+          type:
+          - "null"
+          - boolean
         defaultSourceSchema:
           type:
           - "null"
@@ -4173,6 +4177,8 @@ components:
         bufferRows:
           type: integer
         castAllColumnsToString:
+          type: boolean
+        databricksAutoLiquidClustering:
           type: boolean
         defaultSourceSchema:
           type: string
