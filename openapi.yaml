@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.99
+  version: v1.0.100
 servers:
 - url: https://api.artie.com
 paths:
@@ -3514,6 +3514,8 @@ components:
         maxParallelism:
           minimum: 0
           type: integer
+        physicalRanges:
+          $ref: '#/components/schemas/PayloadsPhysicalCTIDRangeSettings'
       type: object
     PayloadsCatalogTableProperty:
       properties:
@@ -4159,6 +4161,14 @@ components:
           type: boolean
         range:
           $ref: '#/components/schemas/PayloadsRangeSettings'
+      type: object
+    PayloadsPhysicalCTIDRangeSettings:
+      properties:
+        enabled:
+          type: boolean
+        pagesPerRange:
+          minimum: 0
+          type: integer
       type: object
     PayloadsPipelineAdvancedSettings:
       properties:
