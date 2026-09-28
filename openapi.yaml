@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.100
+  version: v1.0.101
 servers:
 - url: https://api.artie.com
 paths:
@@ -3495,6 +3495,33 @@ components:
         sasToken:
           type: string
       type: object
+    PayloadsBackfillDefaultsPayload:
+      properties:
+        chunkSize:
+          maximum: 1e+08
+          minimum: 100000
+          type: integer
+        pagination:
+          enum:
+          - client
+          - server
+          type: string
+        parallelism:
+          maximum: 50
+          minimum: 1
+          type: integer
+        preset:
+          enum:
+          - normal
+          - performance
+          type: string
+        readMode:
+          enum:
+          - primaryKey
+          - range
+          - ctid
+          type: string
+      type: object
     PayloadsBigQuerySettings:
       properties:
         partitionBy:
@@ -4638,6 +4665,8 @@ components:
           type:
           - "null"
           - integer
+        backfillDefaults:
+          $ref: '#/components/schemas/PayloadsBackfillDefaultsPayload'
         collectionScopedMode:
           type:
           - "null"
