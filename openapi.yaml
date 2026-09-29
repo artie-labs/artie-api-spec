@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.105
+  version: v1.0.106
 servers:
 - url: https://api.artie.com
 paths:
@@ -2079,7 +2079,7 @@ paths:
     get:
       description: Returns table-level usage statistics for the specified pipeline
         within a given time range. Requires 'from' and 'to' query parameters in RFC3339
-        format.
+        format. Pass 'excludeBackfills=true' to exclude backfill rows from row counts.
       operationId: pipeline_usage
       parameters:
       - in: path
@@ -2099,6 +2099,16 @@ paths:
         schema:
           format: date-time
           type: string
+      - description: When true, rows processed by backfills are excluded from row
+          counts so only CDC rows are counted. Latency is not affected. Defaults to
+          false.
+        in: query
+        name: excludeBackfills
+        schema:
+          description: When true, rows processed by backfills are excluded from row
+            counts so only CDC rows are counted. Latency is not affected. Defaults
+            to false.
+          type: boolean
       responses:
         "200":
           content:
@@ -2128,7 +2138,8 @@ paths:
         title: Get pipeline usage
         triggerDescription: Returns per-table ingestion lag and row counts for a saved
           pipeline over a time range. Pass the pipeline uuid plus from and to as RFC3339
-          timestamps. Use when the user asks about lag, throughput, or rows processed.
+          timestamps; set excludeBackfills=true to leave backfill rows out of row
+          counts. Use when the user asks about lag, throughput, or rows processed.
           This is not slot health, warehouse correctness, pipeline_list status, pipeline_detail
           table status, or error logs (pipeline_error_logs).
   /pipelines/create-from-source:
