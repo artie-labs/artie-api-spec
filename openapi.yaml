@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.104
+  version: v1.0.105
 servers:
 - url: https://api.artie.com
 paths:
@@ -3587,17 +3587,6 @@ components:
           - ctid
           type: string
       type: object
-    PayloadsBackfillLifecycleEvent:
-      properties:
-        stage:
-          type: string
-        timestamp:
-          format: date-time
-          type: string
-      required:
-      - stage
-      - timestamp
-      type: object
     PayloadsBigQuerySettings:
       properties:
         partitionBy:
@@ -3973,12 +3962,6 @@ components:
       properties:
         advancedSettings:
           $ref: '#/components/schemas/PayloadsPipelineAdvancedSettings'
-        backfillLifecycle:
-          items:
-            $ref: '#/components/schemas/PayloadsBackfillLifecycleEvent'
-          type:
-          - array
-          - "null"
         columnHashingSaltUUID:
           format: uuid
           type:
@@ -4053,7 +4036,6 @@ components:
       - isDeploying
       - sourceType
       - hasUndeployedChanges
-      - backfillLifecycle
       - tables
       - specificDestCfg
       - advancedSettings
@@ -4187,12 +4169,6 @@ components:
       type: object
     PayloadsLightPipeline:
       properties:
-        backfillLifecycle:
-          items:
-            $ref: '#/components/schemas/PayloadsBackfillLifecycleEvent'
-          type:
-          - array
-          - "null"
         columnHashingSaltUUID:
           format: uuid
           type:
@@ -4261,7 +4237,6 @@ components:
       - isDeploying
       - sourceType
       - hasUndeployedChanges
-      - backfillLifecycle
       type: object
     PayloadsMergePredicates:
       properties:
