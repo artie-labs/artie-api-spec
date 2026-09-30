@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.108
+  version: v1.0.109
 servers:
 - url: https://api.artie.com
 paths:
@@ -5035,6 +5035,11 @@ components:
           $ref: '#/components/schemas/PayloadsTableAdvancedSettings'
         backfillStage:
           $ref: '#/components/schemas/EnumsBackfillStage'
+          deprecated: true
+        backfillStages:
+          items:
+            $ref: '#/components/schemas/PayloadsBackfillStageEvent'
+          type: array
         createdAt:
           format: date-time
           type: string
@@ -5044,8 +5049,13 @@ components:
           type: boolean
         enableHistoryMode:
           type: boolean
+        historyBackfillStages:
+          items:
+            $ref: '#/components/schemas/PayloadsBackfillStageEvent'
+          type: array
         historyTableBackfillStage:
           $ref: '#/components/schemas/EnumsBackfillStage'
+          deprecated: true
         historyTableStatus:
           type: string
         individualDeployment:
