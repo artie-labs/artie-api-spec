@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.106
+  version: v1.0.107
 servers:
 - url: https://api.artie.com
 paths:
@@ -3157,6 +3157,16 @@ webhooks:
           description: Acknowledge delivery
 components:
   schemas:
+    EnumsBackfillStage:
+      enum:
+      - queued
+      - snapshotting
+      - copying
+      - merging
+      - done
+      - failed
+      - cancelled
+      type: string
     EnumsConnectorSlug:
       enum:
       - api
@@ -3598,6 +3608,17 @@ components:
           - ctid
           type: string
       type: object
+    PayloadsBackfillStageEvent:
+      properties:
+        stage:
+          $ref: '#/components/schemas/EnumsBackfillStage'
+        timestamp:
+          format: date-time
+          type: string
+      required:
+      - stage
+      - timestamp
+      type: object
     PayloadsBigQuerySettings:
       properties:
         partitionBy:
@@ -3973,6 +3994,10 @@ components:
       properties:
         advancedSettings:
           $ref: '#/components/schemas/PayloadsPipelineAdvancedSettings'
+        backfillStages:
+          items:
+            $ref: '#/components/schemas/PayloadsBackfillStageEvent'
+          type: array
         columnHashingSaltUUID:
           format: uuid
           type:
@@ -4003,6 +4028,10 @@ components:
           type: boolean
         hasUndeployedChanges:
           type: boolean
+        historyBackfillStages:
+          items:
+            $ref: '#/components/schemas/PayloadsBackfillStageEvent'
+          type: array
         isDeploying:
           type: boolean
         lastDeployedAt:
@@ -4180,6 +4209,10 @@ components:
       type: object
     PayloadsLightPipeline:
       properties:
+        backfillStages:
+          items:
+            $ref: '#/components/schemas/PayloadsBackfillStageEvent'
+          type: array
         columnHashingSaltUUID:
           format: uuid
           type:
@@ -4210,6 +4243,10 @@ components:
           type: boolean
         hasUndeployedChanges:
           type: boolean
+        historyBackfillStages:
+          items:
+            $ref: '#/components/schemas/PayloadsBackfillStageEvent'
+          type: array
         isDeploying:
           type: boolean
         lastDeployedAt:
@@ -4991,7 +5028,7 @@ components:
         advancedSettings:
           $ref: '#/components/schemas/PayloadsTableAdvancedSettings'
         backfillStage:
-          type: string
+          $ref: '#/components/schemas/EnumsBackfillStage'
         createdAt:
           format: date-time
           type: string
@@ -5002,7 +5039,7 @@ components:
         enableHistoryMode:
           type: boolean
         historyTableBackfillStage:
-          type: string
+          $ref: '#/components/schemas/EnumsBackfillStage'
         historyTableStatus:
           type: string
         individualDeployment:
