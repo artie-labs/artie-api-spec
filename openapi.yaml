@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.107
+  version: v1.0.108
 servers:
 - url: https://api.artie.com
 paths:
@@ -3396,6 +3396,10 @@ components:
           type:
           - "null"
           - integer
+        postgresPartitionMirroring:
+          type:
+          - "null"
+          - boolean
         snowpipeStreamingMaxChannels:
           type:
           - "null"
@@ -4364,6 +4368,8 @@ components:
           minimum: 0
           type: integer
         nullOutInvalidValues:
+          type: boolean
+        postgresPartitionMirroring:
           type: boolean
         reuseStagingTable:
           type: boolean
