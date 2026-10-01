@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.109
+  version: v1.0.110
 servers:
 - url: https://api.artie.com
 paths:
@@ -3653,6 +3653,10 @@ components:
           type: string
         value:
           $ref: '#/components/schemas/PayloadsJSONValue'
+      required:
+      - key
+      - value
+      - isDate
       type: object
     PayloadsColumnHashingSalt:
       properties:
@@ -3717,6 +3721,9 @@ components:
           $ref: '#/components/schemas/PayloadsConnectorColumnMetadata'
         name:
           type: string
+      required:
+      - name
+      - metadata
       type: object
     PayloadsConnectorColumnMetadata:
       properties:
@@ -3725,15 +3732,14 @@ components:
         dataType:
           type: string
         defaultValue:
-          type:
-          - "null"
-          - string
+          type: string
         isPrimaryKey:
-          type:
-          - "null"
-          - boolean
+          type: boolean
         notNull:
           type: boolean
+      required:
+      - dataType
+      - notNull
       type: object
     PayloadsConnectorFetchDatabasesResponse:
       properties:
@@ -3816,6 +3822,13 @@ components:
           type: string
         unreadable:
           type: boolean
+      required:
+      - schema
+      - name
+      - isView
+      - createdAt
+      - modifiedAt
+      - unreadable
       type: object
     PayloadsDataCatalogDatabase:
       properties:
@@ -6326,6 +6339,14 @@ components:
           type: string
         unreadable:
           type: boolean
+      required:
+      - schema
+      - name
+      - isView
+      - createdAt
+      - modifiedAt
+      - unreadable
+      - approxDateAdded
       type: object
     RouterCreateColumnHashingSaltRequest:
       properties:
