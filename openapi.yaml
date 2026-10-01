@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.111
+  version: v1.0.112
 servers:
 - url: https://api.artie.com
 paths:
@@ -3946,6 +3946,8 @@ components:
       properties:
         name:
           type: string
+      required:
+      - name
       type: object
     PayloadsDataCatalogMatch:
       properties:
@@ -3957,6 +3959,10 @@ components:
         score:
           format: double
           type: number
+      required:
+      - score
+      - connectorUUID
+      - object
       type: object
     PayloadsDataCatalogMatchedObject:
       properties:
@@ -3973,6 +3979,9 @@ components:
           type: string
         name:
           type: string
+      required:
+      - name
+      - databaseName
       type: object
     PayloadsDataCatalogSearchRequest:
       properties:
@@ -3987,6 +3996,10 @@ components:
           type: string
         schemaName:
           type: string
+      required:
+      - name
+      - schemaName
+      - databaseName
       type: object
     PayloadsDatabaseListItem:
       properties:
