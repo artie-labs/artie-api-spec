@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.110
+  version: v1.0.111
 servers:
 - url: https://api.artie.com
 paths:
@@ -680,8 +680,111 @@ paths:
         - connectors:write
         retrySemantics: unsafe
         title: Drop a PostgreSQL replication slot
-        triggerDescription: Drops an inactive PostgreSQL replication slot. Confirm
-          the slot is unused.
+        triggerDescription: 'Drops an inactive PostgreSQL replication slot. Check
+          connector_fetch_postgres_replication_slots first: only an inactive or lost
+          slot can be dropped.'
+  /connectors/{uuid}/postgres-replication-slots:
+    get:
+      description: Lists replication slots on the PostgreSQL source for the specified
+        connector.
+      operationId: connector_fetch_postgres_replication_slots
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: databaseName
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBodyPostgresReplicationSlot'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: List PostgreSQL replication slots
+      tags:
+      - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: true
+        operationId: connector_fetch_postgres_replication_slots
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - connectors:read
+        retrySemantics: safe
+        title: List PostgreSQL replication slots
+        triggerDescription: Lists replication slots on a saved Postgres source (name,
+          database, active, walStatus, retainedWALBytes, isReplica). uuid must come
+          from connector_list with includeSourceConnectors=true, not a pipeline uuid
+          or sourceReaderUUID; pass databaseName for the pipeline's reader database.
+          Use for slot health and WAL retention, and to confirm a slot is inactive
+          before connector_drop_postgres_replication_slot.
+  /connectors/{uuid}/postgres-settings:
+    get:
+      description: Returns PostgreSQL server configuration settings relevant to replication
+        for the specified connector.
+      operationId: connector_fetch_postgres_settings
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: databaseName
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PayloadsPostgresSetting'
+                type: array
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Fetch PostgreSQL settings
+      tags:
+      - Connectors
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: true
+        operationId: connector_fetch_postgres_settings
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - connectors:read
+        retrySemantics: safe
+        title: Fetch PostgreSQL settings
+        triggerDescription: Returns replication-relevant server settings (name, value,
+          unit, category) for a saved Postgres source, such as wal_level, max_replication_slots,
+          max_wal_senders, and max_slot_wal_keep_size. uuid must come from connector_list
+          with includeSourceConnectors=true. Use to check CDC prerequisites (wal_level
+          must be logical) before pipeline_start or after it fails. Settings are changed
+          on the database, not through Artie.
   /connectors/{uuid}/schemas:
     get:
       description: Lists available schemas on the target using a saved connector's
@@ -3286,6 +3389,15 @@ components:
       required:
       - items
       type: object
+    ListResponseBodyPostgresReplicationSlot:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PayloadsPostgresReplicationSlot'
+          type: array
+      required:
+      - items
+      type: object
     ListResponseBodySchemaResponse:
       properties:
         items:
@@ -4524,6 +4636,56 @@ components:
           type: boolean
       required:
       - name
+      type: object
+    PayloadsPostgresReplicationSlot:
+      properties:
+        active:
+          type: boolean
+        database:
+          type:
+          - "null"
+          - string
+        hotStandbyFeedback:
+          type: string
+        isReplica:
+          type: boolean
+        name:
+          type: string
+        notFound:
+          type: boolean
+        retainedWALBytes:
+          minimum: 0
+          type: integer
+        walStatus:
+          type: string
+      required:
+      - name
+      - database
+      - notFound
+      - active
+      - walStatus
+      - retainedWALBytes
+      - isReplica
+      - hotStandbyFeedback
+      type: object
+    PayloadsPostgresSetting:
+      properties:
+        category:
+          type: string
+        description:
+          type: string
+        name:
+          type: string
+        unit:
+          type: string
+        value:
+          type: string
+      required:
+      - name
+      - value
+      - unit
+      - category
+      - description
       type: object
     PayloadsPrivateLinkConnection:
       properties:
