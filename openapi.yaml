@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.112
+  version: v1.0.113
 servers:
 - url: https://api.artie.com
 paths:
@@ -4649,6 +4649,8 @@ components:
           type: boolean
       required:
       - name
+      - allTables
+      - publishViaPartitionRoot
       type: object
     PayloadsPostgresReplicationSlot:
       properties:
