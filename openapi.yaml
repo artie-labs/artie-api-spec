@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.112
+  version: v1.0.115
 servers:
 - url: https://api.artie.com
 paths:
@@ -496,6 +496,10 @@ paths:
       - in: path
         name: uuid
         required: true
+        schema:
+          type: string
+      - in: query
+        name: databaseName
         schema:
           type: string
       responses:
@@ -3858,13 +3862,13 @@ components:
         items:
           items:
             $ref: '#/components/schemas/PayloadsDatabaseListItem'
-          type:
-          - array
-          - "null"
+          type: array
         metadata:
           items:
             $ref: '#/components/schemas/PayloadsCatalogTableProperty'
           type: array
+      required:
+      - items
       type: object
     PayloadsConnectorPayload:
       properties:
@@ -4005,6 +4009,8 @@ components:
       properties:
         name:
           type: string
+      required:
+      - name
       type: object
     PayloadsDynamoDBSnapshotConfig:
       properties:
@@ -4649,6 +4655,8 @@ components:
           type: boolean
       required:
       - name
+      - allTables
+      - publishViaPartitionRoot
       type: object
     PayloadsPostgresReplicationSlot:
       properties:
