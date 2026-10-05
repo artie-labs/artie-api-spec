@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.121
+  version: v1.0.122
 servers:
 - url: https://api.artie.com
 paths:
@@ -4151,6 +4151,11 @@ components:
       - draft
       - active
       type: string
+    EnumsMSSQLArchiveLocationType:
+      enum:
+      - azure_blob
+      - smb_share
+      type: string
     EnumsPipelineStatus:
       enum:
       - draft
@@ -6280,11 +6285,17 @@ components:
       type: object
     PayloadsSourceReaderSettingsPayload:
       properties:
+        archiveLocationType:
+          $ref: '#/components/schemas/EnumsMSSQLArchiveLocationType'
         archiveLogPassword:
           type:
           - "null"
           - string
         archiveLogPath:
+          type:
+          - "null"
+          - string
+        archiveLogUsername:
           type:
           - "null"
           - string
