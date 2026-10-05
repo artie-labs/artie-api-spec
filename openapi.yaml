@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.122
+  version: v1.0.123
 servers:
 - url: https://api.artie.com
 paths:
@@ -1100,7 +1100,7 @@ paths:
     post:
       description: Tests network connectivity and authentication for a connector configuration
         before saving it. Pass type, sharedConfig, and connectionRole. Success is
-        204.
+        204; a failed connection attempt returns 200 with an error message.
       operationId: unsaved_connector_ping
       requestBody:
         content:
@@ -1109,6 +1109,12 @@ paths:
               $ref: '#/components/schemas/RouterConnectorPingRequest'
         required: true
       responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouterConnectorPingResponse'
+          description: OK
         "204":
           description: No Content
         "400":
@@ -7601,6 +7607,11 @@ components:
       - warning
       - error
       type: string
+    RouterConnectorConnectionRole:
+      enum:
+      - source
+      - destination
+      type: string
     RouterConnectorCreateDatabaseRequest:
       properties:
         connector:
@@ -7699,7 +7710,7 @@ components:
     RouterConnectorPingRequest:
       properties:
         connectionRole:
-          type: string
+          $ref: '#/components/schemas/RouterConnectorConnectionRole'
         dataPlaneName:
           type: string
         defaultDatabase:
@@ -7737,6 +7748,13 @@ components:
           type: string
         uuid:
           type: string
+      type: object
+    RouterConnectorPingResponse:
+      properties:
+        error:
+          type: string
+      required:
+      - error
       type: object
     RouterConnectorShadowScriptTable:
       properties:
