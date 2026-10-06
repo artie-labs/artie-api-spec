@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.124
+  version: v1.0.126
 servers:
 - url: https://api.artie.com
 paths:
@@ -2096,6 +2096,53 @@ paths:
         title: Create a Kafka topic
         triggerDescription: Use when you need to create a Kafka topic.
   /kafka-clusters/{uuid}/topics/{topic}:
+    delete:
+      description: Deletes a topic and all of its messages. Only topics in the company's
+        customer namespace (starting with `<companyUUID>.customer.`) can be deleted.
+      operationId: kafka_topic_delete
+      parameters:
+      - in: path
+        name: topic
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        "502":
+          description: Bad Gateway
+      summary: Delete a Kafka topic
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        bodilessSuccess: true
+        destructiveHint: true
+        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
+          and do not include Kafka scopes yet.
+        exposure: excluded
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_topic_delete
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Use a company-wide API key with the Kafka scope.
+        requiredScopes:
+        - kafka:delete
+        retrySemantics: safe
+        title: Delete a Kafka topic
+        triggerDescription: Use when you need to delete a Kafka topic.
     get:
       description: Retrieves topic metadata and partition sizes. Includes the owning
         source reader name, table name, and pipeline names and UUIDs when the topic
@@ -2258,6 +2305,61 @@ paths:
         retrySemantics: safe-after-state-check
         title: Increase Kafka topic partitions
         triggerDescription: Use when you need to increase Kafka topic partitions.
+  /kafka-clusters/{uuid}/topics/{topic}/retention:
+    post:
+      description: 'Sets a topic''s `retention.ms`. Potentially destructive: Kafka
+        deletes messages older than the new retention, and on Artie-managed topics
+        that can drop change events before Artie pipelines read them.'
+      operationId: kafka_topic_retention_update
+      parameters:
+      - in: path
+        name: topic
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterUpdateKafkaTopicRetentionRequest'
+        required: true
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        "502":
+          description: Bad Gateway
+      summary: Change Kafka topic retention
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        bodilessSuccess: true
+        destructiveHint: true
+        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
+          and do not include Kafka scopes yet.
+        exposure: excluded
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_topic_retention_update
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Use a company-wide API key with the Kafka scope.
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe
+        title: Change Kafka topic retention
+        triggerDescription: Use when you need to change Kafka topic retention.
   /kafka-clusters/{uuid}/users:
     get:
       description: Retrieves the Kafka users for the cluster. Passwords are never
@@ -5477,6 +5579,10 @@ components:
       type: object
     PayloadsKafkaTopic:
       properties:
+        artieManaged:
+          description: 'Whether Artie manages this topic: a CDC topic under the company
+            prefix outside the customer namespace, or a Kafka-internal __ topic.'
+          type: boolean
         partitionCount:
           type: integer
         retentionMS:
@@ -5491,6 +5597,7 @@ components:
       - topic
       - retentionMS
       - partitionCount
+      - artieManaged
       type: object
     PayloadsKafkaTopicCreateResponse:
       properties:
@@ -8352,6 +8459,15 @@ components:
           - string
         name:
           type: string
+      type: object
+    RouterUpdateKafkaTopicRetentionRequest:
+      properties:
+        retentionMS:
+          description: 'New retention.ms: at least 86400000 (one day), or -1 to keep
+            messages forever.'
+          type: integer
+      required:
+      - retentionMS
       type: object
     RouterValidateErrorResponse:
       properties:
