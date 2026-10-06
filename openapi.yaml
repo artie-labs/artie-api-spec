@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.123
+  version: v1.0.124
 servers:
 - url: https://api.artie.com
 paths:
@@ -1621,7 +1621,7 @@ paths:
   /kafka-clusters:
     get:
       description: Retrieves the Kafka clusters owned by the authenticated company.
-        Only available for BYOC companies with Kafka access enabled.
+        Only available for companies with Kafka access enabled.
       operationId: kafka_cluster_list
       responses:
         "200":
