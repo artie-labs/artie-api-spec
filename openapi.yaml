@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.127
+  version: v1.0.129
 servers:
 - url: https://api.artie.com
 paths:
@@ -1639,16 +1639,13 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_cluster_list
         outputSensitivity: none
         readOnlyHint: true
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:read
         retrySemantics: safe
@@ -1681,21 +1678,165 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_cluster_detail
         outputSensitivity: none
         readOnlyHint: true
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:read
         retrySemantics: safe
         title: Get a Kafka cluster
         triggerDescription: Use when you need to get a Kafka cluster.
+  /kafka-clusters/{uuid}/admin-users:
+    post:
+      description: Creates an admin-profile Kafka user and returns its password once.
+        Admin-profile users have cluster-wide Kafka ACLs, including every replicated
+        topic. Company admins only.
+      operationId: kafka_admin_user_create
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterCreateKafkaAdminUserRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouterKafkaUserCreateResponse'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Create an admin Kafka user
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_admin_user_create
+        outputSensitivity: restricted-credentials
+        readOnlyHint: false
+        requiredScopes:
+        - kafka_admin_users:write
+        retrySemantics: safe-after-state-check
+        title: Create an admin Kafka user
+        triggerDescription: Use when you need to create an admin Kafka user.
+  /kafka-clusters/{uuid}/admin-users/{userUUID}:
+    delete:
+      description: Revokes the admin-profile Kafka user's ACLs and broker credentials,
+        then deletes it. Returns 204 once revocation completes, or 200 with a warning
+        while revocation is pending reconciliation.
+      operationId: kafka_admin_user_delete
+      parameters:
+      - in: path
+        name: userUUID
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouterKafkaUserDeleteResponse'
+          description: OK
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Delete an admin Kafka user
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        bodilessSuccess: true
+        destructiveHint: true
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_admin_user_delete
+        outputSensitivity: none
+        readOnlyHint: false
+        requiredScopes:
+        - kafka_admin_users:delete
+        retrySemantics: safe
+        title: Delete an admin Kafka user
+        triggerDescription: Use when you need to delete an admin Kafka user.
+  /kafka-clusters/{uuid}/admin-users/{userUUID}/credentials:
+    get:
+      description: Returns the admin-profile Kafka user's password, which lets the
+        caller act as that user. Admin-profile users have cluster-wide Kafka ACLs,
+        including every replicated topic. Company admins only.
+      operationId: kafka_admin_user_credentials
+      parameters:
+      - in: path
+        name: userUUID
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouterKafkaUserCredentialsResponse'
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get admin Kafka user credentials
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_admin_user_credentials
+        outputSensitivity: restricted-credentials
+        readOnlyHint: true
+        requiredScopes:
+        - kafka_admin_users:read
+        retrySemantics: safe
+        title: Get admin Kafka user credentials
+        triggerDescription: Use when you need to get admin Kafka user credentials.
   /kafka-clusters/{uuid}/consumer-groups:
     get:
       description: Retrieves the consumer groups for the cluster. Results are cached
@@ -1727,16 +1868,13 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_consumer_group_list
         outputSensitivity: none
         readOnlyHint: true
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:read
         retrySemantics: safe
@@ -1778,16 +1916,13 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_consumer_group_detail
         outputSensitivity: none
         readOnlyHint: true
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:read
         retrySemantics: safe
@@ -1832,16 +1967,13 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_cluster_metrics_graph
         outputSensitivity: none
         readOnlyHint: true
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:read
         retrySemantics: safe
@@ -1886,16 +2018,13 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_cluster_storage_graph
         outputSensitivity: none
         readOnlyHint: true
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:read
         retrySemantics: safe
@@ -1932,16 +2061,13 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_cluster_summary
         outputSensitivity: none
         readOnlyHint: true
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:read
         retrySemantics: safe
@@ -1978,16 +2104,13 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_topic_sizes
         outputSensitivity: none
         readOnlyHint: true
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:read
         retrySemantics: safe
@@ -2026,16 +2149,13 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_topic_list
         outputSensitivity: none
         readOnlyHint: true
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:read
         retrySemantics: safe
@@ -2080,16 +2200,13 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: false
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_topic_create
         outputSensitivity: none
         readOnlyHint: false
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:write
         retrySemantics: safe-after-state-check
@@ -2128,16 +2245,13 @@ paths:
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_topic_delete
         outputSensitivity: none
         readOnlyHint: false
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:delete
         retrySemantics: safe
@@ -2179,16 +2293,13 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_topic_detail
         outputSensitivity: none
         readOnlyHint: true
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:read
         retrySemantics: safe
@@ -2232,16 +2343,13 @@ paths:
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_topic_latest_message
         outputSensitivity: none
         readOnlyHint: true
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:read
         retrySemantics: safe
@@ -2290,16 +2398,13 @@ paths:
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: false
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_topic_partitions_increase
         outputSensitivity: none
         readOnlyHint: false
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:write
         retrySemantics: safe-after-state-check
@@ -2345,16 +2450,13 @@ paths:
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_topic_retention_update
         outputSensitivity: none
         readOnlyHint: false
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka:write
         retrySemantics: safe
@@ -2387,16 +2489,13 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_user_list
         outputSensitivity: none
         readOnlyHint: true
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka_users:read
         retrySemantics: safe
@@ -2406,8 +2505,7 @@ paths:
       description: Creates a Kafka user and returns its password once. Producer/consumer
         users can read every topic under the company's prefix, which includes all
         data Artie replicates, and write to topics under the company's customer prefix.
-        Admin-profile users require a company admin; API keys can only manage producer/consumer
-        users.
+        Admin-profile users are managed under /admin-users.
       operationId: kafka_user_create
       parameters:
       - in: path
@@ -2441,16 +2539,13 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: false
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_user_create
         outputSensitivity: restricted-credentials
         readOnlyHint: false
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka_users:write
         retrySemantics: safe-after-state-check
@@ -2460,8 +2555,7 @@ paths:
     delete:
       description: Revokes the Kafka user's ACLs and broker credentials, then deletes
         it. Returns 204 once revocation completes, or 200 with a warning while revocation
-        is pending reconciliation. Admin-profile users require a company admin; API
-        keys can only delete producer/consumer users.
+        is pending reconciliation. Admin-profile users are deleted under /admin-users.
       operationId: kafka_user_delete
       parameters:
       - in: path
@@ -2497,16 +2591,13 @@ paths:
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_user_delete
         outputSensitivity: none
         readOnlyHint: false
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka_users:delete
         retrySemantics: safe
@@ -2518,8 +2609,7 @@ paths:
         that user, so kafka_users:read grants read access to all replicated data.
         Producer/consumer users can read every topic under the company's prefix, which
         includes all data Artie replicates, and write to topics under the company's
-        customer prefix. Admin-profile users require a company admin; API keys can
-        only manage producer/consumer users.
+        customer prefix. Admin-profile users are managed under /admin-users.
       operationId: kafka_user_credentials
       parameters:
       - in: path
@@ -2548,16 +2638,13 @@ paths:
       - Kafka Clusters
       x-artie-mcp:
         destructiveHint: false
-        exclusionReason: Kafka resources are company-wide; MCP grants are environment-bound
-          and do not include Kafka scopes yet.
-        exposure: excluded
+        exposure: exposed
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_user_credentials
         outputSensitivity: restricted-credentials
         readOnlyHint: true
-        remediation: Use a company-wide API key with the Kafka scope.
         requiredScopes:
         - kafka_users:read
         retrySemantics: safe
@@ -8008,6 +8095,13 @@ components:
       - ingestionAPIKey
       - secret
       type: object
+    RouterCreateKafkaAdminUserRequest:
+      properties:
+        username:
+          type: string
+      required:
+      - username
+      type: object
     RouterCreateKafkaTopicRequest:
       properties:
         configEntries:
@@ -8030,6 +8124,8 @@ components:
     RouterCreateKafkaUserRequest:
       properties:
         accessProfile:
+          description: Must be producer_consumer; create admin-profile users with
+            POST /kafka-clusters/{uuid}/admin-users.
           type: string
         username:
           type: string
