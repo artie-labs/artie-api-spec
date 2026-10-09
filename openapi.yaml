@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.129
+  version: v1.0.130
 servers:
 - url: https://api.artie.com
 paths:
@@ -8176,6 +8176,17 @@ components:
       type: object
     RouterPipelineBackfillRequest:
       properties:
+        backfillBatchSize:
+          description: Optional rows per batch. Saved as the pipeline's backfill batch
+            size before the backfill starts, so later backfills use it too.
+          minimum: 0
+          type:
+          - "null"
+          - integer
+        backfillDefaults:
+          $ref: '#/components/schemas/PayloadsBackfillDefaultsPayload'
+          description: Optional backfill speed. Saved as the pipeline's backfill speed
+            before the backfill starts, so later backfills use it too.
         backfillFromDatabases:
           description: Optional source databases to backfill for regular-table backfills.
             Requires beforeBackfill to be the empty-string do-nothing option.
