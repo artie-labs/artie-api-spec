@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.130
+  version: v1.0.131
 servers:
 - url: https://api.artie.com
 paths:
@@ -5990,10 +5990,6 @@ components:
           type: boolean
         reuseStagingTable:
           type: boolean
-        sessionDriverMemory:
-          type: string
-        sessionExecutorMemory:
-          type: string
         snowpipeStreamingMaxChannels:
           type: integer
         splitEventsByType:
@@ -6006,9 +6002,6 @@ components:
           type:
           - array
           - "null"
-        tablesPerTransferPod:
-          minimum: 0
-          type: integer
         truncateExceededValues:
           type: boolean
         turboLatencyThresholdMinutes:
@@ -6028,8 +6021,6 @@ components:
           - "null"
           - boolean
         useSnowpipeStreaming:
-          type: boolean
-        waitForTopics:
           type: boolean
         writeRawBinaryValues:
           type: boolean
