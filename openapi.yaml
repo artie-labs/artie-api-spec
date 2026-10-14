@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.133
+  version: v1.0.134
 servers:
 - url: https://api.artie.com
 paths:
@@ -4522,6 +4522,10 @@ components:
           type:
           - "null"
           - string
+        autoEnableHistoryIncludeRegex:
+          type:
+          - "null"
+          - string
         autoReplicateIgnoreRegex:
           type:
           - "null"
@@ -5942,6 +5946,8 @@ components:
         autoEnableHistoryForNewTables:
           type: boolean
         autoEnableHistoryIgnoreRegex:
+          type: string
+        autoEnableHistoryIncludeRegex:
           type: string
         autoReplicateIgnoreRegex:
           type: string
