@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.132
+  version: v1.0.133
 servers:
 - url: https://api.artie.com
 paths:
@@ -6824,6 +6824,8 @@ components:
         k8sRequestMemoryMB:
           minimum: 0
           type: integer
+        keepOldSwapTable:
+          type: boolean
         mergePredicates:
           items:
             $ref: '#/components/schemas/PayloadsMergePredicates'
@@ -6833,6 +6835,8 @@ components:
           type: integer
         partitionRangeSettings:
           $ref: '#/components/schemas/PayloadsPartitionRangeSettings'
+        previousSwapTableSuffix:
+          type: string
         primaryKeysOverride:
           items:
             type: string
@@ -6856,6 +6860,8 @@ components:
         startingPrimaryKey:
           type: string
         streamARN:
+          type: string
+        swapTableSuffix:
           type: string
         unifyAcrossDatabases:
           type: boolean
@@ -8208,10 +8214,16 @@ components:
           - ""
           - truncate_table
           - drop_table
+          - swap_table
           type: string
         historyMode:
           description: When true, backfill the selected history tables instead of
             the regular tables.
+          type: boolean
+        keepOldTable:
+          description: 'Only for swap_table: keep the destination table''s old rows
+            in a separate table after the swap, until the next swap_table backfill
+            of this table.'
           type: boolean
         tableUUIDs:
           description: UUIDs of the regular or history tables to backfill.
