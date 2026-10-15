@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.135
+  version: v1.0.136
 servers:
 - url: https://api.artie.com
 paths:
@@ -4983,6 +4983,12 @@ components:
           type:
           - "null"
           - string
+        draftPipelineUUID:
+          description: 'On create only: the draft pipeline this connector is for.'
+          format: uuid
+          type:
+          - "null"
+          - string
         environmentUUID:
           format: uuid
           type:
@@ -5201,6 +5207,13 @@ components:
           - string
         defaultDatabase:
           type: string
+        draftPipelineUUID:
+          description: The draft pipeline this connector was created for. Unset once
+            a pipeline or source reader past draft uses it.
+          format: uuid
+          type:
+          - "null"
+          - string
         environmentUUID:
           format: uuid
           type: string
@@ -5800,6 +5813,13 @@ components:
           format: date-time
           type: string
         dataPlaneName:
+          type:
+          - "null"
+          - string
+        draftPipelineUUID:
+          description: The draft pipeline this connector was created for. Unset once
+            a pipeline or source reader past draft uses it.
+          format: uuid
           type:
           - "null"
           - string
@@ -7936,6 +7956,12 @@ components:
         dataPlaneName:
           type: string
         defaultDatabase:
+          type:
+          - "null"
+          - string
+        draftPipelineUUID:
+          description: 'On create only: the draft pipeline this connector is for.'
+          format: uuid
           type:
           - "null"
           - string
