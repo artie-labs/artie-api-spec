@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.138
+  version: v1.0.139
 servers:
 - url: https://api.artie.com
 paths:
@@ -4351,6 +4351,7 @@ components:
       - redis
       - redshift
       - s3
+      - smb_share
       - snowflake
       type: string
     EnumsKafkaStatus:
