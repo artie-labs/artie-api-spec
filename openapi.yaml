@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.136
+  version: v1.0.138
 servers:
 - url: https://api.artie.com
 paths:
@@ -3467,8 +3467,9 @@ paths:
         - private_link_connections:write
         retrySemantics: unsafe
         title: Create a PrivateLink connection
-        triggerDescription: Creates an AWS PrivateLink connection. Keep the returned
-          UUID; there is no list tool.
+        triggerDescription: 'Creates a PrivateLink connection: pass vpcServiceName
+          and availabilityZoneIds for an AWS data plane, or privateLinkServiceAlias
+          for an Azure one. Keep the returned UUID; there is no list tool.'
   /privatelink-connections/{uuid}:
     delete:
       description: Permanently deletes a PrivateLink connection by UUID. This action
@@ -3506,8 +3507,10 @@ paths:
         title: Delete a PrivateLink connection
         triggerDescription: Permanently deletes a PrivateLink connection by UUID.
     get:
-      description: Retrieves the details of a PrivateLink connection by UUID, including
-        its status, VPC service name, region, DNS entry, and availability zones.
+      description: 'Retrieves the details of a PrivateLink connection by UUID, including
+        its status, cloud provider, region, Private Link target (vpcServiceName and
+        availabilityZoneIds on AWS, privateLinkServiceAlias on Azure), and the Artie
+        endpoint''s address (dnsEntry: a DNS name on AWS, a private IP on Azure).'
       operationId: private_link_connection_detail
       parameters:
       - in: path
@@ -3545,9 +3548,11 @@ paths:
         triggerDescription: Returns one PrivateLink connection by UUID.
     post:
       description: Updates an existing PrivateLink connection by UUID. The name can
-        always be updated. The config fields (region / VPC service name / data plane
-        / availability zones) are only mutable while the connection is under review
-        or errored — once it is being provisioned or live they are immutable.
+        always be updated. The data plane and Private Link target (vpcServiceName
+        and availabilityZoneIds on AWS, privateLinkServiceAlias on Azure; the region
+        comes from the target) are only mutable while the connection is under review
+        or errored and has no Artie endpoint. Once the Artie endpoint exists they
+        are immutable.
       operationId: private_link_connection_update
       parameters:
       - in: path
@@ -3588,8 +3593,9 @@ paths:
         - private_link_connections:write
         retrySemantics: unsafe
         title: Update a PrivateLink connection
-        triggerDescription: Updates a PrivateLink connection. Region, VPC service
-          name, data plane, and AZs are only mutable while under review or errored.
+        triggerDescription: Updates a PrivateLink connection. The data plane and Private
+          Link target (VPC service name and AZs on AWS, privateLinkServiceAlias on
+          Azure) are only mutable while under review or errored.
   /source-readers:
     get:
       description: Lists all source readers for the authenticated company.
@@ -4316,6 +4322,12 @@ components:
       - failed
       - cancelled
       type: string
+    EnumsCloudProvider:
+      enum:
+      - aws
+      - gcp
+      - azure
+      type: string
     EnumsConnectorSlug:
       enum:
       - api
@@ -4535,6 +4547,10 @@ components:
           - "null"
           - string
         autoReplicateNewTables:
+          type:
+          - "null"
+          - boolean
+        backfillMySQLFloatsAsShortestDecimal:
           type:
           - "null"
           - boolean
@@ -5989,6 +6005,8 @@ components:
           type: string
         autoReplicateNewTables:
           type: boolean
+        backfillMySQLFloatsAsShortestDecimal:
+          type: boolean
         bigQueryReservation:
           type: string
         bufferRows:
@@ -6248,6 +6266,10 @@ components:
           type: string
         name:
           type: string
+        privateLinkServiceAlias:
+          type: string
+        provider:
+          $ref: '#/components/schemas/EnumsCloudProvider'
         provisioningError:
           type: string
         region:
@@ -6271,7 +6293,9 @@ components:
       - createdAt
       - updatedAt
       - name
+      - provider
       - vpcServiceName
+      - privateLinkServiceAlias
       - status
       - region
       - dnsEntry
@@ -8483,7 +8507,9 @@ components:
         availabilityZoneIds:
           items:
             type: string
-          type: array
+          type:
+          - array
+          - "null"
         dataPlaneName:
           type:
           - "null"
@@ -8495,30 +8521,31 @@ components:
           - string
         name:
           type: string
+        privateLinkServiceAlias:
+          type: string
         vpcServiceName:
           type: string
-      required:
-      - vpcServiceName
-      - availabilityZoneIds
       type: object
     RouterPrivateLinkConnectionUpdateRequest:
       properties:
         availabilityZoneIds:
           items:
             type: string
-          type: array
+          type:
+          - array
+          - "null"
         dataPlaneName:
           type:
           - "null"
           - string
         name:
           type: string
+        privateLinkServiceAlias:
+          type: string
         vpcServiceName:
           type: string
       required:
       - name
-      - vpcServiceName
-      - availabilityZoneIds
       type: object
     RouterSSHTunnelCreateRequest:
       properties:
