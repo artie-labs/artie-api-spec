@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.140
+  version: v1.0.141
 servers:
 - url: https://api.artie.com
 paths:
@@ -4340,6 +4340,7 @@ components:
       - dynamodb
       - gcs
       - iceberg
+      - kafka
       - keyspaces
       - mongodb
       - motherduck
@@ -6596,6 +6597,10 @@ components:
           type:
           - "null"
           - array
+        deploymentScopedMode:
+          type:
+          - "null"
+          - boolean
         disableAutoFetchTables:
           type:
           - "null"
@@ -7950,6 +7955,8 @@ components:
       type: object
     RouterConnectorFetchTablesRequest:
       properties:
+        allDatabases:
+          type: boolean
         connector:
           $ref: '#/components/schemas/PayloadsConnectorPayload'
         databaseName:
