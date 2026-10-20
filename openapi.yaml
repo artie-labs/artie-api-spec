@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.140
+  version: v1.0.142
 servers:
 - url: https://api.artie.com
 paths:
@@ -4340,6 +4340,7 @@ components:
       - dynamodb
       - gcs
       - iceberg
+      - kafka
       - keyspaces
       - mongodb
       - motherduck
@@ -6596,6 +6597,10 @@ components:
           type:
           - "null"
           - array
+        deploymentScopedMode:
+          type:
+          - "null"
+          - boolean
         disableAutoFetchTables:
           type:
           - "null"
@@ -6785,9 +6790,6 @@ components:
       properties:
         advancedSettings:
           $ref: '#/components/schemas/PayloadsTableAdvancedSettings'
-        backfillStage:
-          $ref: '#/components/schemas/EnumsBackfillStage'
-          deprecated: true
         backfillStages:
           items:
             $ref: '#/components/schemas/PayloadsBackfillStageEvent'
@@ -6805,9 +6807,6 @@ components:
           items:
             $ref: '#/components/schemas/PayloadsBackfillStageEvent'
           type: array
-        historyTableBackfillStage:
-          $ref: '#/components/schemas/EnumsBackfillStage'
-          deprecated: true
         historyTableStatus:
           type: string
         individualDeployment:
@@ -7950,6 +7949,8 @@ components:
       type: object
     RouterConnectorFetchTablesRequest:
       properties:
+        allDatabases:
+          type: boolean
         connector:
           $ref: '#/components/schemas/PayloadsConnectorPayload'
         databaseName:
