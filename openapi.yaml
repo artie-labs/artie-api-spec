@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.139
+  version: v1.0.140
 servers:
 - url: https://api.artie.com
 paths:
@@ -6494,6 +6494,11 @@ components:
       properties:
         apiBaseURL:
           type: string
+        archiveConnectorUUID:
+          format: uuid
+          type:
+          - "null"
+          - string
         companyUUID:
           format: uuid
           type: string
@@ -6558,11 +6563,13 @@ components:
           - "null"
           - string
         archiveLogPrivateLinkUUID:
+          deprecated: true
           format: uuid
           type:
           - "null"
           - string
         archiveLogUsername:
+          deprecated: true
           type:
           - "null"
           - string
@@ -8586,6 +8593,11 @@ components:
       type: object
     RouterSourceReaderCreateRequest:
       properties:
+        archiveConnectorUUID:
+          format: uuid
+          type:
+          - "null"
+          - string
         connectorUUID:
           format: uuid
           type: string
