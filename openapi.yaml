@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.142
+  version: v1.0.146
 servers:
 - url: https://api.artie.com
 paths:
@@ -1692,9 +1692,11 @@ paths:
         triggerDescription: Use when you need to get a Kafka cluster.
   /kafka-clusters/{uuid}/admin-users:
     post:
-      description: Creates an admin-profile Kafka user and returns its password once.
-        Admin-profile users have cluster-wide Kafka ACLs, including every replicated
-        topic. Company admins only.
+      description: Creates an admin-profile Kafka user. Strimzi generates its password,
+        which is returned if the user becomes active within a few seconds; otherwise
+        the response has a warning and the user's password is available from the credentials
+        endpoint once it is active. Admin-profile users have cluster-wide Kafka ACLs,
+        including every replicated topic. Company admins only.
       operationId: kafka_admin_user_create
       parameters:
       - in: path
@@ -1742,9 +1744,9 @@ paths:
         triggerDescription: Use when you need to create an admin Kafka user.
   /kafka-clusters/{uuid}/admin-users/{userUUID}:
     delete:
-      description: Revokes the admin-profile Kafka user's ACLs and broker credentials,
-        then deletes it. Returns 204 once revocation completes, or 200 with a warning
-        while revocation is pending reconciliation.
+      description: Deletes the admin-profile Kafka user. Kafka then revokes its credentials
+        and ACLs, normally within seconds. Returns 204 once the user is deleted, or
+        200 with a warning while deletion is pending reconciliation.
       operationId: kafka_admin_user_delete
       parameters:
       - in: path
@@ -1795,8 +1797,10 @@ paths:
   /kafka-clusters/{uuid}/admin-users/{userUUID}/credentials:
     get:
       description: Returns the admin-profile Kafka user's password, which lets the
-        caller act as that user. Admin-profile users have cluster-wide Kafka ACLs,
-        including every replicated topic. Company admins only.
+        caller act as that user. Returns 409 while its password isn't ready yet or
+        the user is being deleted; a pending user becomes active once its password
+        is ready. Admin-profile users have cluster-wide Kafka ACLs, including every
+        replicated topic. Company admins only.
       operationId: kafka_admin_user_credentials
       parameters:
       - in: path
@@ -1816,8 +1820,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/RouterKafkaUserCredentialsResponse'
           description: OK
+        "400":
+          description: Bad Request
         "404":
           description: Not Found
+        "409":
+          description: Conflict
         "500":
           description: Internal Server Error
       summary: Get admin Kafka user credentials
@@ -2502,10 +2510,13 @@ paths:
         title: List Kafka users
         triggerDescription: Use when you need to list Kafka users.
     post:
-      description: Creates a Kafka user and returns its password once. Producer/consumer
-        users can read every topic under the company's prefix, which includes all
-        data Artie replicates, and write to topics under the company's customer prefix.
-        Admin-profile users are managed under /admin-users.
+      description: Creates a Kafka user. Strimzi generates its password, which is
+        returned if the user becomes active within a few seconds; otherwise the response
+        has a warning and the user's password is available from the credentials endpoint
+        once it is active. Producer/consumer users can read every topic under the
+        company's prefix, which includes all data Artie replicates, and write to topics
+        under the company's customer prefix. Admin-profile users are managed under
+        /admin-users.
       operationId: kafka_user_create
       parameters:
       - in: path
@@ -2553,9 +2564,10 @@ paths:
         triggerDescription: Use when you need to create a Kafka user.
   /kafka-clusters/{uuid}/users/{userUUID}:
     delete:
-      description: Revokes the Kafka user's ACLs and broker credentials, then deletes
-        it. Returns 204 once revocation completes, or 200 with a warning while revocation
-        is pending reconciliation. Admin-profile users are deleted under /admin-users.
+      description: Deletes the Kafka user. Kafka then revokes its credentials and
+        ACLs, normally within seconds. Returns 204 once the user is deleted, or 200
+        with a warning while deletion is pending reconciliation. Admin-profile users
+        are deleted under /admin-users.
       operationId: kafka_user_delete
       parameters:
       - in: path
@@ -2607,9 +2619,11 @@ paths:
     get:
       description: Returns the Kafka user's password, which lets the caller act as
         that user, so kafka_users:read grants read access to all replicated data.
-        Producer/consumer users can read every topic under the company's prefix, which
-        includes all data Artie replicates, and write to topics under the company's
-        customer prefix. Admin-profile users are managed under /admin-users.
+        Returns 409 while its password isn't ready yet or the user is being deleted;
+        a pending user becomes active once its password is ready. Producer/consumer
+        users can read every topic under the company's prefix, which includes all
+        data Artie replicates, and write to topics under the company's customer prefix.
+        Admin-profile users are managed under /admin-users.
       operationId: kafka_user_credentials
       parameters:
       - in: path
@@ -2629,8 +2643,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/RouterKafkaUserCredentialsResponse'
           description: OK
+        "400":
+          description: Bad Request
         "404":
           description: Not Found
+        "409":
+          description: Conflict
         "500":
           description: Internal Server Error
       summary: Get Kafka user credentials
@@ -4657,6 +4675,10 @@ components:
           type:
           - "null"
           - array
+        structAsVariant:
+          type:
+          - "null"
+          - boolean
         truncateExceededValues:
           type:
           - "null"
@@ -6068,6 +6090,8 @@ components:
           type:
           - array
           - "null"
+        structAsVariant:
+          type: boolean
         truncateExceededValues:
           type: boolean
         turboLatencyThresholdMinutes:
@@ -6800,6 +6824,7 @@ components:
         destinationTableName:
           type: string
         disableReplication:
+          deprecated: true
           type: boolean
         enableHistoryMode:
           type: boolean
@@ -6944,7 +6969,10 @@ components:
         advancedSettings:
           $ref: '#/components/schemas/PayloadsAdvancedTableSettingsPayload'
         disableReplication:
-          type: boolean
+          deprecated: true
+          type:
+          - "null"
+          - boolean
         enableHistoryMode:
           type: boolean
         individualDeployment:
@@ -8230,12 +8258,14 @@ components:
         kafkaUser:
           $ref: '#/components/schemas/PayloadsKafkaUser'
         password:
+          description: The SCRAM-SHA-512 password Strimzi generated, returned when
+            the user is already active. Otherwise get it from the credentials endpoint
+            once the user is active.
           type: string
         warning:
           type: string
       required:
       - kafkaUser
-      - password
       type: object
     RouterKafkaUserCredentialsResponse:
       properties:
@@ -8448,6 +8478,11 @@ components:
         destination:
           $ref: '#/components/schemas/PayloadsConnectorPayload'
         destinationUUID:
+          format: uuid
+          type:
+          - "null"
+          - string
+        pipelineUUID:
           format: uuid
           type:
           - "null"
