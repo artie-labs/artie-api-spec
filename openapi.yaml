@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.147
+  version: v1.0.148
 servers:
 - url: https://api.artie.com
 paths:
@@ -4377,6 +4377,8 @@ components:
       enum:
       - draft
       - active
+      - deploying
+      - failed
       type: string
     EnumsMSSQLArchiveLocationType:
       enum:
