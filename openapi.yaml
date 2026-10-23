@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.151
+  version: v1.0.153
 servers:
 - url: https://api.artie.com
 paths:
@@ -2313,6 +2313,62 @@ paths:
         retrySemantics: safe
         title: Get Kafka topic detail
         triggerDescription: Use when you need to get Kafka topic detail.
+    post:
+      description: 'Changes a topic''s retention and tiered storage; send only the
+        settings to change. Potentially destructive: Kafka deletes messages older
+        than the new retention, and on Artie-managed topics that can drop change events
+        before Artie pipelines read them. Kafka-internal (`__`) topics can''t change.
+        A change the rules refuse is a 400 that says why.'
+      operationId: kafka_topic_settings_update
+      parameters:
+      - in: path
+        name: topic
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterUpdateKafkaTopicSettingsRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaTopic'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        "502":
+          description: Bad Gateway
+      summary: Change Kafka topic settings
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: true
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_topic_settings_update
+        outputSensitivity: none
+        readOnlyHint: false
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe
+        title: Change Kafka topic settings
+        triggerDescription: Use when you need to change Kafka topic settings.
   /kafka-clusters/{uuid}/topics/{topic}/latest-message:
     get:
       description: Retrieves the newest message from partition 0, including its contents.
@@ -2422,7 +2478,9 @@ paths:
     post:
       description: 'Sets a topic''s `retention.ms`. Potentially destructive: Kafka
         deletes messages older than the new retention, and on Artie-managed topics
-        that can drop change events before Artie pipelines read them.'
+        that can drop change events before Artie pipelines read them. A topic with
+        tiered storage on or paused keeps at most 14 days, and Kafka-internal (`__`)
+        topics can''t change.'
       operationId: kafka_topic_retention_update
       parameters:
       - in: path
@@ -4382,6 +4440,12 @@ components:
       - deploying
       - failed
       type: string
+    EnumsKafkaTopicTieredStorageState:
+      enum:
+      - "off"
+      - "on"
+      - paused
+      type: string
     EnumsMSSQLArchiveLocationType:
       enum:
       - azure_blob
@@ -5496,6 +5560,10 @@ components:
           description: Why the last deploy of a Managed Kafka cluster failed. Only
             set while status is failed.
           type: string
+        tieredStorageAvailable:
+          description: Whether tiered storage is available on this cluster. Artie
+            turns it on once the cluster's brokers have tiered storage.
+          type: boolean
         usesScram:
           type: boolean
         uuid:
@@ -5511,6 +5579,7 @@ components:
       - disableTLS
       - cloud
       - region
+      - tieredStorageAvailable
       type: object
     PayloadsKafkaClusterSummary:
       properties:
@@ -5751,6 +5820,11 @@ components:
           description: 'Whether Artie manages this topic: a CDC topic under the company
             prefix outside the customer namespace, or a Kafka-internal __ topic.'
           type: boolean
+        localRetentionMS:
+          description: How long a tiered topic keeps data on broker disks (local.retention.ms).
+            -2 means the same as retention. Left out when the brokers don't report
+            it.
+          type: string
         partitionCount:
           type: integer
         retentionMS:
@@ -5759,6 +5833,8 @@ components:
           type: string
         tableName:
           type: string
+        tieredStorage:
+          $ref: '#/components/schemas/PayloadsKafkaTopicTieredStorage'
         topic:
           type: string
       required:
@@ -5766,6 +5842,7 @@ components:
       - retentionMS
       - partitionCount
       - artieManaged
+      - tieredStorage
       type: object
     PayloadsKafkaTopicCreateResponse:
       properties:
@@ -5825,11 +5902,26 @@ components:
           type:
           - array
           - "null"
+        remoteSizeBytes:
+          description: The topic's size in remote storage (S3). Missing when Datadog
+            has no data for it.
+          type:
+          - "null"
+          - integer
         topic:
           type: string
       required:
       - topic
       - partitions
+      type: object
+    PayloadsKafkaTopicTieredStorage:
+      properties:
+        state:
+          $ref: '#/components/schemas/EnumsKafkaTopicTieredStorageState'
+          description: off, on or paused, from the topic's remote.storage.enable and
+            remote.log.copy.disable configs.
+      required:
+      - state
       type: object
     PayloadsKafkaUser:
       properties:
@@ -8736,6 +8828,35 @@ components:
           type: integer
       required:
       - retentionMS
+      type: object
+    RouterUpdateKafkaTopicSettingsRequest:
+      properties:
+        localRetentionMS:
+          description: 'How long the tiered topic keeps data on broker disks: from
+            86400000 (one day) up to retention. Turning tiered storage on without
+            it uses 7 days, capped at retention.'
+          type:
+          - "null"
+          - integer
+        retentionMS:
+          description: 'New retention.ms: at least 86400000 (one day); -1 (keep forever)
+            isn''t supported. At most 1209600000 (14 days) while tiered storage is
+            on or paused.'
+          type:
+          - "null"
+          - integer
+        tieredStorage:
+          description: off, on or paused. A topic that's on can only be paused, and
+            only a paused topic can be turned off, which deletes its data in remote
+            storage. Pausing keeps that data readable until retention expires it.
+          enum:
+          - "off"
+          - "on"
+          - paused
+          - null
+          type:
+          - "null"
+          - string
       type: object
     RouterValidateErrorResponse:
       properties:
