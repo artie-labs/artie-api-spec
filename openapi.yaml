@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.154
+  version: v1.0.156
 servers:
 - url: https://api.artie.com
 paths:
@@ -5403,6 +5403,11 @@ components:
         environmentUUID:
           format: uuid
           type: string
+        forceFlushUntil:
+          format: date-time
+          type:
+          - "null"
+          - string
         hasBackfillingTables:
           type: boolean
         hasUndeployedChanges:
@@ -5554,6 +5559,10 @@ components:
           description: Whether this is a Managed Kafka cluster that Artie runs for
             the company.
           type: boolean
+        managed:
+          $ref: '#/components/schemas/PayloadsKafkaClusterManaged'
+          description: A Managed Kafka cluster's configuration. Only set when isManaged,
+            and only by Get a Kafka cluster.
         name:
           type: string
         region:
@@ -5585,6 +5594,29 @@ components:
       - region
       - tieredStorageAvailable
       - isManaged
+      type: object
+    PayloadsKafkaClusterManaged:
+      properties:
+        allowedCIDRs:
+          description: Client IP ranges allowed to reach the cluster.
+          items:
+            type: string
+          type: array
+        brokers:
+          type: integer
+        instanceType:
+          type: string
+        kafkaVersion:
+          type: string
+        storageGiB:
+          description: Disk per broker in GiB.
+          type: integer
+      required:
+      - brokers
+      - instanceType
+      - storageGiB
+      - allowedCIDRs
+      - kafkaVersion
       type: object
     PayloadsKafkaClusterSummary:
       properties:
