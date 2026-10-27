@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.157
+  version: v1.0.158
 servers:
 - url: https://api.artie.com
 paths:
@@ -5601,6 +5601,38 @@ components:
       - tieredStorageAvailable
       - isManaged
       type: object
+    PayloadsKafkaClusterChange:
+      properties:
+        field:
+          description: The setting the change is to. The other fields already show
+            its new value.
+          enum:
+          - allowedCIDRs
+          - storageGiB
+          - brokers
+          - instanceType
+          type: string
+        startedAt:
+          description: When the change was saved.
+          format: date-time
+          type: string
+        state:
+          description: 'Applying for 20 minutes after the save, then failed: the apply
+            failed or was lost. Saving the same value again retries it.'
+          enum:
+          - applying
+          - failed
+          type: string
+        summary:
+          description: What the change does, as the Activity feed says it, such as
+            "Grew broker storage from 50 GiB to 80 GiB".
+          type: string
+      required:
+      - state
+      - field
+      - summary
+      - startedAt
+      type: object
     PayloadsKafkaClusterManaged:
       properties:
         allowedCIDRs:
@@ -5614,6 +5646,10 @@ components:
           type: string
         kafkaVersion:
           type: string
+        pendingChange:
+          $ref: '#/components/schemas/PayloadsKafkaClusterChange'
+          description: The cluster's latest change that isn't applied yet. Missing
+            once every change is applied, and while the cluster isn't active.
         storageGiB:
           description: Disk per broker in GiB.
           type: integer
