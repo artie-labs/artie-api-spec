@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.156
+  version: v1.0.157
 servers:
 - url: https://api.artie.com
 paths:
@@ -5577,6 +5577,11 @@ components:
           description: Whether tiered storage is available on this cluster. Artie
             turns it on once the cluster's brokers have tiered storage.
           type: boolean
+        updatedAt:
+          description: When the cluster row last changed. A deploying cluster can
+            be retried 20 minutes after this.
+          format: date-time
+          type: string
         usesScram:
           type: boolean
         uuid:
@@ -5586,6 +5591,7 @@ components:
       - uuid
       - name
       - createdAt
+      - updatedAt
       - status
       - externalBootstrapURL
       - usesScram
