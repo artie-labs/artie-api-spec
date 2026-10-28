@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.159
+  version: v1.0.163
 servers:
 - url: https://api.artie.com
 paths:
@@ -4447,6 +4447,7 @@ components:
       - active
       - deploying
       - failed
+      - deleted
       type: string
     EnumsKafkaTopicTieredStorageState:
       enum:
@@ -4663,6 +4664,10 @@ components:
           - "null"
           - boolean
         databricksAutoLiquidClustering:
+          type:
+          - "null"
+          - boolean
+        databricksDisableVariantShredding:
           type:
           - "null"
           - boolean
@@ -5630,8 +5635,10 @@ components:
           format: date-time
           type: string
         state:
-          description: 'Applying for 20 minutes after the save, then failed: the apply
-            failed or was lost. Saving the same value again retries it.'
+          description: 'Applying until the apply''s time limit after the save has
+            passed (15 minutes plus a broker roll per broker, plus 5 minutes), then
+            failed: the apply failed or was lost. Saving the same value again retries
+            it.'
           enum:
           - applying
           - failed
@@ -5649,7 +5656,8 @@ components:
     PayloadsKafkaClusterManaged:
       properties:
         allowedCIDRs:
-          description: Client IP ranges allowed to reach the cluster.
+          description: Client IP ranges allowed to reach the cluster. Empty when any
+            IP can connect.
           items:
             type: string
           type: array
@@ -6235,6 +6243,8 @@ components:
         castAllColumnsToString:
           type: boolean
         databricksAutoLiquidClustering:
+          type: boolean
+        databricksDisableVariantShredding:
           type: boolean
         defaultSourceSchema:
           type: string
