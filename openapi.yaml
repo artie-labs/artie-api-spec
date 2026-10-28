@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.163
+  version: v1.0.164
 servers:
 - url: https://api.artie.com
 paths:
@@ -1623,6 +1623,11 @@ paths:
       description: Retrieves the Kafka clusters owned by the authenticated company.
         Only available for companies with Kafka access enabled.
       operationId: kafka_cluster_list
+      parameters:
+      - in: query
+        name: includeDeleted
+        schema:
+          type: boolean
       responses:
         "200":
           content:
@@ -5562,6 +5567,11 @@ components:
         cloud:
           type: string
         createdAt:
+          format: date-time
+          type: string
+        dataKeptUntil:
+          description: When a deleted Managed Kafka cluster's data is deleted for
+            good. It can be restored until then. Only set while status is deleted.
           format: date-time
           type: string
         deployStage:
