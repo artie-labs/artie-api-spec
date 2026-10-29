@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.164
+  version: v1.0.166
 servers:
 - url: https://api.artie.com
 paths:
@@ -434,9 +434,9 @@ paths:
         title: Get a saved connector
         triggerDescription: Returns a saved connector by uuid from connector_list,
           not a pipeline uuid or sourceReaderUUID. Includes type, label, and sharedConfig.
-          Sensitive fields may be masked placeholders. To ping that connector, pass
-          this payload into unsaved_connector_ping and keep uuid set so stored secrets
-          unmask.
+          Sensitive fields may be masked placeholders. With connectors:write, you
+          can ping that connector by passing this payload into unsaved_connector_ping
+          with uuid set so stored secrets unmask.
     post:
       description: Updates the configuration of an existing source or destination
         connector. Modify connection settings, credentials, or replication parameters
@@ -969,7 +969,7 @@ paths:
         readOnlyHint: true
         remediation: Save the connector before discovering databases.
         requiredScopes:
-        - connectors:read
+        - connectors:write
         retrySemantics: safe
         title: Fetch databases for an unsaved connector
         triggerDescription: Use when you need to fetch databases for an unsaved connector.
@@ -1133,7 +1133,7 @@ paths:
         outputSensitivity: none
         readOnlyHint: true
         requiredScopes:
-        - connectors:read
+        - connectors:write
         retrySemantics: safe
         title: Ping a connector
         triggerDescription: 'Pings a connector before connector_create. Pass type,
@@ -1181,7 +1181,7 @@ paths:
         readOnlyHint: true
         remediation: Save the connector before discovering PostgreSQL publications.
         requiredScopes:
-        - connectors:read
+        - connectors:write
         retrySemantics: safe
         title: List PostgreSQL publications for an unsaved connector
         triggerDescription: Use when you need to list PostgreSQL publications for
@@ -1225,7 +1225,7 @@ paths:
         readOnlyHint: true
         remediation: Save the connector before discovering schemas.
         requiredScopes:
-        - connectors:read
+        - connectors:write
         retrySemantics: safe
         title: Fetch schemas for an unsaved connector
         triggerDescription: Use when you need to fetch schemas for an unsaved connector.
@@ -1268,7 +1268,7 @@ paths:
         readOnlyHint: true
         remediation: Save the connector before discovering tables.
         requiredScopes:
-        - connectors:read
+        - connectors:write
         retrySemantics: safe
         title: Fetch tables for an unsaved connector
         triggerDescription: Use when you need to fetch tables for an unsaved connector.
@@ -3209,7 +3209,10 @@ paths:
   /pipelines/{uuid}/status:
     post:
       description: Changes the status of a pipeline (e.g. running, paused). Validates
-        the pipeline before resuming and deploys the configuration change.
+        the pipeline before resuming and deploys the configuration change. Pausing
+        a pipeline pauses its source reader, unless the source reader is shared and
+        another pipeline still reads from it; resuming a pipeline resumes its source
+        reader.
       operationId: pipeline_update_status
       parameters:
       - in: path
@@ -3422,7 +3425,8 @@ paths:
   /pipelines/validate-unsaved-destination:
     post:
       description: Validates destination configuration without persisting. Returns
-        204 on success or 200 with error message on validation failure.
+        204 on success or 200 with error message on validation failure. A destination
+        that names a saved connector by uuid also needs connectors:write.
       operationId: pipeline_validate_unsaved_destination
       requestBody:
         content:
@@ -3461,14 +3465,15 @@ paths:
         remediation: Save the destination connector first, then use a safe pipeline
           tool.
         requiredScopes:
-        - pipelines:read
+        - pipelines:write
         retrySemantics: safe
         title: Validate unsaved destination
         triggerDescription: Use when you need to validate unsaved destination.
   /pipelines/validate-unsaved-source:
     post:
       description: Validates source reader and connector configuration without persisting.
-        Returns 204 on success or 200 with error message on validation failure.
+        Returns 204 on success or 200 with error message on validation failure. A
+        sourceConnector that names a saved connector by uuid also needs connectors:write.
       operationId: pipeline_validate_unsaved_source
       requestBody:
         content:
@@ -3507,7 +3512,7 @@ paths:
         remediation: Save the source configuration first, then use the safe pipeline
           tools.
         requiredScopes:
-        - pipelines:read
+        - pipelines:write
         retrySemantics: safe
         title: Validate unsaved source
         triggerDescription: Use when you need to validate unsaved source.
@@ -3926,6 +3931,8 @@ paths:
   /source-readers/{uuid}/status:
     post:
       description: Changes the status of a shared source reader (e.g. running, paused).
+        Pausing it stops every pipeline that reads from it. Resuming any of those
+        pipelines through the pipeline status endpoint also resumes the source reader.
         Only shared source readers are supported; for non-shared source readers, use
         the pipeline status endpoint instead.
       operationId: source_reader_update_status
@@ -4011,7 +4018,7 @@ paths:
         remediation: Validate source-reader credentials through the authenticated
           Dashboard setup flow.
         requiredScopes:
-        - source_readers:read
+        - source_readers:write
         retrySemantics: safe
         title: Validate an unsaved source reader
         triggerDescription: Use when you need to validate an unsaved source reader.
@@ -8661,6 +8668,10 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/EnumsPipelineStatus'
+          description: running resumes the pipeline and its source reader. transfer
+            paused stops writing to the destination while the source reader keeps
+            reading. paused stops writing and pauses the source reader, unless the
+            source reader is shared and another pipeline still reads from it.
       required:
       - status
       type: object
@@ -8887,6 +8898,8 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/EnumsSourceReaderStatus'
+          description: running or paused. Pausing a shared source reader stops reading
+            for every pipeline on it.
       required:
       - status
       type: object
