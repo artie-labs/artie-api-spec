@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.177
+  version: v1.0.179
 servers:
 - url: https://api.artie.com
 paths:
@@ -5005,15 +5005,6 @@ components:
           - "null"
           - boolean
       type: object
-    PayloadsAzureBlobStorageConfig:
-      properties:
-        accountURL:
-          type: string
-        containerName:
-          type: string
-        sasToken:
-          type: string
-      type: object
     PayloadsBackfillDefaultsPayload:
       properties:
         chunkSize:
@@ -5822,17 +5813,32 @@ components:
       type: object
     PayloadsKafkaClusterRatesCluster:
       properties:
+        bytesInPerSecond:
+          type:
+          - "null"
+          - number
+        bytesInSeries:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaMetricsGraphPoint'
+          type: array
         bytesOutPerSecond:
           type:
           - "null"
           - number
+        bytesOutSeries:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaMetricsGraphPoint'
+          type: array
         messagesInPerSecond:
           type:
           - "null"
           - number
       required:
       - messagesInPerSecond
+      - bytesInPerSecond
       - bytesOutPerSecond
+      - bytesInSeries
+      - bytesOutSeries
       type: object
     PayloadsKafkaClusterRatesGroupLag:
       properties:
@@ -5898,6 +5904,9 @@ components:
           items:
             $ref: '#/components/schemas/PayloadsKafkaConsumerGroupMember'
           type: array
+        readAt:
+          format: date-time
+          type: string
         state:
           type: string
         topics:
@@ -5911,6 +5920,7 @@ components:
       - consumerCount
       - state
       - topics
+      - readAt
       type: object
     PayloadsKafkaConsumerGroupMember:
       properties:
@@ -7062,8 +7072,6 @@ components:
           type:
           - "null"
           - string
-        azureBlobStorageConfig:
-          $ref: '#/components/schemas/PayloadsAzureBlobStorageConfig'
         backfillBatchSize:
           minimum: 0
           type:
