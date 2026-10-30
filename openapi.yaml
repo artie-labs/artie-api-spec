@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.172
+  version: v1.0.174
 servers:
 - url: https://api.artie.com
 paths:
@@ -5702,6 +5702,10 @@ components:
           description: Why the last deploy of a Managed Kafka cluster failed. Only
             set while status is failed.
           type: string
+        tierAllTopics:
+          description: Whether Artie turns tiered storage on for every topic of a
+            Managed Kafka cluster that doesn't choose otherwise.
+          type: boolean
         tieredStorageAvailable:
           description: Whether tiered storage is available on this cluster. Artie
             turns it on once the cluster's brokers have tiered storage.
@@ -5734,6 +5738,7 @@ components:
       - region
       - tieredStorageAvailable
       - isManaged
+      - tierAllTopics
       type: object
     PayloadsKafkaClusterChange:
       properties:
@@ -5745,6 +5750,7 @@ components:
           - storageGiB
           - brokers
           - instanceType
+          - tieredStorage
           type: string
         startedAt:
           description: When the change was saved.
