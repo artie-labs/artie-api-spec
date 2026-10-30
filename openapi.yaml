@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.177
+  version: v1.0.178
 servers:
 - url: https://api.artie.com
 paths:
@@ -5822,17 +5822,32 @@ components:
       type: object
     PayloadsKafkaClusterRatesCluster:
       properties:
+        bytesInPerSecond:
+          type:
+          - "null"
+          - number
+        bytesInSeries:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaMetricsGraphPoint'
+          type: array
         bytesOutPerSecond:
           type:
           - "null"
           - number
+        bytesOutSeries:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaMetricsGraphPoint'
+          type: array
         messagesInPerSecond:
           type:
           - "null"
           - number
       required:
       - messagesInPerSecond
+      - bytesInPerSecond
       - bytesOutPerSecond
+      - bytesInSeries
+      - bytesOutSeries
       type: object
     PayloadsKafkaClusterRatesGroupLag:
       properties:
