@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.172
+  version: v1.0.177
 servers:
 - url: https://api.artie.com
 paths:
@@ -5702,6 +5702,10 @@ components:
           description: Why the last deploy of a Managed Kafka cluster failed. Only
             set while status is failed.
           type: string
+        tierAllTopics:
+          description: Whether Artie turns tiered storage on for every topic of a
+            Managed Kafka cluster that doesn't choose otherwise.
+          type: boolean
         tieredStorageAvailable:
           description: Whether tiered storage is available on this cluster. Artie
             turns it on once the cluster's brokers have tiered storage.
@@ -5734,6 +5738,7 @@ components:
       - region
       - tieredStorageAvailable
       - isManaged
+      - tierAllTopics
       type: object
     PayloadsKafkaClusterChange:
       properties:
@@ -5745,6 +5750,7 @@ components:
           - storageGiB
           - brokers
           - instanceType
+          - tieredStorage
           type: string
         startedAt:
           description: When the change was saved.
@@ -6255,12 +6261,24 @@ components:
       type: object
     PayloadsKafkaTopicTieredStorage:
       properties:
+        canTier:
+          description: Whether tiered storage can be on for this topic. Kafka refuses
+            it on compacted topics, and Artie keeps it off Kafka's and Cruise Control's
+            own topics and topics keeping more than 14 days.
+          type: boolean
         state:
           $ref: '#/components/schemas/EnumsKafkaTopicTieredStorageState'
           description: off, on or paused, from the topic's remote.storage.enable and
             remote.log.copy.disable configs.
+        switchOn:
+          description: Whether the topic's tiered storage switch is on. On a Managed
+            Kafka cluster it's the topic's own switch, else the cluster's tierAllTopics;
+            elsewhere it's whether the topic is tiered (on or paused).
+          type: boolean
       required:
       - state
+      - canTier
+      - switchOn
       type: object
     PayloadsKafkaUser:
       properties:
@@ -8542,6 +8560,12 @@ components:
       properties:
         s3Bucket:
           type: string
+        s3BucketOwner:
+          description: AWS account ID that owns the S3 bucket. Required when the bucket
+            is in a different account than the table.
+          type:
+          - "null"
+          - string
         s3Prefix:
           type:
           - "null"
