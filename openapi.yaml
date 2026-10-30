@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.166
+  version: v1.0.172
 servers:
 - url: https://api.artie.com
 paths:
@@ -1853,7 +1853,8 @@ paths:
   /kafka-clusters/{uuid}/consumer-groups:
     get:
       description: Retrieves the consumer groups for the cluster. Results are cached
-        for two minutes unless forceRefresh is true.
+        for two minutes (10 seconds on Managed Kafka clusters) unless forceRefresh
+        is true.
       operationId: kafka_consumer_group_list
       parameters:
       - in: path
@@ -1896,7 +1897,8 @@ paths:
   /kafka-clusters/{uuid}/consumer-groups/{groupID}:
     get:
       description: Retrieves a consumer group's members and per-topic offset lag.
-        Results are cached for two minutes unless forceRefresh is true.
+        Results are cached for two minutes (10 seconds on Managed Kafka clusters)
+        unless forceRefresh is true.
       operationId: kafka_consumer_group_detail
       parameters:
       - in: path
@@ -1992,6 +1994,63 @@ paths:
         retrySemantics: safe
         title: Get Kafka metrics graphs
         triggerDescription: Use when you need to get Kafka metrics graphs.
+  /kafka-clusters/{uuid}/rates:
+    get:
+      description: Retrieves a Managed Kafka cluster's messages in and bytes out per
+        second over the last 5 minutes, each topic's messages in per second now and
+        over the last hour, and each consumer group's lag per topic over the range
+        with its derived read rate. Cached for 30 seconds. Returns 400 for other clusters
+        and 409 if the cluster isn't active.
+      operationId: kafka_cluster_rates
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      - description: How far back the topic and consumer group series go, defaults
+          to 1h
+        in: query
+        name: range
+        schema:
+          description: How far back the topic and consumer group series go, defaults
+            to 1h
+          enum:
+          - 1h
+          - 6h
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaClusterRates'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Get Managed Kafka cluster rates
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_rates
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - kafka:read
+        retrySemantics: safe
+        title: Get Managed Kafka cluster rates
+        triggerDescription: Use when you need to get Managed Kafka cluster rates.
   /kafka-clusters/{uuid}/storage-graph:
     get:
       description: Retrieves persistent-volume storage utilization for a Strimzi Kafka
@@ -2175,9 +2234,11 @@ paths:
         title: List Kafka topics
         triggerDescription: Use when you need to list Kafka topics.
     post:
-      description: 'Creates a topic in the company''s customer namespace: the name
-        must start with `<companyUUID>.customer.`, the namespace customer Kafka users
-        can produce to.'
+      description: Creates a topic. On a shared cluster the name must start with `<companyUUID>.customer.`,
+        the namespace customer Kafka users can produce to. On a Managed Kafka cluster
+        any name works except the cluster's own topics (Kafka's `__` topics and Cruise
+        Control's `strimzi.cruisecontrol.*`), and the cluster must be active (409
+        otherwise).
       operationId: kafka_topic_create
       parameters:
       - in: path
@@ -2227,8 +2288,11 @@ paths:
         triggerDescription: Use when you need to create a Kafka topic.
   /kafka-clusters/{uuid}/topics/{topic}:
     delete:
-      description: Deletes a topic and all of its messages. Only topics in the company's
-        customer namespace (starting with `<companyUUID>.customer.`) can be deleted.
+      description: Deletes a topic and all of its messages. On a shared cluster only
+        topics in the company's customer namespace (starting with `<companyUUID>.customer.`)
+        can be deleted. On a Managed Kafka cluster any topic but the cluster's own
+        (`__` and `strimzi.cruisecontrol.*`) can, and the cluster must be active (409
+        otherwise).
       operationId: kafka_topic_delete
       parameters:
       - in: path
@@ -2248,6 +2312,8 @@ paths:
           description: Bad Request
         "404":
           description: Not Found
+        "409":
+          description: Conflict
         "500":
           description: Internal Server Error
         "502":
@@ -2322,8 +2388,10 @@ paths:
       description: 'Changes a topic''s retention and tiered storage; send only the
         settings to change. Potentially destructive: Kafka deletes messages older
         than the new retention, and on Artie-managed topics that can drop change events
-        before Artie pipelines read them. Kafka-internal (`__`) topics can''t change.
-        A change the rules refuse is a 400 that says why.'
+        before Artie pipelines read them. Kafka-internal (`__`) topics can''t change;
+        on a Managed Kafka cluster neither can Cruise Control''s (`strimzi.cruisecontrol.*`),
+        and the cluster must be active (409 otherwise). A change the rules refuse
+        is a 400 that says why.'
       operationId: kafka_topic_settings_update
       parameters:
       - in: path
@@ -2353,6 +2421,8 @@ paths:
           description: Bad Request
         "404":
           description: Not Found
+        "409":
+          description: Conflict
         "500":
           description: Internal Server Error
         "502":
@@ -2429,7 +2499,9 @@ paths:
       description: Increases a topic's partition count. Not allowed on Artie-managed
         topics (anything under `<companyUUID>.` outside the customer namespace, or
         Kafka-internal `__` topics), because adding partitions breaks per-key ordering
-        for Artie pipelines.
+        for Artie pipelines. On a Managed Kafka cluster any topic but the cluster's
+        own (`__` and `strimzi.cruisecontrol.*`) can grow, and the cluster must be
+        active (409 otherwise).
       operationId: kafka_topic_partitions_increase
       parameters:
       - in: path
@@ -2485,7 +2557,8 @@ paths:
         deletes messages older than the new retention, and on Artie-managed topics
         that can drop change events before Artie pipelines read them. A topic with
         tiered storage on or paused keeps at most 14 days, and Kafka-internal (`__`)
-        topics can''t change.'
+        topics can''t change. On a Managed Kafka cluster Cruise Control''s (`strimzi.cruisecontrol.*`)
+        can''t either, and the cluster must be active (409 otherwise).'
       operationId: kafka_topic_retention_update
       parameters:
       - in: path
@@ -2511,6 +2584,8 @@ paths:
           description: Bad Request
         "404":
           description: Not Found
+        "409":
+          description: Conflict
         "500":
           description: Internal Server Error
         "502":
@@ -5594,6 +5669,20 @@ components:
           description: Whether this is a Managed Kafka cluster that Artie runs for
             the company.
           type: boolean
+        localRetentionBytes:
+          description: 'Disk cap per partition: the most broker disk each partition
+            of the cluster''s tiered topics keeps, in bytes (log.local.retention.bytes).
+            Missing when there is no cap.'
+          type:
+          - "null"
+          - integer
+        localRetentionMS:
+          description: 'Days on disk: how long the cluster''s tiered topics keep data
+            on broker disks, in ms (log.local.retention.ms). Missing on clusters made
+            before it, whose brokers use Kafka''s default.'
+          type:
+          - "null"
+          - integer
         managed:
           $ref: '#/components/schemas/PayloadsKafkaClusterManaged'
           description: A Managed Kafka cluster's configuration. Only set when isManaged,
@@ -5602,6 +5691,11 @@ components:
           type: string
         region:
           type: string
+        shuttingDown:
+          description: Whether a deleted Managed Kafka cluster is still being taken
+            down. It can't be restored until that finishes. Only set in the clusters
+            list.
+          type: boolean
         status:
           $ref: '#/components/schemas/EnumsKafkaStatus'
         statusMessage:
@@ -5612,6 +5706,11 @@ components:
           description: Whether tiered storage is available on this cluster. Artie
             turns it on once the cluster's brokers have tiered storage.
           type: boolean
+        tieredStorageSyncedAt:
+          description: When the sync last made a Managed Kafka cluster's topics match
+            the tiered storage choice for each. Missing until its first run.
+          format: date-time
+          type: string
         updatedAt:
           description: When the cluster row last changed. A deploying cluster can
             be retried 20 minutes after this.
@@ -5698,6 +5797,74 @@ components:
       - allowedCIDRs
       - kafkaVersion
       type: object
+    PayloadsKafkaClusterRates:
+      properties:
+        cluster:
+          $ref: '#/components/schemas/PayloadsKafkaClusterRatesCluster'
+        groups:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaClusterRatesGroupLag'
+          type: array
+        topics:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaClusterRatesTopic'
+          type: array
+      required:
+      - cluster
+      - topics
+      - groups
+      type: object
+    PayloadsKafkaClusterRatesCluster:
+      properties:
+        bytesOutPerSecond:
+          type:
+          - "null"
+          - number
+        messagesInPerSecond:
+          type:
+          - "null"
+          - number
+      required:
+      - messagesInPerSecond
+      - bytesOutPerSecond
+      type: object
+    PayloadsKafkaClusterRatesGroupLag:
+      properties:
+        group:
+          type: string
+        lag:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaMetricsGraphPoint'
+          type: array
+        readPerSecond:
+          type:
+          - "null"
+          - number
+        topic:
+          type: string
+      required:
+      - group
+      - topic
+      - lag
+      - readPerSecond
+      type: object
+    PayloadsKafkaClusterRatesTopic:
+      properties:
+        messagesInPerSecond:
+          type:
+          - "null"
+          - number
+        messagesInSeries:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaMetricsGraphPoint'
+          type: array
+        topic:
+          type: string
+      required:
+      - topic
+      - messagesInPerSecond
+      - messagesInSeries
+      type: object
     PayloadsKafkaClusterSummary:
       properties:
         consumerGroupCount:
@@ -5721,6 +5888,10 @@ components:
           type: integer
         groupID:
           type: string
+        members:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaConsumerGroupMember'
+          type: array
         state:
           type: string
         topics:
@@ -5734,6 +5905,16 @@ components:
       - consumerCount
       - state
       - topics
+      type: object
+    PayloadsKafkaConsumerGroupMember:
+      properties:
+        clientHost:
+          type: string
+        clientID:
+          type: string
+      required:
+      - clientID
+      - clientHost
       type: object
     PayloadsKafkaConsumerGroupTopic:
       properties:
@@ -5751,6 +5932,9 @@ components:
       type: object
     PayloadsKafkaConsumerGroupTopicPartition:
       properties:
+        committedMessageTimestamp:
+          format: date-time
+          type: string
         currentOffset:
           format: int64
           type: integer
@@ -5970,6 +6154,11 @@ components:
       type: object
     PayloadsKafkaTopicDetail:
       properties:
+        managed:
+          $ref: '#/components/schemas/PayloadsKafkaTopicDetailManaged'
+          description: 'The topic''s replication and per-partition leader and offsets.
+            Only set when the cluster isManaged: on shared clusters broker details
+            are Artie infra.'
         partitionSizes:
           items:
             $ref: '#/components/schemas/PayloadsKafkaTopicPartitionSize'
@@ -5988,6 +6177,39 @@ components:
       - topic
       - partitionSizes
       - pipelines
+      type: object
+    PayloadsKafkaTopicDetailManaged:
+      properties:
+        partitions:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaTopicPartition'
+          type: array
+        replicationFactor:
+          description: How many copies of each partition the brokers keep.
+          type: integer
+      required:
+      - replicationFactor
+      - partitions
+      type: object
+    PayloadsKafkaTopicPartition:
+      properties:
+        inSyncCount:
+          description: How many copies are caught up with the leader, the leader included.
+          type: integer
+        latestOffset:
+          description: The offset the next message gets. Missing when the brokers
+            didn't answer for it.
+          type: integer
+        leaderID:
+          description: The broker that serves the partition. Missing while it has
+            no leader, except that a leaderless partition whose last in-sync copy
+            was broker 0 still shows 0.
+          type: integer
+        partition:
+          type: integer
+      required:
+      - partition
+      - inSyncCount
       type: object
     PayloadsKafkaTopicPartitionSize:
       properties:
@@ -8959,7 +9181,8 @@ components:
         localRetentionMS:
           description: 'How long the tiered topic keeps data on broker disks: from
             86400000 (one day) up to retention. Turning tiered storage on without
-            it uses 7 days, capped at retention.'
+            it uses 7 days, capped at retention; on a Managed Kafka cluster it uses
+            the cluster''s days on disk.'
           type:
           - "null"
           - integer
