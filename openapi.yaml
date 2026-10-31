@@ -2,10 +2,90 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.177
+  version: v1.0.181
 servers:
 - url: https://api.artie.com
 paths:
+  /analytics:
+    get:
+      description: Queries Datadog metrics for analytics datasets such as rows synced,
+        ingestion lag, flush time, and more. pipelineUUID is required for API keys
+        bound to an environment. For windows of 59 minutes or longer, from and to
+        are floored to 30 s and results are cached for up to 1 minute.
+      operationId: analytics_query
+      parameters:
+      - in: query
+        name: from
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: to
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: datasets[]
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      - in: query
+        name: pipelineUUID
+        schema:
+          type: string
+      - in: query
+        name: tables[]
+        schema:
+          items:
+            type: string
+          type: array
+      - in: query
+        name: backfillOptions
+        schema:
+          type: string
+      - in: query
+        name: transferMode
+        schema:
+          type: string
+      - in: query
+        name: groupBy
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouterAnalyticsResponse'
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Query analytics data
+      tags:
+      - Analytics
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: true
+        operationId: analytics_query
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - pipelines:read
+        retrySemantics: safe
+        title: Query analytics
+        triggerDescription: Returns time series for named datasets (datasets[]) such
+          as rowsSyncedByTime, ingestionLag, readerLag, rowLag and flushTime over
+          from/to (RFC3339). Pass pipelineUUID from pipeline_list to scope to one
+          pipeline; it is required for environment-scoped keys. Total lag is readerLag
+          plus ingestionLag at each timestamp. Use for lag or throughput over time.
+          For one per-table lag number and row count, use pipeline_usage.
   /column-hashing-salts:
     get:
       description: Lists all column hashing salts for the authenticated company.
@@ -5005,15 +5085,78 @@ components:
           - "null"
           - boolean
       type: object
-    PayloadsAzureBlobStorageConfig:
+    PayloadsAnalyticsDimensions:
       properties:
-        accountURL:
+        operation:
           type: string
-        containerName:
+        pipelineUUID:
+          format: uuid
+          type:
+          - "null"
+          - string
+        reason:
           type: string
-        sasToken:
+        slot:
+          type: string
+        table:
+          type: string
+        warehouseName:
+          type: string
+        warehouseSize:
           type: string
       type: object
+    PayloadsAnalyticsScalarIntPoint:
+      properties:
+        value:
+          format: int64
+          type: integer
+      type: object
+    PayloadsAnalyticsScalarSeries:
+      properties:
+        dimensions:
+          $ref: '#/components/schemas/PayloadsAnalyticsDimensions'
+        granularityInterval:
+          type:
+          - "null"
+          - integer
+        points:
+          items:
+            $ref: '#/components/schemas/PayloadsAnalyticsScalarIntPoint'
+          type:
+          - array
+          - "null"
+      type: object
+    PayloadsAnalyticsTimeseries:
+      properties:
+        dimensions:
+          $ref: '#/components/schemas/PayloadsAnalyticsDimensions'
+        granularityInterval:
+          type:
+          - "null"
+          - integer
+        points:
+          items:
+            $ref: '#/components/schemas/PayloadsAnalyticsTimeseriesPoint'
+          type:
+          - array
+          - "null"
+      type: object
+    PayloadsAnalyticsTimeseriesPoint:
+      properties:
+        time:
+          format: int64
+          type: integer
+        value:
+          format: double
+          type: number
+      type: object
+    PayloadsAnalyticsUnit:
+      enum:
+      - count
+      - megabytes
+      - ms
+      - bytes
+      type: string
     PayloadsBackfillDefaultsPayload:
       properties:
         chunkSize:
@@ -5702,6 +5845,10 @@ components:
           description: Why the last deploy of a Managed Kafka cluster failed. Only
             set while status is failed.
           type: string
+        storageAutoscale:
+          $ref: '#/components/schemas/PayloadsKafkaClusterStorageAutoscale'
+          description: A Managed Kafka cluster's storage autoscaling. Only set when
+            isManaged.
         tierAllTopics:
           description: Whether Artie turns tiered storage on for every topic of a
             Managed Kafka cluster that doesn't choose otherwise.
@@ -5822,17 +5969,32 @@ components:
       type: object
     PayloadsKafkaClusterRatesCluster:
       properties:
+        bytesInPerSecond:
+          type:
+          - "null"
+          - number
+        bytesInSeries:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaMetricsGraphPoint'
+          type: array
         bytesOutPerSecond:
           type:
           - "null"
           - number
+        bytesOutSeries:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaMetricsGraphPoint'
+          type: array
         messagesInPerSecond:
           type:
           - "null"
           - number
       required:
       - messagesInPerSecond
+      - bytesInPerSecond
       - bytesOutPerSecond
+      - bytesInSeries
+      - bytesOutSeries
       type: object
     PayloadsKafkaClusterRatesGroupLag:
       properties:
@@ -5871,6 +6033,33 @@ components:
       - messagesInPerSecond
       - messagesInSeries
       type: object
+    PayloadsKafkaClusterStorageAutoscale:
+      properties:
+        bumpAtPercent:
+          description: How full, in %, a broker's disk gets before every broker's
+            disk grows. At most 70. Defaults to 65.
+          maximum: 70
+          minimum: 1
+          type: integer
+        enabled:
+          description: Whether Artie grows the brokers' disks before they fill.
+          type: boolean
+        maxGiB:
+          description: The most disk per broker, in GiB, a grow goes to. Missing is
+            no limit.
+          minimum: 1
+          type: integer
+        targetPercent:
+          description: How full, in %, the fullest broker's disk is after a grow.
+            Less than bumpAtPercent. Defaults to 55.
+          maximum: 69
+          minimum: 1
+          type: integer
+      required:
+      - enabled
+      - bumpAtPercent
+      - targetPercent
+      type: object
     PayloadsKafkaClusterSummary:
       properties:
         consumerGroupCount:
@@ -5898,6 +6087,9 @@ components:
           items:
             $ref: '#/components/schemas/PayloadsKafkaConsumerGroupMember'
           type: array
+        readAt:
+          format: date-time
+          type: string
         state:
           type: string
         topics:
@@ -5911,6 +6103,7 @@ components:
       - consumerCount
       - state
       - topics
+      - readAt
       type: object
     PayloadsKafkaConsumerGroupMember:
       properties:
@@ -7062,8 +7255,6 @@ components:
           type:
           - "null"
           - string
-        azureBlobStorageConfig:
-          $ref: '#/components/schemas/PayloadsAzureBlobStorageConfig'
         backfillBatchSize:
           minimum: 0
           type:
@@ -8384,6 +8575,24 @@ components:
       - warning
       - error
       type: string
+    RouterAnalyticsDatasetData:
+      anyOf:
+      - items:
+          $ref: '#/components/schemas/PayloadsAnalyticsScalarSeries'
+        type: array
+      - items:
+          $ref: '#/components/schemas/PayloadsAnalyticsTimeseries'
+        type: array
+      - type: "null"
+    RouterAnalyticsResponse:
+      properties:
+        datasets:
+          additionalProperties:
+            $ref: '#/components/schemas/RouterQueryResult'
+          type: object
+      required:
+      - datasets
+      type: object
     RouterConnectorConnectionRole:
       enum:
       - source
@@ -9076,6 +9285,21 @@ components:
           type: string
       required:
       - name
+      type: object
+    RouterQueryResult:
+      properties:
+        data:
+          $ref: '#/components/schemas/RouterAnalyticsDatasetData'
+        err:
+          type:
+          - "null"
+          - string
+        unit:
+          $ref: '#/components/schemas/PayloadsAnalyticsUnit'
+      required:
+      - unit
+      - data
+      - err
       type: object
     RouterSSHTunnelCreateRequest:
       properties:
