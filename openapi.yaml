@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.181
+  version: v1.0.183
 servers:
 - url: https://api.artie.com
 paths:
@@ -1930,6 +1930,53 @@ paths:
         retrySemantics: safe
         title: Get admin Kafka user credentials
         triggerDescription: Use when you need to get admin Kafka user credentials.
+  /kafka-clusters/{uuid}/consumer-group-details:
+    get:
+      description: Retrieves every consumer group's members and per-topic offset lag
+        on a Managed Kafka cluster in one read. Results are cached for 10 seconds
+        unless forceRefresh is true. Returns 400 for other clusters.
+      operationId: kafka_consumer_group_details
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: forceRefresh
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBodyKafkaConsumerGroupDetail'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get every consumer group's detail
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_consumer_group_details
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - kafka:read
+        retrySemantics: safe
+        title: Get every Kafka consumer group's detail
+        triggerDescription: Use when you need to get every Kafka consumer group's
+          detail.
   /kafka-clusters/{uuid}/consumer-groups:
     get:
       description: Retrieves the consumer groups for the cluster. Results are cached
@@ -4703,6 +4750,15 @@ components:
       required:
       - items
       type: object
+    ListResponseBodyKafkaConsumerGroupDetail:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaConsumerGroupDetail'
+          type: array
+      required:
+      - items
+      type: object
     ListResponseBodyKafkaTopic:
       properties:
         items:
@@ -6037,8 +6093,8 @@ components:
       properties:
         bumpAtPercent:
           description: How full, in %, a broker's disk gets before every broker's
-            disk grows. At most 70. Defaults to 65.
-          maximum: 70
+            disk grows. At most 99. Defaults to 65.
+          maximum: 99
           minimum: 1
           type: integer
         enabled:
@@ -6052,7 +6108,7 @@ components:
         targetPercent:
           description: How full, in %, the fullest broker's disk is after a grow.
             Less than bumpAtPercent. Defaults to 55.
-          maximum: 69
+          maximum: 98
           minimum: 1
           type: integer
       required:
