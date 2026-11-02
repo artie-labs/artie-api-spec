@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.183
+  version: v1.0.184
 servers:
 - url: https://api.artie.com
 paths:
@@ -5543,6 +5543,9 @@ components:
           type: boolean
         exportArn:
           type: string
+        maxParallelism:
+          minimum: 0
+          type: integer
         optionalFolder:
           type: string
       type: object
