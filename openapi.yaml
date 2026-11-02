@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.184
+  version: v1.0.185
 servers:
 - url: https://api.artie.com
 paths:
@@ -2104,6 +2104,8 @@ paths:
           description: Not Found
         "500":
           description: Internal Server Error
+        "502":
+          description: Bad Gateway
       summary: Get Kafka metrics graphs
       tags:
       - Kafka Clusters
@@ -2161,6 +2163,8 @@ paths:
           description: Conflict
         "500":
           description: Internal Server Error
+        "502":
+          description: Bad Gateway
       summary: Get Managed Kafka cluster rates
       tags:
       - Kafka Clusters
@@ -2212,6 +2216,8 @@ paths:
           description: Not Found
         "500":
           description: Internal Server Error
+        "502":
+          description: Bad Gateway
       summary: Get Kafka storage graph
       tags:
       - Kafka Clusters
@@ -3555,6 +3561,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+        "502":
+          description: Bad Gateway
       summary: Get pipeline usage
       tags:
       - Pipelines
