@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.184
+  version: v1.0.186
 servers:
 - url: https://api.artie.com
 paths:
@@ -1736,7 +1736,102 @@ paths:
         retrySemantics: safe
         title: List Kafka clusters
         triggerDescription: Use when you need to list Kafka clusters.
+    post:
+      description: Saves a Managed Kafka cluster with status deploying and starts
+        deploying it. An account on a public or disposable email domain, or an API
+        key it made, gets a 403, unless an app setting allows them. A company not
+        yet paying Artie needs a card on file first, or gets a 402. Company admins
+        only.
+      operationId: kafka_cluster_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterCreateKafkaClusterRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaCluster'
+          description: OK
+        "400":
+          description: Bad Request
+        "402":
+          description: Payment Required
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "424":
+          description: Failed Dependency
+        "500":
+          description: Internal Server Error
+      summary: Create a Managed Kafka cluster
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_create
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe-after-state-check
+        title: Create a Managed Kafka cluster
+        triggerDescription: Use when you need to create a Managed Kafka cluster.
   /kafka-clusters/{uuid}:
+    delete:
+      description: Deletes an active or failed Managed Kafka cluster, with its data.
+        It leaves the list at once and is removed from AWS in the background. Returns
+        409 while the cluster is deploying. Company admins only.
+      operationId: kafka_cluster_delete
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Delete a Managed Kafka cluster
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        bodilessSuccess: true
+        destructiveHint: true
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_delete
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:delete
+        retrySemantics: safe
+        title: Delete a Managed Kafka cluster
+        triggerDescription: Use when you need to delete a Managed Kafka cluster.
     get:
       description: Retrieves a single Kafka cluster owned by the authenticated company,
         by UUID.
@@ -1775,6 +1870,106 @@ paths:
         retrySemantics: safe
         title: Get a Kafka cluster
         triggerDescription: Use when you need to get a Kafka cluster.
+  /kafka-clusters/{uuid}/admin-credentials:
+    get:
+      description: Returns the username, password and client settings for logging
+        in to a Managed Kafka cluster with SASL/SCRAM-SHA-512 over TLS. Returns 409
+        if the cluster isn't active or its password isn't ready yet. Company admins
+        only.
+      operationId: kafka_cluster_admin_credentials
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouterKafkaClusterAdminCredentialsResponse'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Get a Managed Kafka cluster's admin credentials
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_admin_credentials
+        outputSensitivity: restricted-credentials
+        readOnlyHint: true
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka_admin_users:read
+        retrySemantics: safe
+        title: Get a Managed Kafka cluster's admin credentials
+        triggerDescription: Use when you need to get a Managed Kafka cluster's admin
+          credentials.
+  /kafka-clusters/{uuid}/admin-credentials/rotate:
+    post:
+      description: Gives the cluster's admin user a new random password and returns
+        it once. Clients using the old password stop connecting as soon as the new
+        one is live. If it is not live yet, the response has a warning and no password;
+        get it from the admin credentials later. Returns 409 if the cluster isn't
+        active, another change of its password is running, or it was built before
+        password login and has no admin password to change. Company admins only.
+      operationId: kafka_cluster_admin_password_rotate
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouterKafkaClusterAdminPasswordRotateResponse'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Generate a new Managed Kafka admin password
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_admin_password_rotate
+        outputSensitivity: restricted-credentials
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka_admin_users:write
+        retrySemantics: safe-after-state-check
+        title: Generate a new Managed Kafka admin password
+        triggerDescription: Use when you need to generate a new Managed Kafka admin
+          password.
   /kafka-clusters/{uuid}/admin-users:
     post:
       description: Creates an admin-profile Kafka user. Strimzi generates its password,
@@ -1930,6 +2125,117 @@ paths:
         retrySemantics: safe
         title: Get admin Kafka user credentials
         triggerDescription: Use when you need to get admin Kafka user credentials.
+  /kafka-clusters/{uuid}/allowed-cidrs:
+    put:
+      description: Replaces the client IP ranges allowed to reach an active Managed
+        Kafka cluster and applies them. No broker restarts. Returns 409 while any
+        change to the cluster is still being applied. Company admins only.
+      operationId: kafka_cluster_allowed_cidrs_update
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterUpdateKafkaClusterAllowedCIDRsRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaCluster'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Change a Managed Kafka cluster's allowlist
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_allowed_cidrs_update
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe-after-state-check
+        title: Change a Managed Kafka cluster's allowlist
+        triggerDescription: Use when you need to change a Managed Kafka cluster's
+          allowlist.
+  /kafka-clusters/{uuid}/brokers:
+    put:
+      description: 'Adds brokers to an active Managed Kafka cluster and applies it:
+        new machines, brokers, and one load balancer port each. Brokers can only be
+        added for now. Existing partitions stay where they are; new topics use every
+        broker. Returns 409 while any change to the cluster is still being applied.
+        Company admins only.'
+      operationId: kafka_cluster_brokers_update
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterUpdateKafkaClusterBrokersRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaCluster'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      summary: Add brokers to a Managed Kafka cluster
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_brokers_update
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe-after-state-check
+        title: Add brokers to a Managed Kafka cluster
+        triggerDescription: Use when you need to add brokers to a Managed Kafka cluster.
   /kafka-clusters/{uuid}/consumer-group-details:
     get:
       description: Retrieves every consumer group's members and per-topic offset lag
@@ -2070,6 +2376,64 @@ paths:
         retrySemantics: safe
         title: Get Kafka consumer group detail
         triggerDescription: Use when you need to get Kafka consumer group detail.
+  /kafka-clusters/{uuid}/instance-type:
+    put:
+      description: Moves every broker of an active Managed Kafka cluster to another
+        EC2 instance type and applies it. The brokers restart one at a time onto new
+        machines, so clients keep working; each broker's memory and CPU follow the
+        new type. Returns 409 while any change to the cluster is still being applied.
+        Company admins only.
+      operationId: kafka_cluster_instance_type_update
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterUpdateKafkaClusterInstanceTypeRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaCluster'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      summary: Change a Managed Kafka cluster's instance type
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_instance_type_update
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe-after-state-check
+        title: Change a Managed Kafka cluster's instance type
+        triggerDescription: Use when you need to change a Managed Kafka cluster's
+          instance type.
   /kafka-clusters/{uuid}/metrics-graph:
     get:
       description: Retrieves broker, topic, partition, and per-broker CPU user/system
@@ -2104,6 +2468,8 @@ paths:
           description: Not Found
         "500":
           description: Internal Server Error
+        "502":
+          description: Bad Gateway
       summary: Get Kafka metrics graphs
       tags:
       - Kafka Clusters
@@ -2161,6 +2527,8 @@ paths:
           description: Conflict
         "500":
           description: Internal Server Error
+        "502":
+          description: Bad Gateway
       summary: Get Managed Kafka cluster rates
       tags:
       - Kafka Clusters
@@ -2178,6 +2546,263 @@ paths:
         retrySemantics: safe
         title: Get Managed Kafka cluster rates
         triggerDescription: Use when you need to get Managed Kafka cluster rates.
+  /kafka-clusters/{uuid}/rename:
+    post:
+      description: Changes the name a Managed Kafka cluster, or one on the company's
+        BYOC data plane, shows in the dashboard. Its bootstrap address, Kubernetes
+        objects, and MSK cluster keep the name it was created with. Company admins
+        only.
+      operationId: kafka_cluster_rename
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterRenameKafkaClusterRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaCluster'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Rename a Kafka cluster
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_rename
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe-after-state-check
+        title: Rename a Kafka cluster
+        triggerDescription: Use when you need to rename a Kafka cluster.
+  /kafka-clusters/{uuid}/restore:
+    post:
+      description: Brings back a deleted Managed Kafka cluster with its data, address
+        and passwords, until its data is deleted for good. Company admins only.
+      operationId: kafka_cluster_restore
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaCluster'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Restore a deleted Managed Kafka cluster
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_restore
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe-after-state-check
+        title: Restore a deleted Managed Kafka cluster
+        triggerDescription: Use when you need to restore a deleted Managed Kafka cluster.
+  /kafka-clusters/{uuid}/retry:
+    post:
+      description: Deploys a Managed Kafka cluster again whose last deploy failed,
+        or that has been deploying for over 20 minutes. Company admins only.
+      operationId: kafka_cluster_retry
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaCluster'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Retry deploying a Managed Kafka cluster
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_retry
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe-after-state-check
+        title: Retry deploying a Managed Kafka cluster
+        triggerDescription: Use when you need to retry deploying a Managed Kafka cluster.
+  /kafka-clusters/{uuid}/storage:
+    put:
+      description: Grows the disk of every broker in an active Managed Kafka cluster
+        and applies it. The disks grow online. AWS limits how often a disk can change,
+        so storage grows at most 3 times in 24 hours, an hour apart, once the last
+        change has finished; otherwise 429. Returns 409 while any change to the cluster
+        is still being applied. Company admins only.
+      operationId: kafka_cluster_storage_update
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterUpdateKafkaClusterStorageRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaCluster'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "429":
+          description: Too Many Requests
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      summary: Grow a Managed Kafka cluster's broker storage
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_storage_update
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe-after-state-check
+        title: Grow a Managed Kafka cluster's broker storage
+        triggerDescription: Use when you need to grow a Managed Kafka cluster's broker
+          storage.
+  /kafka-clusters/{uuid}/storage-autoscale:
+    put:
+      description: Sets whether Artie grows the brokers' disks before they fill, at
+        what % full, how full they are after, and the most disk per broker. Takes
+        effect on the next autoscale run; nothing is applied to the cluster. Company
+        admins only.
+      operationId: kafka_cluster_storage_autoscale_update
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayloadsKafkaClusterStorageAutoscale'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaCluster'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Change a Managed Kafka cluster's storage autoscaling
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_storage_autoscale_update
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe-after-state-check
+        title: Change a Managed Kafka cluster's storage autoscaling
+        triggerDescription: Use when you need to change a Managed Kafka cluster's
+          storage autoscaling.
   /kafka-clusters/{uuid}/storage-graph:
     get:
       description: Retrieves persistent-volume storage utilization for a Strimzi Kafka
@@ -2212,6 +2837,8 @@ paths:
           description: Not Found
         "500":
           description: Internal Server Error
+        "502":
+          description: Bad Gateway
       summary: Get Kafka storage graph
       tags:
       - Kafka Clusters
@@ -2272,6 +2899,111 @@ paths:
         retrySemantics: safe
         title: Get Kafka cluster summary
         triggerDescription: Use when you need to get Kafka cluster summary.
+  /kafka-clusters/{uuid}/tiered-storage:
+    post:
+      description: Changes whether every topic of an active Managed Kafka cluster
+        is tiered, its days on disk and its disk cap per partition. New days on disk
+        or a new cap applies to the running brokers within minutes, without a restart.
+        It changes the brokers' defaults, so a topic with its own local.retention.ms
+        or local.retention.bytes keeps them. Turning tiering of every topic on or
+        off wins over each topic's own choice; the tiered storage sync carries it
+        out. Returns 409 while any change to the cluster is still being applied. Company
+        admins only.
+      operationId: kafka_cluster_tiered_storage_update
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterUpdateKafkaClusterTieredStorageRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaCluster'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Change a Managed Kafka cluster's tiered storage settings
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_tiered_storage_update
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe-after-state-check
+        title: Change a Managed Kafka cluster's tiered storage settings
+        triggerDescription: Use when you need to change a Managed Kafka cluster's
+          tiered storage settings.
+  /kafka-clusters/{uuid}/tiered-storage/sync:
+    post:
+      description: Queues the sync that makes each topic of a Managed Kafka cluster
+        match the tiered storage choice for it, which otherwise runs every 12 hours.
+        A sync already running is left to finish. Active clusters only. Company admins
+        only.
+      operationId: kafka_cluster_tiered_storage_sync
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Accepted
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Sync a Managed Kafka cluster's tiered storage now
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        bodilessSuccess: true
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_tiered_storage_sync
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe-after-state-check
+        title: Sync a Managed Kafka cluster's tiered storage now
+        triggerDescription: Use when you need to sync a Managed Kafka cluster's tiered
+          storage now.
   /kafka-clusters/{uuid}/topic-sizes:
     get:
       description: Retrieves cached, customer-safe partition sizes for every topic
@@ -2621,6 +3353,79 @@ paths:
         retrySemantics: safe
         title: Get latest Kafka topic message
         triggerDescription: Use when you need to get latest Kafka topic message.
+  /kafka-clusters/{uuid}/topics/{topic}/messages:
+    get:
+      description: Retrieves the newest messages across all partitions of a Managed
+        Kafka topic, newest first, including their contents. With after, only messages
+        past those offsets, and only the newest limit of them when more arrived. Results
+        are not cached. Only available when the company allows reading Kafka messages.
+      operationId: kafka_topic_messages
+      parameters:
+      - in: path
+        name: topic
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      - description: How many messages to return, 20 if left out.
+        in: query
+        name: limit
+        schema:
+          description: How many messages to return, 20 if left out.
+          maximum: 50
+          minimum: 1
+          type: integer
+      - description: Only messages past these offsets, as partition:offset pairs separated
+          by commas, e.g. 0:61448,7:61447. Partitions left out return their newest
+          messages.
+        in: query
+        name: after
+        schema:
+          description: Only messages past these offsets, as partition:offset pairs
+            separated by commas, e.g. 0:61448,7:61447. Partitions left out return
+            their newest messages.
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaTopicMessages'
+          description: OK
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        "504":
+          description: Gateway Timeout
+      summary: Get newest Kafka topic messages
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_topic_messages
+        outputSensitivity: none
+        readOnlyHint: true
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:read
+        retrySemantics: safe
+        title: Get newest Kafka topic messages
+        triggerDescription: Use when you need to get newest Kafka topic messages.
   /kafka-clusters/{uuid}/topics/{topic}/partitions:
     post:
       description: Increases a topic's partition count. Not allowed on Artie-managed
@@ -2933,6 +3738,54 @@ paths:
         retrySemantics: safe
         title: Get Kafka user credentials
         triggerDescription: Use when you need to get Kafka user credentials.
+  /kafka-clusters/estimate:
+    post:
+      description: Prices a cluster and its usage in whole dollars from the stored
+        AWS prices. Artie's fee is on compute only; tiered storage is billed uncompressed
+        at the S3 price.
+      operationId: kafka_cluster_estimate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterKafkaClusterEstimateRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouterKafkaClusterEstimate'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        "503":
+          description: Service Unavailable
+      summary: Estimate a Managed Kafka cluster's monthly cost
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_estimate
+        outputSensitivity: none
+        readOnlyHint: true
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:read
+        retrySemantics: safe
+        title: Estimate a Managed Kafka cluster's monthly cost
+        triggerDescription: Use when you need to estimate a Managed Kafka cluster's
+          monthly cost.
   /pipelines:
     get:
       description: Returns pipelines for the authenticated company, optionally filtered
@@ -3555,6 +4408,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+        "502":
+          description: Bad Gateway
       summary: Get pipeline usage
       tags:
       - Pipelines
@@ -6210,6 +7065,21 @@ components:
       - logEndOffset
       - lag
       type: object
+    PayloadsKafkaInstanceType:
+      enum:
+      - m8g.2xlarge
+      - m8g.4xlarge
+      - m8g.xlarge
+      - m8i.2xlarge
+      - m8i.4xlarge
+      - m8i.xlarge
+      - r8g.2xlarge
+      - r8g.large
+      - r8g.xlarge
+      - r8i.2xlarge
+      - r8i.large
+      - r8i.xlarge
+      type: string
     PayloadsKafkaMessage:
       properties:
         headers:
@@ -6448,6 +7318,21 @@ components:
       required:
       - replicationFactor
       - partitions
+      type: object
+    PayloadsKafkaTopicMessages:
+      properties:
+        latestOffsets:
+          additionalProperties:
+            format: int64
+            type: integer
+          type: object
+        messages:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaMessage'
+          type: array
+      required:
+      - messages
+      - latestOffsets
       type: object
     PayloadsKafkaTopicPartition:
       properties:
@@ -8962,6 +9847,67 @@ components:
       required:
       - username
       type: object
+    RouterCreateKafkaClusterRequest:
+      properties:
+        allowedCIDRs:
+          description: Client IP ranges allowed to reach the cluster. Empty allows
+            any IP; clients still need the password.
+          items:
+            type: string
+          type: array
+        brokers:
+          default: 3
+          maximum: 30
+          minimum: 3
+          type: integer
+        instanceType:
+          $ref: '#/components/schemas/PayloadsKafkaInstanceType'
+          default: r8g.large
+        localRetentionBytes:
+          description: 'Disk cap per partition: the most broker disk each partition
+            of a tiered topic keeps, in bytes, at least 1073741824 (1 GiB). Null is
+            no cap.'
+          type:
+          - "null"
+          - integer
+        localRetentionMS:
+          description: 'Days on disk: how long tiered topics keep data on broker disks,
+            in ms, from 86400000 (one day) to 1209600000 (14 days). Every topic that
+            doesn''t set log.local.retention.ms inherits it. Left out is 3 days.'
+          type:
+          - "null"
+          - integer
+        name:
+          description: The cluster's name, as customers see it. 3 to 100 characters.
+            The cluster's ID, which its address and Kubernetes objects use, is generated.
+          maxLength: 100
+          minLength: 3
+          type: string
+        region:
+          type: string
+        storageAutoscale:
+          $ref: '#/components/schemas/PayloadsKafkaClusterStorageAutoscale'
+          description: How Artie grows the brokers' disks before they fill. Left out
+            is on, growing at 65% to 55%, with no limit.
+        storageGiB:
+          description: 'Disk per broker in GiB: 20, 50 or 80, or any size from 100
+            to 1024 (1 TiB). Bigger sizes go through support.'
+          maximum: 1024
+          minimum: 20
+          type: integer
+        tieredStorage:
+          description: Whether Artie turns tiered storage on for every topic that
+            hasn't set it either way. The setup form starts it on.
+          type: boolean
+      required:
+      - name
+      - region
+      - brokers
+      - instanceType
+      - storageGiB
+      - allowedCIDRs
+      - tieredStorage
+      type: object
     RouterCreateKafkaTopicRequest:
       properties:
         configEntries:
@@ -9002,6 +9948,185 @@ components:
       required:
       - currentPartitionCount
       - newPartitionCount
+      type: object
+    RouterKafkaClusterAdminCredentialsResponse:
+      properties:
+        bootstrapServers:
+          type: string
+        password:
+          type: string
+        saslMechanism:
+          type: string
+        securityProtocol:
+          type: string
+        username:
+          type: string
+      required:
+      - username
+      - password
+      - bootstrapServers
+      - securityProtocol
+      - saslMechanism
+      type: object
+    RouterKafkaClusterAdminPasswordRotateResponse:
+      properties:
+        password:
+          description: The new admin password. Shown once, unless the response has
+            a warning.
+          type: string
+        warning:
+          type: string
+      type: object
+    RouterKafkaClusterEstimate:
+      properties:
+        egressRates:
+          description: The region's outbound transfer prices, not in the total.
+          items:
+            $ref: '#/components/schemas/RouterKafkaClusterEstimateEgressRate'
+          type: array
+        feeRate:
+          description: Artie's fee on compute, e.g. 0.25.
+          format: double
+          type: number
+        feeUSD:
+          type: integer
+        lineItems:
+          items:
+            $ref: '#/components/schemas/RouterKafkaClusterEstimateLineItem'
+          type: array
+        pricesAsOf:
+          description: When the prices were last fetched from AWS; null before the
+            first fetch.
+          format: date-time
+          type:
+          - "null"
+          - string
+        region:
+          type: string
+        totalUSD:
+          type: integer
+      required:
+      - region
+      - lineItems
+      - feeRate
+      - feeUSD
+      - totalUSD
+      - egressRates
+      type: object
+    RouterKafkaClusterEstimateEgress:
+      properties:
+        crossAZ:
+          format: double
+          minimum: 0
+          type: number
+        crossRegion:
+          additionalProperties:
+            format: double
+            type: number
+          description: GiB a month to each other region, by region code.
+          type:
+          - object
+          - "null"
+        internet:
+          description: Also traffic to other clouds.
+          format: double
+          minimum: 0
+          type: number
+        sameAZ:
+          description: Billed like cross-AZ traffic, since clients connect through
+            the cluster's public load balancer.
+          format: double
+          minimum: 0
+          type: number
+      type: object
+    RouterKafkaClusterEstimateEgressRate:
+      properties:
+        label:
+          type: string
+        maxUSDPerGB:
+          format: double
+          type: number
+        minUSDPerGB:
+          format: double
+          type: number
+      required:
+      - label
+      - minUSDPerGB
+      - maxUSDPerGB
+      type: object
+    RouterKafkaClusterEstimateLineItem:
+      properties:
+        category:
+          enum:
+          - instance
+          - block_storage
+          - object_storage
+          - data_transfer
+          - network
+          type: string
+        label:
+          type: string
+        quantity:
+          format: double
+          type: number
+        unit:
+          enum:
+          - hour
+          - gb_month
+          - gb
+          - iops_month
+          - mbps_month
+          - request_1k
+          type: string
+        unitUSD:
+          description: The first tier's price for a tiered one.
+          format: double
+          type: number
+        usd:
+          type: integer
+      required:
+      - category
+      - label
+      - quantity
+      - unit
+      - unitUSD
+      - usd
+      type: object
+    RouterKafkaClusterEstimateRequest:
+      properties:
+        brokers:
+          maximum: 30
+          minimum: 3
+          type: integer
+        instanceType:
+          $ref: '#/components/schemas/PayloadsKafkaInstanceType'
+        region:
+          description: Region code; defaults to the region Managed Kafka runs in.
+          type: string
+        storageGiBPerBroker:
+          type: integer
+        tieredStorageGiB:
+          description: Data in tiered storage, uncompressed. Billed on that size at
+            the S3 price.
+          format: double
+          minimum: 0
+          type: number
+        traffic:
+          $ref: '#/components/schemas/RouterKafkaClusterEstimateTraffic'
+      required:
+      - brokers
+      - instanceType
+      - storageGiBPerBroker
+      type: object
+    RouterKafkaClusterEstimateTraffic:
+      properties:
+        egressGiBPerMonth:
+          $ref: '#/components/schemas/RouterKafkaClusterEstimateEgress'
+        ingressGiBPerMonth:
+          description: From the internet.
+          format: double
+          minimum: 0
+          type: number
       type: object
     RouterKafkaUserCreateResponse:
       properties:
@@ -9360,6 +10485,16 @@ components:
       - data
       - err
       type: object
+    RouterRenameKafkaClusterRequest:
+      properties:
+        name:
+          description: The cluster's new name, as customers see it. 3 to 100 characters.
+          maxLength: 100
+          minLength: 3
+          type: string
+      required:
+      - name
+      type: object
     RouterSSHTunnelCreateRequest:
       properties:
         environmentUUID:
@@ -9473,6 +10608,78 @@ components:
           - string
         name:
           type: string
+      type: object
+    RouterUpdateKafkaClusterAllowedCIDRsRequest:
+      properties:
+        allowedCIDRs:
+          description: Client IPv4 ranges allowed to reach the cluster. Replaces the
+            current list. Empty allows any IP; clients still need the password.
+          items:
+            type: string
+          type: array
+      required:
+      - allowedCIDRs
+      type: object
+    RouterUpdateKafkaClusterBrokersRequest:
+      properties:
+        brokers:
+          description: New number of brokers. Brokers can only be added for now. Existing
+            partitions stay on the brokers they're on; new topics use every broker.
+          maximum: 30
+          minimum: 3
+          type: integer
+      required:
+      - brokers
+      type: object
+    RouterUpdateKafkaClusterInstanceTypeRequest:
+      properties:
+        instanceType:
+          $ref: '#/components/schemas/PayloadsKafkaInstanceType'
+          description: EC2 instance type for every broker. The brokers restart one
+            at a time onto the new machines.
+      required:
+      - instanceType
+      type: object
+    RouterUpdateKafkaClusterStorageRequest:
+      properties:
+        storageGiB:
+          description: 'New disk per broker in GiB: 50 or 80, or any size from 100
+            to 1024 (1 TiB). Must be larger than the current size; bigger sizes go
+            through support.'
+          maximum: 1024
+          minimum: 50
+          type: integer
+      required:
+      - storageGiB
+      type: object
+    RouterUpdateKafkaClusterTieredStorageRequest:
+      properties:
+        localRetentionBytes:
+          description: 'Disk cap per partition: the most broker disk each partition
+            of a tiered topic keeps, in bytes, at least 1073741824 (1 GiB). Null is
+            no cap.'
+          minimum: 1.073741824e+09
+          type:
+          - "null"
+          - integer
+        localRetentionMS:
+          description: 'Days on disk: how long tiered topics keep data on broker disks,
+            in ms, from 86400000 (one day) to 1209600000 (14 days).'
+          format: int64
+          maximum: 1.2096e+09
+          minimum: 8.64e+07
+          type: integer
+        tierAllTopics:
+          description: 'Whether every topic is tiered. It wins over each topic''s
+            own choice: turning it on turns tiered storage on for every topic, and
+            turning it off pauses every topic tiered through Artie (one tiered outside
+            Artie, e.g. with the CLI, is left alone). A paused topic keeps new messages
+            on broker disks while what''s already in remote storage stays readable
+            until retention expires it.'
+          type: boolean
+      required:
+      - tierAllTopics
+      - localRetentionMS
       type: object
     RouterUpdateKafkaTopicRetentionRequest:
       properties:
