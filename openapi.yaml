@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.193
+  version: v1.0.194
 servers:
 - url: https://api.artie.com
 paths:
@@ -338,7 +338,7 @@ paths:
           description: Forbidden
         "500":
           description: Internal Server Error
-      summary: Trigger automatic schema changes
+      summary: Trigger automatic schema changes for all pipelines
       tags:
       - Company
       x-artie-mcp:
@@ -4126,7 +4126,7 @@ paths:
           description: Conflict
         "500":
           description: Internal Server Error
-      summary: Trigger automatic schema changes
+      summary: Trigger automatic schema changes for a pipeline
       tags:
       - Pipelines
       x-artie-mcp:
@@ -10421,10 +10421,12 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/EnumsPipelineStatus'
-          description: running resumes the pipeline and its source reader. transfer
-            paused stops writing to the destination while the source reader keeps
-            reading. paused stops writing and pauses the source reader, unless the
-            source reader is shared and another pipeline still reads from it.
+          description: running (Active in the dashboard) resumes source reading and
+            delivery. transfer paused (Delivery paused) stops writing to the destination
+            while the source reader keeps reading. Changes are kept for the Kafka
+            topic's retention, 14 days by default. paused (Paused) pauses source reading
+            and delivery, unless the source reader is shared and another pipeline
+            still reads from it.
       required:
       - status
       type: object
