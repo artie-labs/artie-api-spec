@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.194
+  version: v1.0.195
 servers:
 - url: https://api.artie.com
 paths:
@@ -2495,6 +2495,47 @@ paths:
         title: Change a Managed Kafka cluster's instance type
         triggerDescription: Use when you need to change a Managed Kafka cluster's
           instance type.
+  /kafka-clusters/{uuid}/managed-users:
+    get:
+      description: Lists the extra Kafka logins on a Managed Kafka cluster, with their
+        ACLs. Passwords are never included.
+      operationId: kafka_managed_user_list
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBodyManagedKafkaUser'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: List a Managed Kafka cluster's users
+      tags:
+      - Kafka clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_managed_user_list
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - kafka_users:read
+        retrySemantics: safe
+        title: List a Managed Kafka cluster's users
+        triggerDescription: Use when you need to list a Managed Kafka cluster's users.
   /kafka-clusters/{uuid}/metrics-graph:
     get:
       description: Retrieves broker, topic, partition, and per-broker CPU user/system
@@ -5607,6 +5648,31 @@ components:
       - smb_share
       - snowflake
       type: string
+    EnumsKafkaACLOperation:
+      enum:
+      - Read
+      - Write
+      - Create
+      - Delete
+      - Alter
+      - Describe
+      - DescribeConfigs
+      - AlterConfigs
+      - IdempotentWrite
+      - All
+      type: string
+    EnumsKafkaACLPatternType:
+      enum:
+      - literal
+      - prefix
+      type: string
+    EnumsKafkaACLResourceType:
+      enum:
+      - topic
+      - group
+      - transactionalId
+      - cluster
+      type: string
     EnumsKafkaDeployStage:
       enum:
       - applying_custom_resources
@@ -5760,6 +5826,15 @@ components:
         items:
           items:
             $ref: '#/components/schemas/PayloadsLightPipeline'
+          type: array
+      required:
+      - items
+      type: object
+    ListResponseBodyManagedKafkaUser:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PayloadsManagedKafkaUser'
           type: array
       required:
       - items
@@ -7553,6 +7628,25 @@ components:
       - createdAt
       - consumerGroupPrefix
       type: object
+    PayloadsKafkaUserACL:
+      properties:
+        name:
+          description: Empty for the cluster, which is one resource.
+          type: string
+        operation:
+          $ref: '#/components/schemas/EnumsKafkaACLOperation'
+        patternType:
+          $ref: '#/components/schemas/EnumsKafkaACLPatternType'
+          description: literal matches name exactly, and "*" is every name; prefix
+            matches names starting with it.
+        resourceType:
+          $ref: '#/components/schemas/EnumsKafkaACLResourceType'
+      required:
+      - resourceType
+      - patternType
+      - name
+      - operation
+      type: object
     PayloadsLightConnector:
       properties:
         companyUUID:
@@ -7699,6 +7793,26 @@ components:
       - isDeploying
       - sourceType
       - hasUndeployedChanges
+      type: object
+    PayloadsManagedKafkaUser:
+      properties:
+        acls:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaUserACL'
+          type: array
+        createdAt:
+          format: date-time
+          type: string
+        username:
+          type: string
+        uuid:
+          format: uuid
+          type: string
+      required:
+      - uuid
+      - username
+      - acls
+      - createdAt
       type: object
     PayloadsMergePredicates:
       properties:
