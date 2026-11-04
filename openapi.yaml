@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.192
+  version: v1.0.193
 servers:
 - url: https://api.artie.com
 paths:
@@ -101,7 +101,7 @@ paths:
           description: Internal Server Error
       summary: List column hashing salts
       tags:
-      - Column Hashing Salts
+      - Column hashing salts
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -138,7 +138,7 @@ paths:
           description: Internal Server Error
       summary: Create a column hashing salt
       tags:
-      - Column Hashing Salts
+      - Column hashing salts
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Accepts and returns a column-hashing salt.
@@ -175,7 +175,7 @@ paths:
           description: Internal Server Error
       summary: Delete a column hashing salt
       tags:
-      - Column Hashing Salts
+      - Column hashing salts
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
@@ -215,7 +215,7 @@ paths:
           description: Internal Server Error
       summary: Get a column hashing salt
       tags:
-      - Column Hashing Salts
+      - Column hashing salts
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Returns the decrypted column-hashing salt.
@@ -260,7 +260,7 @@ paths:
           description: Internal Server Error
       summary: Update a column hashing salt
       tags:
-      - Column Hashing Salts
+      - Column hashing salts
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -309,7 +309,7 @@ paths:
           description: Internal Server Error
       summary: Preview a column hashing salt
       tags:
-      - Column Hashing Salts
+      - Column hashing salts
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -1373,7 +1373,7 @@ paths:
           description: Internal Server Error
       summary: Search the data catalog
       tags:
-      - Data Catalog
+      - Data catalog
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -1404,7 +1404,7 @@ paths:
           description: Internal Server Error
       summary: List encryption keys
       tags:
-      - Encryption Keys
+      - Encryption keys
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -1441,7 +1441,7 @@ paths:
           description: Internal Server Error
       summary: Create an encryption key
       tags:
-      - Encryption Keys
+      - Encryption keys
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Returns a newly generated encryption key.
@@ -1478,7 +1478,7 @@ paths:
           description: Internal Server Error
       summary: Delete an encryption key
       tags:
-      - Encryption Keys
+      - Encryption keys
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
@@ -1518,7 +1518,7 @@ paths:
           description: Internal Server Error
       summary: Get an encryption key
       tags:
-      - Encryption Keys
+      - Encryption keys
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Returns the decrypted encryption key.
@@ -1563,7 +1563,7 @@ paths:
           description: Internal Server Error
       summary: Update an encryption key
       tags:
-      - Encryption Keys
+      - Encryption keys
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -1603,7 +1603,7 @@ paths:
           description: Internal Server Error
       summary: Create an ingestion API key
       tags:
-      - Ingestion API Keys
+      - Ingestion API keys
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Returns an ingestion API key secret that is shown only once.
@@ -1638,7 +1638,7 @@ paths:
           description: Internal Server Error
       summary: Delete an ingestion API key
       tags:
-      - Ingestion API Keys
+      - Ingestion API keys
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
@@ -1682,7 +1682,7 @@ paths:
           description: Internal Server Error
       summary: Update an ingestion API key
       tags:
-      - Ingestion API Keys
+      - Ingestion API keys
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -1720,7 +1720,7 @@ paths:
           description: Internal Server Error
       summary: List Kafka clusters
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -1769,7 +1769,7 @@ paths:
           description: Internal Server Error
       summary: Create a Managed Kafka cluster
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -1812,7 +1812,7 @@ paths:
           description: Internal Server Error
       summary: Delete a Managed Kafka cluster
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
@@ -1854,7 +1854,7 @@ paths:
           description: Internal Server Error
       summary: Get a Kafka cluster
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -1913,7 +1913,7 @@ paths:
           description: Service Unavailable
       summary: Update a Managed Kafka cluster
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -1961,7 +1961,7 @@ paths:
           description: Internal Server Error
       summary: Get a Managed Kafka cluster's admin credentials
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -2012,7 +2012,7 @@ paths:
           description: Internal Server Error
       summary: Generate a new Managed Kafka admin password
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -2068,7 +2068,7 @@ paths:
           description: Internal Server Error
       summary: Create an admin Kafka user
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -2119,7 +2119,7 @@ paths:
           description: Internal Server Error
       summary: Delete an admin Kafka user
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
@@ -2171,7 +2171,7 @@ paths:
           description: Internal Server Error
       summary: Get admin Kafka user credentials
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -2221,7 +2221,7 @@ paths:
           description: Internal Server Error
       summary: Change a Managed Kafka cluster's allowlist
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -2279,7 +2279,7 @@ paths:
           description: Service Unavailable
       summary: Add brokers to a Managed Kafka cluster
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -2328,7 +2328,7 @@ paths:
           description: Internal Server Error
       summary: Get every consumer group's detail
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -2373,7 +2373,7 @@ paths:
           description: Internal Server Error
       summary: List consumer groups
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -2422,7 +2422,7 @@ paths:
           description: Internal Server Error
       summary: Get Kafka consumer group detail
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -2476,7 +2476,7 @@ paths:
           description: Service Unavailable
       summary: Change a Managed Kafka cluster's instance type
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -2533,7 +2533,7 @@ paths:
           description: Bad Gateway
       summary: Get Kafka metrics graphs
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -2592,7 +2592,7 @@ paths:
           description: Bad Gateway
       summary: Get Managed Kafka cluster rates
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -2641,7 +2641,7 @@ paths:
           description: Internal Server Error
       summary: Rename a Kafka cluster
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -2687,7 +2687,7 @@ paths:
           description: Internal Server Error
       summary: Restore a deleted Managed Kafka cluster
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -2733,7 +2733,7 @@ paths:
           description: Internal Server Error
       summary: Retry deploying a Managed Kafka cluster
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -2793,7 +2793,7 @@ paths:
           description: Service Unavailable
       summary: Grow a Managed Kafka cluster's broker storage
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -2846,7 +2846,7 @@ paths:
           description: Internal Server Error
       summary: Change a Managed Kafka cluster's storage autoscaling
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -2903,7 +2903,7 @@ paths:
           description: Bad Gateway
       summary: Get Kafka storage graph
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -2946,7 +2946,7 @@ paths:
           description: Internal Server Error
       summary: Get Kafka cluster summary
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -3001,7 +3001,7 @@ paths:
           description: Internal Server Error
       summary: Change a Managed Kafka cluster's tiered storage settings
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -3046,7 +3046,7 @@ paths:
           description: Internal Server Error
       summary: Sync a Managed Kafka cluster's tiered storage now
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: false
@@ -3094,7 +3094,7 @@ paths:
           description: Internal Server Error
       summary: Get Kafka topic partition sizes
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -3139,7 +3139,7 @@ paths:
           description: Internal Server Error
       summary: List Kafka topics
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -3192,7 +3192,7 @@ paths:
           description: Bad Gateway
       summary: Create a Kafka topic
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -3241,7 +3241,7 @@ paths:
           description: Bad Gateway
       summary: Delete a Kafka topic
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
@@ -3290,7 +3290,7 @@ paths:
           description: Internal Server Error
       summary: Get Kafka topic detail
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -3350,7 +3350,7 @@ paths:
           description: Bad Gateway
       summary: Change Kafka topic settings
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: true
         exposure: exposed
@@ -3399,7 +3399,7 @@ paths:
           description: Internal Server Error
       summary: Get latest Kafka topic message
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: false
@@ -3470,7 +3470,7 @@ paths:
           description: Gateway Timeout
       summary: Get newest Kafka topic messages
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -3529,7 +3529,7 @@ paths:
           description: Bad Gateway
       summary: Increase Kafka topic partitions
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: false
@@ -3586,7 +3586,7 @@ paths:
           description: Bad Gateway
       summary: Change Kafka topic retention
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
@@ -3626,7 +3626,7 @@ paths:
           description: Internal Server Error
       summary: List Kafka users
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -3679,7 +3679,7 @@ paths:
           description: Internal Server Error
       summary: Create a Kafka user
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -3731,7 +3731,7 @@ paths:
           description: Internal Server Error
       summary: Delete a Kafka user
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
@@ -3775,7 +3775,7 @@ paths:
           description: Internal Server Error
       summary: Get a Kafka user
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -3828,7 +3828,7 @@ paths:
           description: Internal Server Error
       summary: Get Kafka user credentials
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -3872,7 +3872,7 @@ paths:
           description: Service Unavailable
       summary: Estimate a Managed Kafka cluster's monthly cost
       tags:
-      - Kafka Clusters
+      - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Published for the Terraform provider; not reviewed as an
@@ -4701,7 +4701,7 @@ paths:
           description: Internal Server Error
       summary: Create a PrivateLink connection
       tags:
-      - PrivateLink Connections
+      - PrivateLink connections
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -4738,7 +4738,7 @@ paths:
           description: Internal Server Error
       summary: Delete a PrivateLink connection
       tags:
-      - PrivateLink Connections
+      - PrivateLink connections
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
@@ -4779,7 +4779,7 @@ paths:
           description: Internal Server Error
       summary: Get a PrivateLink connection
       tags:
-      - PrivateLink Connections
+      - PrivateLink connections
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -4827,7 +4827,7 @@ paths:
           description: Internal Server Error
       summary: Update a PrivateLink connection
       tags:
-      - PrivateLink Connections
+      - PrivateLink connections
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -4861,7 +4861,7 @@ paths:
           description: Internal Server Error
       summary: List source readers
       tags:
-      - Source Readers
+      - Source readers
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Returns source-reader configuration that can contain credentials.
@@ -4901,7 +4901,7 @@ paths:
           description: Internal Server Error
       summary: Create a source reader
       tags:
-      - Source Readers
+      - Source readers
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Accepts and returns source-reader configuration that can
@@ -4940,7 +4940,7 @@ paths:
           description: Internal Server Error
       summary: Delete a source reader
       tags:
-      - Source Readers
+      - Source readers
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
@@ -4981,7 +4981,7 @@ paths:
           description: Internal Server Error
       summary: Get a source reader
       tags:
-      - Source Readers
+      - Source readers
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -5033,7 +5033,7 @@ paths:
           description: Internal Server Error
       summary: Update a source reader
       tags:
-      - Source Readers
+      - Source readers
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -5073,7 +5073,7 @@ paths:
           description: Internal Server Error
       summary: Deploy a source reader
       tags:
-      - Source Readers
+      - Source readers
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: false
@@ -5123,7 +5123,7 @@ paths:
           description: Internal Server Error
       summary: Update source reader status
       tags:
-      - Source Readers
+      - Source readers
       x-artie-mcp:
         destructiveHint: false
         exclusionReason: Returns source-reader configuration that can contain credentials.
@@ -5164,7 +5164,7 @@ paths:
           description: Internal Server Error
       summary: Validate an unsaved source reader
       tags:
-      - Source Readers
+      - Source readers
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: false
@@ -5209,7 +5209,7 @@ paths:
           description: Internal Server Error
       summary: Create an SSH tunnel
       tags:
-      - SSH Tunnels
+      - SSH tunnels
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -5245,7 +5245,7 @@ paths:
           description: Internal Server Error
       summary: Delete an SSH tunnel
       tags:
-      - SSH Tunnels
+      - SSH tunnels
       x-artie-mcp:
         bodilessSuccess: true
         destructiveHint: true
@@ -5284,7 +5284,7 @@ paths:
           description: Internal Server Error
       summary: Get an SSH tunnel
       tags:
-      - SSH Tunnels
+      - SSH tunnels
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
@@ -5329,7 +5329,7 @@ paths:
           description: Internal Server Error
       summary: Update an SSH tunnel
       tags:
-      - SSH Tunnels
+      - SSH tunnels
       x-artie-mcp:
         destructiveHint: false
         exposure: exposed
