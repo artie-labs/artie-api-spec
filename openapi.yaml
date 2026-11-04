@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.190
+  version: v1.0.191
 servers:
 - url: https://api.artie.com
 paths:
@@ -3747,6 +3747,49 @@ paths:
         retrySemantics: safe
         title: Delete a Kafka user
         triggerDescription: Use when you need to delete a Kafka user.
+    get:
+      description: Retrieves a Kafka user. Its password is never included; get it
+        from the credentials endpoint. Admin-profile users are not found here.
+      operationId: kafka_user_detail
+      parameters:
+      - in: path
+        name: userUUID
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaUser'
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get a Kafka user
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_user_detail
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - kafka_users:read
+        retrySemantics: safe
+        title: Get a Kafka user
+        triggerDescription: Use when you need to get a Kafka user.
   /kafka-clusters/{uuid}/users/{userUUID}/credentials:
     get:
       description: Returns the Kafka user's password, which lets the caller act as
