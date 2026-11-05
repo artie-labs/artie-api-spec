@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.194
+  version: v1.0.198
 servers:
 - url: https://api.artie.com
 paths:
@@ -2495,6 +2495,248 @@ paths:
         title: Change a Managed Kafka cluster's instance type
         triggerDescription: Use when you need to change a Managed Kafka cluster's
           instance type.
+  /kafka-clusters/{uuid}/managed-users:
+    get:
+      description: Lists the extra Kafka logins on a Managed Kafka cluster, with their
+        ACLs. Passwords are never included.
+      operationId: kafka_managed_user_list
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBodyManagedKafkaUser'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: List a Managed Kafka cluster's users
+      tags:
+      - Kafka clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_managed_user_list
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - kafka_users:read
+        retrySemantics: safe
+        title: List a Managed Kafka cluster's users
+        triggerDescription: Use when you need to list a Managed Kafka cluster's users.
+    post:
+      description: Creates an extra Kafka login with the chosen ACLs and returns its
+        password once Strimzi makes it live, normally within seconds. Company admins
+        only.
+      operationId: kafka_managed_user_create
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterManagedKafkaUserRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouterManagedKafkaUserWithPasswordResponse'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Create a Managed Kafka cluster's user
+      tags:
+      - Kafka clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_managed_user_create
+        outputSensitivity: restricted-credentials
+        readOnlyHint: false
+        requiredScopes:
+        - kafka_admin_users:write
+        retrySemantics: safe-after-state-check
+        title: Create a Managed Kafka cluster's user
+        triggerDescription: Use when you need to create a Managed Kafka cluster's
+          user.
+  /kafka-clusters/{uuid}/managed-users/{userUUID}:
+    delete:
+      description: Deletes the user. Kafka refuses its password within seconds. Safe
+        to retry. Company admins only.
+      operationId: kafka_managed_user_delete
+      parameters:
+      - in: path
+        name: userUUID
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Delete a Managed Kafka cluster's user
+      tags:
+      - Kafka clusters
+      x-artie-mcp:
+        bodilessSuccess: true
+        destructiveHint: true
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_managed_user_delete
+        outputSensitivity: none
+        readOnlyHint: false
+        requiredScopes:
+        - kafka_admin_users:delete
+        retrySemantics: safe
+        title: Delete a Managed Kafka cluster's user
+        triggerDescription: Use when you need to delete a Managed Kafka cluster's
+          user.
+    patch:
+      description: Replaces the user's ACLs. Its password stays the same, so clients
+        using it keep working with the new ACLs. Returns 409 while the user is being
+        deleted. Company admins only.
+      operationId: kafka_managed_user_update
+      parameters:
+      - in: path
+        name: userUUID
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterManagedKafkaUserACLsRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsManagedKafkaUser'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Change a Managed Kafka cluster's user's ACLs
+      tags:
+      - Kafka clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_managed_user_update
+        outputSensitivity: none
+        readOnlyHint: false
+        requiredScopes:
+        - kafka_admin_users:write
+        retrySemantics: safe-after-state-check
+        title: Change a Managed Kafka cluster's user's ACLs
+        triggerDescription: Use when you need to change a Managed Kafka cluster's
+          user's ACLs.
+  /kafka-clusters/{uuid}/managed-users/{userUUID}/credentials:
+    get:
+      description: Returns the user's password, which lets the caller act as that
+        user. Returns 409 while Strimzi hasn't made it live yet or the user is being
+        deleted. Company admins only.
+      operationId: kafka_managed_user_credentials
+      parameters:
+      - in: path
+        name: userUUID
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouterManagedKafkaUserWithPasswordResponse'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Get a Managed Kafka cluster's user's password
+      tags:
+      - Kafka clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_managed_user_credentials
+        outputSensitivity: restricted-credentials
+        readOnlyHint: true
+        requiredScopes:
+        - kafka_admin_users:read
+        retrySemantics: safe
+        title: Get a Managed Kafka cluster's user's password
+        triggerDescription: Use when you need to get a Managed Kafka cluster's user's
+          password.
   /kafka-clusters/{uuid}/metrics-graph:
     get:
       description: Retrieves broker, topic, partition, and per-broker CPU user/system
@@ -3549,10 +3791,10 @@ paths:
     post:
       description: 'Sets a topic''s `retention.ms`. Potentially destructive: Kafka
         deletes messages older than the new retention, and on Artie-managed topics
-        that can drop change events before Artie pipelines read them. A topic with
-        tiered storage on or paused keeps at most 14 days, and Kafka-internal (`__`)
-        topics can''t change. On a Managed Kafka cluster Cruise Control''s (`strimzi.cruisecontrol.*`)
-        can''t either, and the cluster must be active (409 otherwise).'
+        that can drop change events before Artie pipelines read them. Kafka-internal
+        (`__`) topics can''t change. On a Managed Kafka cluster Cruise Control''s
+        (`strimzi.cruisecontrol.*`) can''t either, and the cluster must be active
+        (409 otherwise).'
       operationId: kafka_topic_retention_update
       parameters:
       - in: path
@@ -5607,6 +5849,31 @@ components:
       - smb_share
       - snowflake
       type: string
+    EnumsKafkaACLOperation:
+      enum:
+      - Read
+      - Write
+      - Create
+      - Delete
+      - Alter
+      - Describe
+      - DescribeConfigs
+      - AlterConfigs
+      - IdempotentWrite
+      - All
+      type: string
+    EnumsKafkaACLPatternType:
+      enum:
+      - literal
+      - prefix
+      type: string
+    EnumsKafkaACLResourceType:
+      enum:
+      - topic
+      - group
+      - transactionalId
+      - cluster
+      type: string
     EnumsKafkaDeployStage:
       enum:
       - applying_custom_resources
@@ -5760,6 +6027,15 @@ components:
         items:
           items:
             $ref: '#/components/schemas/PayloadsLightPipeline'
+          type: array
+      required:
+      - items
+      type: object
+    ListResponseBodyManagedKafkaUser:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PayloadsManagedKafkaUser'
           type: array
       required:
       - items
@@ -7396,9 +7672,7 @@ components:
       properties:
         managed:
           $ref: '#/components/schemas/PayloadsKafkaTopicDetailManaged'
-          description: 'The topic''s replication and per-partition leader and offsets.
-            Only set when the cluster isManaged: on shared clusters broker details
-            are Artie infra.'
+          description: The topic's replication and per-partition leader and offsets.
         partitionSizes:
           items:
             $ref: '#/components/schemas/PayloadsKafkaTopicPartitionSize'
@@ -7513,7 +7787,7 @@ components:
         canTier:
           description: Whether tiered storage can be on for this topic. Kafka refuses
             it on compacted topics, and Artie keeps it off Kafka's and Cruise Control's
-            own topics and topics keeping more than 14 days.
+            own topics and topics whose retention can't be read.
           type: boolean
         state:
           $ref: '#/components/schemas/EnumsKafkaTopicTieredStorageState'
@@ -7552,6 +7826,25 @@ components:
       - status
       - createdAt
       - consumerGroupPrefix
+      type: object
+    PayloadsKafkaUserACL:
+      properties:
+        name:
+          description: Empty for the cluster, which is one resource.
+          type: string
+        operation:
+          $ref: '#/components/schemas/EnumsKafkaACLOperation'
+        patternType:
+          $ref: '#/components/schemas/EnumsKafkaACLPatternType'
+          description: literal matches name exactly, and "*" is every name; prefix
+            matches names starting with it.
+        resourceType:
+          $ref: '#/components/schemas/EnumsKafkaACLResourceType'
+      required:
+      - resourceType
+      - patternType
+      - name
+      - operation
       type: object
     PayloadsLightConnector:
       properties:
@@ -7699,6 +7992,26 @@ components:
       - isDeploying
       - sourceType
       - hasUndeployedChanges
+      type: object
+    PayloadsManagedKafkaUser:
+      properties:
+        acls:
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaUserACL'
+          type: array
+        createdAt:
+          format: date-time
+          type: string
+        username:
+          type: string
+        uuid:
+          format: uuid
+          type: string
+      required:
+      - uuid
+      - username
+      - acls
+      - createdAt
       type: object
     PayloadsMergePredicates:
       properties:
@@ -10275,6 +10588,52 @@ components:
       required:
       - kafkaUser
       type: object
+    RouterManagedKafkaUserACLsRequest:
+      properties:
+        acls:
+          description: What the user can do. Kafka refuses it everything else.
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaUserACL'
+          maxItems: 50
+          minItems: 1
+          type:
+          - array
+          - "null"
+      required:
+      - acls
+      type: object
+    RouterManagedKafkaUserRequest:
+      properties:
+        acls:
+          description: What the user can do. Kafka refuses it everything else.
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaUserACL'
+          maxItems: 50
+          minItems: 1
+          type:
+          - array
+          - "null"
+        username:
+          description: Lowercase letters, digits, '.' and '-', at most 64 characters.
+            admin and artie are the built-in logins.
+          type: string
+      required:
+      - username
+      - acls
+      type: object
+    RouterManagedKafkaUserWithPasswordResponse:
+      properties:
+        password:
+          description: Left out while Strimzi hasn't made it live yet; get it from
+            the credentials endpoint.
+          type: string
+        user:
+          $ref: '#/components/schemas/PayloadsManagedKafkaUser'
+        warning:
+          type: string
+      required:
+      - user
+      type: object
     RouterPipelineBackfillRequest:
       properties:
         backfillBatchSize:
@@ -10870,9 +11229,8 @@ components:
           - "null"
           - integer
         retentionMS:
-          description: 'New retention.ms: at least 86400000 (one day); -1 (keep forever)
-            isn''t supported. At most 1209600000 (14 days) while tiered storage is
-            on or paused.'
+          description: 'New retention.ms: at least 86400000 (one day); or -1 to keep
+            messages forever.'
           type:
           - "null"
           - integer
