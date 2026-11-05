@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.200
+  version: v1.0.203
 servers:
 - url: https://api.artie.com
 paths:
@@ -1789,9 +1789,10 @@ paths:
         triggerDescription: Use when you need to create a Managed Kafka cluster.
   /kafka-clusters/{uuid}:
     delete:
-      description: Deletes an active or failed Managed Kafka cluster, with its data.
-        It leaves the list at once and is removed from AWS in the background. Returns
-        409 while the cluster is deploying. Company admins only.
+      description: Deletes an active or failed Managed Kafka cluster. Its brokers
+        stop now and its data is kept 7 days, so it can be restored; permanent-delete
+        deletes it now. Returns 409 while the cluster is deploying. Company admins
+        only.
       operationId: kafka_cluster_delete
       parameters:
       - in: path
@@ -2834,6 +2835,52 @@ paths:
         retrySemantics: safe
         title: Get Kafka metrics graphs
         triggerDescription: Use when you need to get Kafka metrics graphs.
+  /kafka-clusters/{uuid}/permanent-delete:
+    post:
+      description: Deletes a Managed Kafka cluster's messages, disks and tiered storage
+        now, with no 7 days to restore it. A running cluster is stopped first; a deleted
+        one's data goes at once. Returns 409 while the cluster is deploying or still
+        shutting down. Company admins only.
+      operationId: kafka_cluster_permanent_delete
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Permanently delete a Managed Kafka cluster
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        bodilessSuccess: true
+        destructiveHint: true
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_permanent_delete
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:delete
+        retrySemantics: safe
+        title: Permanently delete a Managed Kafka cluster
+        triggerDescription: Use when you need to permanently delete a Managed Kafka
+          cluster.
   /kafka-clusters/{uuid}/rates:
     get:
       description: Retrieves a Managed Kafka cluster's messages in and bytes out per
@@ -3037,6 +3084,51 @@ paths:
         retrySemantics: safe-after-state-check
         title: Retry deploying a Managed Kafka cluster
         triggerDescription: Use when you need to retry deploying a Managed Kafka cluster.
+  /kafka-clusters/{uuid}/settings:
+    get:
+      description: Retrieves a BYOC Strimzi cluster's Kafka version, broker count,
+        and disk size and storage class per broker, read from its Kafka and KafkaNodePool
+        resources. Cached for 5 minutes unless forceRefresh is true. Managed Kafka
+        and MSK clusters get supported false.
+      operationId: kafka_cluster_settings
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: forceRefresh
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsBYOCKafkaClusterSettings'
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get a BYOC Kafka cluster's settings
+      tags:
+      - Kafka clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_settings
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - kafka:read
+        retrySemantics: safe
+        title: Get a BYOC Kafka cluster's settings
+        triggerDescription: Use when you need to get a BYOC Kafka cluster's settings.
   /kafka-clusters/{uuid}/storage:
     put:
       description: Grows the disk of every broker in an active Managed Kafka cluster
@@ -6497,6 +6589,34 @@ components:
       - ms
       - bytes
       type: string
+    PayloadsBYOCKafkaClusterSettings:
+      properties:
+        brokers:
+          description: 'How many brokers the cluster runs: the replicas of its node
+            pools with the broker role, added up.'
+          type: integer
+        kafkaVersion:
+          description: The Kafka version the Kafka resource asks for, such as 4.2.0,
+            else the one Strimzi reports running. Left out when neither is set.
+          type: string
+        storageClass:
+          description: The Kubernetes storage class of the brokers' disks. Left out
+            when the disks name none and the Kubernetes cluster's default class is
+            used.
+          type: string
+        storageGiB:
+          description: Disk per broker in GiB, all its volumes added up. Left out
+            when the brokers have no persistent disks.
+          type: integer
+        supported:
+          description: Whether these settings can be read for the cluster. Only BYOC
+            Strimzi clusters linked to their Kubernetes cluster have them; Managed
+            Kafka clusters show theirs in the cluster's managed field, and MSK clusters
+            have none.
+          type: boolean
+      required:
+      - supported
+      type: object
     PayloadsBackfillDefaultsPayload:
       properties:
         chunkSize:
