@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.198
+  version: v1.0.199
 servers:
 - url: https://api.artie.com
 paths:
@@ -6958,6 +6958,8 @@ components:
           items:
             $ref: '#/components/schemas/PayloadsBackfillStageEvent'
           type: array
+        icebergNativeEngine:
+          type: boolean
         isDeploying:
           type: boolean
         lastDeployError:
@@ -8819,6 +8821,11 @@ components:
         externalStageS3Prefix:
           type: string
         folderName:
+          type: string
+        icebergFormatVersion:
+          enum:
+          - v2
+          - v3
           type: string
         schema:
           type: string
