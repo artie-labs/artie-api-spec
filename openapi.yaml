@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.200
+  version: v1.0.201
 servers:
 - url: https://api.artie.com
 paths:
@@ -3037,6 +3037,51 @@ paths:
         retrySemantics: safe-after-state-check
         title: Retry deploying a Managed Kafka cluster
         triggerDescription: Use when you need to retry deploying a Managed Kafka cluster.
+  /kafka-clusters/{uuid}/settings:
+    get:
+      description: Retrieves a BYOC Strimzi cluster's Kafka version, broker count,
+        and disk size and storage class per broker, read from its Kafka and KafkaNodePool
+        resources. Cached for 5 minutes unless forceRefresh is true. Managed Kafka
+        and MSK clusters get supported false.
+      operationId: kafka_cluster_settings
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: forceRefresh
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsBYOCKafkaClusterSettings'
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get a BYOC Kafka cluster's settings
+      tags:
+      - Kafka clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_settings
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - kafka:read
+        retrySemantics: safe
+        title: Get a BYOC Kafka cluster's settings
+        triggerDescription: Use when you need to get a BYOC Kafka cluster's settings.
   /kafka-clusters/{uuid}/storage:
     put:
       description: Grows the disk of every broker in an active Managed Kafka cluster
@@ -6497,6 +6542,34 @@ components:
       - ms
       - bytes
       type: string
+    PayloadsBYOCKafkaClusterSettings:
+      properties:
+        brokers:
+          description: 'How many brokers the cluster runs: the replicas of its node
+            pools with the broker role, added up.'
+          type: integer
+        kafkaVersion:
+          description: The Kafka version the Kafka resource asks for, such as 4.2.0,
+            else the one Strimzi reports running. Left out when neither is set.
+          type: string
+        storageClass:
+          description: The Kubernetes storage class of the brokers' disks. Left out
+            when the disks name none and the Kubernetes cluster's default class is
+            used.
+          type: string
+        storageGiB:
+          description: Disk per broker in GiB, all its volumes added up. Left out
+            when the brokers have no persistent disks.
+          type: integer
+        supported:
+          description: Whether these settings can be read for the cluster. Only BYOC
+            Strimzi clusters linked to their Kubernetes cluster have them; Managed
+            Kafka clusters show theirs in the cluster's managed field, and MSK clusters
+            have none.
+          type: boolean
+      required:
+      - supported
+      type: object
     PayloadsBackfillDefaultsPayload:
       properties:
         chunkSize:
