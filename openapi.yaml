@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.200
+  version: v1.0.205
 servers:
 - url: https://api.artie.com
 paths:
@@ -1789,9 +1789,10 @@ paths:
         triggerDescription: Use when you need to create a Managed Kafka cluster.
   /kafka-clusters/{uuid}:
     delete:
-      description: Deletes an active or failed Managed Kafka cluster, with its data.
-        It leaves the list at once and is removed from AWS in the background. Returns
-        409 while the cluster is deploying. Company admins only.
+      description: Deletes an active or failed Managed Kafka cluster. Its brokers
+        stop now and its data is kept 7 days, so it can be restored; permanent-delete
+        deletes it now. Returns 409 while the cluster is deploying. Company admins
+        only.
       operationId: kafka_cluster_delete
       parameters:
       - in: path
@@ -2284,6 +2285,64 @@ paths:
         title: Change a Managed Kafka cluster's allowlist
         triggerDescription: Use when you need to change a Managed Kafka cluster's
           allowlist.
+  /kafka-clusters/{uuid}/broker-settings:
+    put:
+      description: 'Changes an active Managed Kafka cluster''s broker settings: only
+        the ones in the request. Retention (log.retention.ms) is how long topics keep
+        messages unless they set their own retention.ms; -1 keeps them forever, and
+        it can''t be shorter than days on disk. Consumer offsets retention follows
+        it (retention plus two days), so a retention change restarts the brokers one
+        at a time. Returns 409 while any change to the cluster is still being applied.
+        Company admins only.'
+      operationId: kafka_cluster_broker_settings_update
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterUpdateKafkaClusterBrokerSettingsRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaCluster'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Change a Managed Kafka cluster's broker settings
+      tags:
+      - Kafka clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_broker_settings_update
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:write
+        retrySemantics: safe-after-state-check
+        title: Change a Managed Kafka cluster's broker settings
+        triggerDescription: Use when you need to change a Managed Kafka cluster's
+          broker settings.
   /kafka-clusters/{uuid}/brokers:
     put:
       description: 'Adds brokers to an active Managed Kafka cluster and applies it:
@@ -2834,6 +2893,52 @@ paths:
         retrySemantics: safe
         title: Get Kafka metrics graphs
         triggerDescription: Use when you need to get Kafka metrics graphs.
+  /kafka-clusters/{uuid}/permanent-delete:
+    post:
+      description: Deletes a Managed Kafka cluster's messages, disks and tiered storage
+        now, with no 7 days to restore it. A running cluster is stopped first; a deleted
+        one's data goes at once. Returns 409 while the cluster is deploying or still
+        shutting down. Company admins only.
+      operationId: kafka_cluster_permanent_delete
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Permanently delete a Managed Kafka cluster
+      tags:
+      - Kafka Clusters
+      x-artie-mcp:
+        bodilessSuccess: true
+        destructiveHint: true
+        exclusionReason: Published for the Terraform provider; not reviewed as an
+          MCP tool.
+        exposure: excluded
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_permanent_delete
+        outputSensitivity: none
+        readOnlyHint: false
+        remediation: Manage the cluster with the Terraform provider or the dashboard.
+        requiredScopes:
+        - kafka:delete
+        retrySemantics: safe
+        title: Permanently delete a Managed Kafka cluster
+        triggerDescription: Use when you need to permanently delete a Managed Kafka
+          cluster.
   /kafka-clusters/{uuid}/rates:
     get:
       description: Retrieves a Managed Kafka cluster's messages in and bytes out per
@@ -3037,6 +3142,51 @@ paths:
         retrySemantics: safe-after-state-check
         title: Retry deploying a Managed Kafka cluster
         triggerDescription: Use when you need to retry deploying a Managed Kafka cluster.
+  /kafka-clusters/{uuid}/settings:
+    get:
+      description: Retrieves a BYOC Strimzi cluster's Kafka version, broker count,
+        and disk size and storage class per broker, read from its Kafka and KafkaNodePool
+        resources. Cached for 5 minutes unless forceRefresh is true. Managed Kafka
+        and MSK clusters get supported false.
+      operationId: kafka_cluster_settings
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: forceRefresh
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsBYOCKafkaClusterSettings'
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get a BYOC Kafka cluster's settings
+      tags:
+      - Kafka clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_settings
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - kafka:read
+        retrySemantics: safe
+        title: Get a BYOC Kafka cluster's settings
+        triggerDescription: Use when you need to get a BYOC Kafka cluster's settings.
   /kafka-clusters/{uuid}/storage:
     put:
       description: Grows the disk of every broker in an active Managed Kafka cluster
@@ -3101,9 +3251,9 @@ paths:
   /kafka-clusters/{uuid}/storage-autoscale:
     put:
       description: Sets whether Artie grows the brokers' disks before they fill, at
-        what % full, how full they are after, and the most disk per broker. Takes
-        effect on the next autoscale run; nothing is applied to the cluster. Company
-        admins only.
+        what % full, how full they are after, and the most disk per broker. Replaces
+        the current settings. Takes effect on the next autoscale run; nothing is applied
+        to the cluster. Company admins only.
       operationId: kafka_cluster_storage_autoscale_update
       parameters:
       - in: path
@@ -3250,13 +3400,13 @@ paths:
   /kafka-clusters/{uuid}/tiered-storage:
     post:
       description: Changes whether every topic of an active Managed Kafka cluster
-        is tiered, its days on disk and its disk cap per partition. New days on disk
-        or a new cap applies to the running brokers within minutes, without a restart.
-        It changes the brokers' defaults, so a topic with its own local.retention.ms
-        or local.retention.bytes keeps them. Turning tiering of every topic on or
-        off wins over each topic's own choice; the tiered storage sync carries it
-        out. Returns 409 while any change to the cluster is still being applied. Company
-        admins only.
+        is tiered, its days on disk and its disk cap per partition. Replaces the current
+        settings. New days on disk or a new cap applies to the running brokers within
+        minutes, without a restart. It changes the brokers' defaults, so a topic with
+        its own local.retention.ms or local.retention.bytes keeps them. Turning tiering
+        of every topic on or off wins over each topic's own choice; the tiered storage
+        sync carries it out. Returns 409 while any change to the cluster is still
+        being applied. Company admins only.
       operationId: kafka_cluster_tiered_storage_update
       parameters:
       - in: path
@@ -6497,6 +6647,34 @@ components:
       - ms
       - bytes
       type: string
+    PayloadsBYOCKafkaClusterSettings:
+      properties:
+        brokers:
+          description: 'How many brokers the cluster runs: the replicas of its node
+            pools with the broker role, added up.'
+          type: integer
+        kafkaVersion:
+          description: The Kafka version the Kafka resource asks for, such as 4.2.0,
+            else the one Strimzi reports running. Left out when neither is set.
+          type: string
+        storageClass:
+          description: The Kubernetes storage class of the brokers' disks. Left out
+            when the disks name none and the Kubernetes cluster's default class is
+            used.
+          type: string
+        storageGiB:
+          description: Disk per broker in GiB, all its volumes added up. Left out
+            when the brokers have no persistent disks.
+          type: integer
+        supported:
+          description: Whether these settings can be read for the cluster. Only BYOC
+            Strimzi clusters linked to their Kubernetes cluster have them; Managed
+            Kafka clusters show theirs in the cluster's managed field, and MSK clusters
+            have none.
+          type: boolean
+      required:
+      - supported
+      type: object
     PayloadsBackfillDefaultsPayload:
       properties:
         chunkSize:
@@ -7132,6 +7310,16 @@ components:
       oneOf:
       - type: string
       type: string
+    PayloadsKafkaBrokerConfig:
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+      required:
+      - name
+      - value
+      type: object
     PayloadsKafkaCluster:
       properties:
         cloud:
@@ -7232,6 +7420,16 @@ components:
       - isManaged
       - tierAllTopics
       type: object
+    PayloadsKafkaClusterBrokerSettings:
+      properties:
+        retentionMS:
+          description: How long topics keep messages unless they set their own retention.ms,
+            in ms (the brokers' log.retention.ms). -1 keeps them forever.
+          format: int64
+          type: integer
+      required:
+      - retentionMS
+      type: object
     PayloadsKafkaClusterChange:
       properties:
         field:
@@ -7243,6 +7441,7 @@ components:
           - brokers
           - instanceType
           - tieredStorage
+          - brokerSettings
           type: string
         startedAt:
           description: When the change was saved.
@@ -7275,6 +7474,15 @@ components:
           items:
             type: string
           type: array
+        brokerConfigs:
+          description: The broker config Artie sets on top of Kafka's defaults, sorted
+            by name.
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaBrokerConfig'
+          type: array
+        brokerSettings:
+          $ref: '#/components/schemas/PayloadsKafkaClusterBrokerSettings'
+          description: The broker settings customers can change.
         brokers:
           type: integer
         instanceType:
@@ -7294,6 +7502,8 @@ components:
       - storageGiB
       - allowedCIDRs
       - kafkaVersion
+      - brokerSettings
+      - brokerConfigs
       type: object
     PayloadsKafkaClusterRates:
       properties:
@@ -7393,10 +7603,12 @@ components:
           description: Whether Artie grows the brokers' disks before they fill.
           type: boolean
         maxGiB:
-          description: The most disk per broker, in GiB, a grow goes to. Missing is
-            no limit.
+          description: The most disk per broker, in GiB, a grow goes to. Null is no
+            limit.
           minimum: 1
-          type: integer
+          type:
+          - "null"
+          - integer
         targetPercent:
           description: How full, in %, the fullest broker's disk is after a grow.
             Less than bumpAtPercent. Defaults to 55.
@@ -11146,6 +11358,17 @@ components:
       required:
       - allowedCIDRs
       type: object
+    RouterUpdateKafkaClusterBrokerSettingsRequest:
+      properties:
+        retentionMS:
+          description: 'How long topics keep messages unless they set their own retention.ms,
+            in ms (log.retention.ms): at least 86400000 (one day), or -1 to keep messages
+            forever. It can''t be shorter than days on disk. Consumer offsets retention
+            follows it, which restarts the brokers one at a time.'
+          type:
+          - "null"
+          - integer
+      type: object
     RouterUpdateKafkaClusterBrokersRequest:
       properties:
         brokers:
@@ -11201,8 +11424,9 @@ components:
           - string
         storageAutoscale:
           $ref: '#/components/schemas/PayloadsKafkaClusterStorageAutoscale'
-          description: How Artie grows the brokers' disks before they fill. Takes
-            effect on the next autoscale run; nothing is applied to the cluster.
+          description: How Artie grows the brokers' disks before they fill. Replaces
+            the current settings. Takes effect on the next autoscale run; nothing
+            is applied to the cluster.
         storageGiB:
           description: 'New disk per broker in GiB: 50 or 80, or any size from 100
             to 1024 (1 TiB). A larger size grows the disks online; the size the brokers
@@ -11216,8 +11440,8 @@ components:
         tieredStorage:
           $ref: '#/components/schemas/RouterUpdateKafkaClusterTieredStorageRequest'
           description: Whether every topic is tiered, days on disk, and disk cap per
-            partition. New days on disk or a new cap applies to the running brokers
-            without a restart.
+            partition. Replaces the current settings. New days on disk or a new cap
+            applies to the running brokers without a restart.
       type: object
     RouterUpdateKafkaClusterStorageRequest:
       properties:
