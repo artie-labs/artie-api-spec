@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.206
+  version: v1.0.207
 servers:
 - url: https://api.artie.com
 paths:
@@ -10562,8 +10562,9 @@ components:
           - integer
         localRetentionMS:
           description: 'Days on disk: how long tiered topics keep data on broker disks,
-            in ms, from 86400000 (one day) to 1209600000 (14 days). Every topic that
-            doesn''t set log.local.retention.ms inherits it. Left out is 3 days.'
+            in ms, from 86400000 (one day) to 2592000000 (30 days), and no longer
+            than retentionMS. Every topic that doesn''t set log.local.retention.ms
+            inherits it. Left out is 3 days.'
           type:
           - "null"
           - integer
@@ -11473,9 +11474,10 @@ components:
           - integer
         localRetentionMS:
           description: 'Days on disk: how long tiered topics keep data on broker disks,
-            in ms, from 86400000 (one day) to 1209600000 (14 days).'
+            in ms, from 86400000 (one day) to 2592000000 (30 days), and no longer
+            than the cluster''s retention.'
           format: int64
-          maximum: 1.2096e+09
+          maximum: 2.592e+09
           minimum: 8.64e+07
           type: integer
         tierAllTopics:
