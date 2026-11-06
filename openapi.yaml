@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.205
+  version: v1.0.206
 servers:
 - url: https://api.artie.com
 paths:
@@ -10575,6 +10575,12 @@ components:
           type: string
         region:
           type: string
+        retentionMS:
+          description: 'How long topics keep messages unless they set their own retention.ms,
+            in ms (the brokers'' log.retention.ms): at least 86400000 (one day), and
+            at least the days on disk, or -1 to keep them forever. Left out is 14
+            days.'
+          type: integer
         storageAutoscale:
           $ref: '#/components/schemas/PayloadsKafkaClusterStorageAutoscale'
           description: How Artie grows the brokers' disks before they fill. Left out
