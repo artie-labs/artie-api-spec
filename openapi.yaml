@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.207
+  version: v1.0.208
 servers:
 - url: https://api.artie.com
 paths:
@@ -5280,6 +5280,198 @@ paths:
         triggerDescription: Updates a PrivateLink connection. The data plane and Private
           Link target (VPC service name and AZs on AWS, privateLinkServiceAlias on
           Azure) are only mutable while under review or errored.
+  /snowflake-eco-schedules:
+    get:
+      description: Retrieves all Snowflake eco schedules for the authenticated user's
+        company.
+      operationId: snowflake_eco_schedule_list
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBodySnowflakeEcoSchedule'
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: List Snowflake eco schedules
+      tags:
+      - Snowflake Eco schedules
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: snowflake_eco_schedule_list
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - snowflake_eco_schedules:read
+        retrySemantics: safe
+        title: List Snowflake Eco Mode schedules
+        triggerDescription: Lists the company's Snowflake Eco Mode schedules. Use
+          a schedule's uuid as snowflakeEcoScheduleUUID on a pipeline update.
+    post:
+      description: Creates a new Snowflake eco schedule for the authenticated user's
+        company.
+      operationId: snowflake_eco_schedule_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterSnowflakeEcoScheduleCreateRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsSnowflakeEcoSchedule'
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create a Snowflake eco schedule
+      tags:
+      - Snowflake Eco schedules
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: snowflake_eco_schedule_create
+        outputSensitivity: none
+        readOnlyHint: false
+        requiredScopes:
+        - snowflake_eco_schedules:write
+        retrySemantics: unsafe
+        title: Create a Snowflake Eco Mode schedule
+        triggerDescription: Creates a schedule of peak hours (time zone, days, start
+          and end time). Outside them, attached pipelines use its off-peak flush rules.
+  /snowflake-eco-schedules/{uuid}:
+    delete:
+      description: Deletes a Snowflake eco schedule by UUID. No pipeline can be using
+        the schedule.
+      operationId: snowflake_eco_schedule_delete
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete a Snowflake eco schedule
+      tags:
+      - Snowflake Eco schedules
+      x-artie-mcp:
+        bodilessSuccess: true
+        destructiveHint: true
+        exposure: exposed
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: snowflake_eco_schedule_delete
+        outputSensitivity: none
+        readOnlyHint: false
+        requiredScopes:
+        - snowflake_eco_schedules:delete
+        retrySemantics: safe-after-state-check
+        title: Delete a Snowflake Eco Mode schedule
+        triggerDescription: Deletes a Snowflake Eco Mode schedule that no pipeline
+          uses.
+    get:
+      description: Retrieves a Snowflake eco schedule by UUID.
+      operationId: snowflake_eco_schedule_detail
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsSnowflakeEcoSchedule'
+          description: OK
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get a Snowflake eco schedule
+      tags:
+      - Snowflake Eco schedules
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: snowflake_eco_schedule_detail
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - snowflake_eco_schedules:read
+        retrySemantics: safe
+        title: Get a Snowflake Eco Mode schedule
+        triggerDescription: Returns one Snowflake Eco Mode schedule by UUID.
+    post:
+      description: Updates an existing Snowflake eco schedule by UUID.
+      operationId: snowflake_eco_schedule_update
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouterSnowflakeEcoScheduleUpdateRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsSnowflakeEcoSchedule'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Update a Snowflake eco schedule
+      tags:
+      - Snowflake Eco schedules
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: snowflake_eco_schedule_update
+        outputSensitivity: none
+        readOnlyHint: false
+        requiredScopes:
+        - snowflake_eco_schedules:write
+        retrySemantics: unsafe
+        title: Update a Snowflake Eco Mode schedule
+        triggerDescription: Replaces a schedule's name and settings.
   /source-readers:
     get:
       description: Lists all source readers for the authenticated company.
@@ -6266,6 +6458,15 @@ components:
         items:
           items:
             $ref: '#/components/schemas/PayloadsSchemaResponse'
+          type: array
+      required:
+      - items
+      type: object
+    ListResponseBodySnowflakeEcoSchedule:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PayloadsSnowflakeEcoSchedule'
           type: array
       required:
       - items
@@ -8788,6 +8989,63 @@ components:
       - dataType
       - notNull
       type: object
+    PayloadsSnowflakeEcoSchedule:
+      properties:
+        company:
+          format: uuid
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        environmentUUID:
+          format: uuid
+          type: string
+        name:
+          type: string
+        settings:
+          $ref: '#/components/schemas/PayloadsSnowflakeEcoScheduleSettings'
+        updatedAt:
+          format: date-time
+          type: string
+        uuid:
+          format: uuid
+          type: string
+      required:
+      - createdAt
+      - updatedAt
+      - uuid
+      - company
+      - environmentUUID
+      - name
+      - settings
+      type: object
+    PayloadsSnowflakeEcoScheduleSettings:
+      properties:
+        days:
+          items:
+            type: string
+          type: array
+        endTimeOfDay:
+          type: string
+        offPeakBufferRows:
+          type: integer
+        offPeakFlushIntervalSeconds:
+          type: integer
+        offPeakFlushSizeKb:
+          type: integer
+        startTimeOfDay:
+          type: string
+        timezone:
+          type: string
+      required:
+      - timezone
+      - startTimeOfDay
+      - endTimeOfDay
+      - days
+      - offPeakFlushIntervalSeconds
+      - offPeakBufferRows
+      - offPeakFlushSizeKb
+      type: object
     PayloadsSoftPartitioning:
       properties:
         enabled:
@@ -11275,6 +11533,31 @@ components:
       - host
       - port
       - username
+      type: object
+    RouterSnowflakeEcoScheduleCreateRequest:
+      properties:
+        environmentUUID:
+          format: uuid
+          type:
+          - "null"
+          - string
+        name:
+          type: string
+        settings:
+          $ref: '#/components/schemas/PayloadsSnowflakeEcoScheduleSettings'
+      required:
+      - name
+      - settings
+      type: object
+    RouterSnowflakeEcoScheduleUpdateRequest:
+      properties:
+        name:
+          type: string
+        settings:
+          $ref: '#/components/schemas/PayloadsSnowflakeEcoScheduleSettings'
+      required:
+      - name
+      - settings
       type: object
     RouterSourceReaderCreateRequest:
       properties:
