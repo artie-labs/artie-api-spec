@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.209
+  version: v1.0.210
 servers:
 - url: https://api.artie.com
 paths:
@@ -1180,7 +1180,7 @@ paths:
     post:
       description: Tests network connectivity and authentication for a connector configuration
         before saving it. Pass type, sharedConfig, and connectionRole. Success is
-        204; a failed connection attempt returns 200 with an error message.
+        204; 422 means the connection attempt failed, with the reason in error.
       operationId: unsaved_connector_ping
       requestBody:
         content:
@@ -1189,16 +1189,16 @@ paths:
               $ref: '#/components/schemas/RouterConnectorPingRequest'
         required: true
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RouterConnectorPingResponse'
-          description: OK
         "204":
           description: No Content
         "400":
           description: Bad Request
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouterConnectorPingResponse'
+          description: Unprocessable Entity
       summary: Ping a connector
       tags:
       - Connectors
@@ -1220,8 +1220,9 @@ paths:
           sharedConfig (host, user, password, and type-specific fields), and connectionRole
           (source or destination). This is not a uuid ping — do not pass a pipeline
           uuid or sourceReaderUUID. Postgres needs a database name, Oracle a service
-          name, S3 a bucket. Success is {"success": true}; a JSON error field means
-          the host or credentials failed.'
+          name, S3 a bucket. Success is {"success": true}. A 422 error means the connection
+          failed (unreachable host, bad credentials, missing permissions) and its
+          message says why; a 400 means the request itself is invalid.'
   /connectors/postgres-publications:
     post:
       description: Lists logical replication publications on a PostgreSQL source using
