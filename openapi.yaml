@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.210
+  version: v1.0.211
 servers:
 - url: https://api.artie.com
 paths:
@@ -2075,13 +2075,17 @@ paths:
       - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
-        exposure: exposed
+        exclusionReason: Returns a Kafka user's password; agents should not handle
+          Kafka credentials.
+        exposure: excluded
         idempotentHint: false
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_admin_user_create
         outputSensitivity: restricted-credentials
         readOnlyHint: false
+        remediation: Create Kafka users and copy their passwords from the dashboard
+          or the API.
         requiredScopes:
         - kafka_admin_users:write
         retrySemantics: safe-after-state-check
@@ -2125,7 +2129,6 @@ paths:
       tags:
       - Kafka clusters
       x-artie-mcp:
-        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: true
@@ -2222,13 +2225,17 @@ paths:
       - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
-        exposure: exposed
+        exclusionReason: Returns a Kafka user's password; agents should not handle
+          Kafka credentials.
+        exposure: excluded
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_admin_user_credentials
         outputSensitivity: restricted-credentials
         readOnlyHint: true
+        remediation: Create Kafka users and copy their passwords from the dashboard
+          or the API.
         requiredScopes:
         - kafka_admin_users:read
         retrySemantics: safe
@@ -2679,13 +2686,17 @@ paths:
       - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
-        exposure: exposed
+        exclusionReason: Returns a Kafka user's password; agents should not handle
+          Kafka credentials.
+        exposure: excluded
         idempotentHint: false
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_managed_user_create
         outputSensitivity: restricted-credentials
         readOnlyHint: false
+        remediation: Create Kafka users and copy their passwords from the dashboard
+          or the API.
         requiredScopes:
         - kafka_admin_users:write
         retrySemantics: safe-after-state-check
@@ -2830,13 +2841,17 @@ paths:
       - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
-        exposure: exposed
+        exclusionReason: Returns a Kafka user's password; agents should not handle
+          Kafka credentials.
+        exposure: excluded
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_managed_user_credentials
         outputSensitivity: restricted-credentials
         readOnlyHint: true
+        remediation: Create Kafka users and copy their passwords from the dashboard
+          or the API.
         requiredScopes:
         - kafka_admin_users:read
         retrySemantics: safe
@@ -3840,7 +3855,6 @@ paths:
       tags:
       - Kafka clusters
       x-artie-mcp:
-        bodilessSuccess: true
         destructiveHint: false
         exposure: exposed
         idempotentHint: true
@@ -4121,13 +4135,17 @@ paths:
       - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
-        exposure: exposed
+        exclusionReason: Returns a Kafka user's password; agents should not handle
+          Kafka credentials.
+        exposure: excluded
         idempotentHint: false
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_user_create
         outputSensitivity: restricted-credentials
         readOnlyHint: false
+        remediation: Create Kafka users and copy their passwords from the dashboard
+          or the API.
         requiredScopes:
         - kafka_users:write
         retrySemantics: safe-after-state-check
@@ -4172,7 +4190,6 @@ paths:
       tags:
       - Kafka clusters
       x-artie-mcp:
-        bodilessSuccess: true
         destructiveHint: true
         exposure: exposed
         idempotentHint: true
@@ -4270,13 +4287,17 @@ paths:
       - Kafka clusters
       x-artie-mcp:
         destructiveHint: false
-        exposure: exposed
+        exclusionReason: Returns a Kafka user's password; agents should not handle
+          Kafka credentials.
+        exposure: excluded
         idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_user_credentials
         outputSensitivity: restricted-credentials
         readOnlyHint: true
+        remediation: Create Kafka users and copy their passwords from the dashboard
+          or the API.
         requiredScopes:
         - kafka_users:read
         retrySemantics: safe
