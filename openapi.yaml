@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.211
+  version: v1.0.212
 servers:
 - url: https://api.artie.com
 paths:
@@ -1737,7 +1737,12 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: List Kafka clusters
-        triggerDescription: Use when you need to list Kafka clusters.
+        triggerDescription: 'Start here for any Kafka question: lists the company''s
+          Kafka clusters with uuid, name, status and isManaged. Every other kafka_*
+          tool takes that uuid. isManaged decides which tools work: Managed clusters
+          use kafka_managed_user_*, kafka_cluster_rates and kafka_consumer_group_details;
+          BYOC clusters (isManaged false) use kafka_user_*, kafka_admin_user_* and
+          kafka_cluster_settings.'
     post:
       description: Saves a Managed Kafka cluster with status deploying and starts
         deploying it. An account on a public or disposable email domain, or an API
@@ -1872,7 +1877,9 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: Get a Kafka cluster
-        triggerDescription: Use when you need to get a Kafka cluster.
+        triggerDescription: Gets one Kafka cluster by the uuid from kafka_cluster_list.
+          For a Managed cluster it also returns the cluster's saved configuration;
+          for a BYOC cluster it matches its kafka_cluster_list entry.
     post:
       description: Changes a cluster's name, allowlist, broker storage, storage autoscaling,
         instance type, broker count, or tiered storage. Send only the fields to change.
@@ -2141,7 +2148,10 @@ paths:
         - kafka_admin_users:delete
         retrySemantics: safe
         title: Delete an admin Kafka user
-        triggerDescription: Use when you need to delete an admin Kafka user.
+        triggerDescription: Deletes an admin Kafka user on a BYOC cluster. Kafka revokes
+          its access within seconds, so clients using it stop working. userUUID comes
+          from kafka_user_list where accessProfile is admin. Confirm with the user
+          first.
     get:
       description: Retrieves an admin-profile Kafka user. Its password is never included;
         get it from the credentials endpoint. Producer/consumer users are not found
@@ -2185,7 +2195,9 @@ paths:
         - kafka_admin_users:read
         retrySemantics: safe
         title: Get an admin Kafka user
-        triggerDescription: Use when you need to get an admin Kafka user.
+        triggerDescription: 'One admin Kafka user on a BYOC cluster, without its password.
+          There is no admin user list: find the userUUID in kafka_user_list where
+          accessProfile is admin.'
   /kafka-clusters/{uuid}/admin-users/{userUUID}/credentials:
     get:
       description: Returns the admin-profile Kafka user's password, which lets the
@@ -2455,8 +2467,9 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: Get every Kafka consumer group's detail
-        triggerDescription: Use when you need to get every Kafka consumer group's
-          detail.
+        triggerDescription: 'Managed clusters only (400 otherwise): every consumer
+          group''s members and per-topic offset lag in one call. Use instead of calling
+          kafka_consumer_group_detail once per group.'
   /kafka-clusters/{uuid}/consumer-groups:
     get:
       description: Retrieves the consumer groups for the cluster. Results are cached
@@ -2500,7 +2513,9 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: List Kafka consumer groups
-        triggerDescription: Use when you need to list Kafka consumer groups.
+        triggerDescription: Lists consumer group IDs on a cluster, without lag. groupID
+          is what kafka_consumer_group_detail takes. For lag on every group of a Managed
+          cluster in one call, use kafka_consumer_group_details instead.
   /kafka-clusters/{uuid}/consumer-groups/{groupID}:
     get:
       description: Retrieves a consumer group's members and per-topic offset lag.
@@ -2549,7 +2564,9 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: Get Kafka consumer group detail
-        triggerDescription: Use when you need to get Kafka consumer group detail.
+        triggerDescription: One consumer group's members and per-topic offset lag,
+          on any cluster type. Use for whether a specific consumer is behind. groupID
+          comes from kafka_consumer_group_list.
   /kafka-clusters/{uuid}/instance-type:
     put:
       description: Moves every broker of an active Managed Kafka cluster to another
@@ -2648,7 +2665,9 @@ paths:
         - kafka_users:read
         retrySemantics: safe
         title: List a Managed Kafka cluster's users
-        triggerDescription: Use when you need to list a Managed Kafka cluster's users.
+        triggerDescription: 'Managed clusters only: lists the cluster''s extra Kafka
+          logins with their ACLs, without passwords. userUUID is what kafka_managed_user_update
+          and kafka_managed_user_delete take.'
     post:
       description: Creates an extra Kafka login with the chosen ACLs and returns its
         password once Strimzi makes it live, normally within seconds. Company admins
@@ -2747,8 +2766,9 @@ paths:
         - kafka_admin_users:delete
         retrySemantics: safe
         title: Delete a Managed Kafka cluster's user
-        triggerDescription: Use when you need to delete a Managed Kafka cluster's
-          user.
+        triggerDescription: 'Managed clusters only: deletes a login. Kafka rejects
+          its password within seconds, so clients using it stop working. Confirm with
+          the user first.'
     patch:
       description: Replaces the user's ACLs. Its password stays the same, so clients
         using it keep working with the new ACLs. Returns 409 while the user is being
@@ -2802,8 +2822,10 @@ paths:
         - kafka_admin_users:write
         retrySemantics: safe-after-state-check
         title: Change a Managed Kafka cluster's user's ACLs
-        triggerDescription: Use when you need to change a Managed Kafka cluster's
-          user's ACLs.
+        triggerDescription: 'Managed clusters only: replaces a login''s ACLs with
+          the acls you send, so any ACL left out is removed. The password stays the
+          same. Read the current ACLs with kafka_managed_user_list and confirm the
+          change with the user first.'
   /kafka-clusters/{uuid}/managed-users/{userUUID}/credentials:
     get:
       description: Returns the user's password, which lets the caller act as that
@@ -2910,7 +2932,10 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: Get Kafka metrics graphs
-        triggerDescription: Use when you need to get Kafka metrics graphs.
+        triggerDescription: Broker, topic and partition metrics and per-broker CPU
+          over time, between from and to, for a Strimzi cluster. Use for trends and
+          CPU questions; for current throughput and consumer lag on a Managed cluster,
+          kafka_cluster_rates is quicker.
   /kafka-clusters/{uuid}/permanent-delete:
     post:
       description: Deletes a Managed Kafka cluster's messages, disks and tiered storage
@@ -3015,7 +3040,11 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: Get Managed Kafka cluster rates
-        triggerDescription: Use when you need to get Managed Kafka cluster rates.
+        triggerDescription: Managed clusters only, and the cluster must be active
+          (400 or 409 otherwise). Shows current messages in and bytes out per second,
+          each topic's message rate, and each consumer group's lag per topic over
+          range (1h or 6h). Use first for whether a Managed cluster is busy or any
+          consumer is behind.
   /kafka-clusters/{uuid}/rename:
     post:
       description: Changes the name a Managed Kafka cluster, or one on the company's
@@ -3204,7 +3233,9 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: Get a BYOC Kafka cluster's settings
-        triggerDescription: Use when you need to get a BYOC Kafka cluster's settings.
+        triggerDescription: 'BYOC Strimzi clusters only: Kafka version, broker count,
+          and disk size and storage class per broker. Managed and MSK clusters return
+          supported false; for a Managed cluster''s configuration use kafka_cluster_detail.'
   /kafka-clusters/{uuid}/storage:
     put:
       description: Grows the disk of every broker in an active Managed Kafka cluster
@@ -3371,7 +3402,9 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: Get Kafka storage graph
-        triggerDescription: Use when you need to get Kafka storage graph.
+        triggerDescription: Broker disk usage over time, between from and to. Use
+          for whether the disk is filling up; follow with kafka_topic_sizes to see
+          which topics use the space.
   /kafka-clusters/{uuid}/summary:
     get:
       description: Retrieves cached topic and consumer group counts for the cluster
@@ -3414,7 +3447,8 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: Get Kafka cluster summary
-        triggerDescription: Use when you need to get Kafka cluster summary.
+        triggerDescription: 'Returns only two counts for a cluster: topics and consumer
+          groups. For status or configuration use kafka_cluster_detail.'
   /kafka-clusters/{uuid}/tiered-storage:
     post:
       description: Changes whether every topic of an active Managed Kafka cluster
@@ -3562,7 +3596,9 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: Get Kafka topic partition sizes
-        triggerDescription: Use when you need to get Kafka topic partition sizes.
+        triggerDescription: Bytes used by every topic on a cluster, per partition,
+          in one call. Use to find which topics fill the disk. Cached unless forceRefresh
+          is true.
   /kafka-clusters/{uuid}/topics:
     get:
       description: Retrieves the light topic list for the cluster (no per-topic detail
@@ -3607,7 +3643,10 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: List Kafka topics
-        triggerDescription: Use when you need to list Kafka topics.
+        triggerDescription: Lists a cluster's topics with partitionCount, retention,
+          tiered storage and artieManaged. artieManaged true means the topic carries
+          Artie CDC data that pipelines read. The topic name is the topic other topic
+          tools take. Cached for 2 minutes; pass forceRefresh after creating a topic.
     post:
       description: Creates a topic. On a shared cluster the name must start with `<companyUUID>.customer.`,
         the namespace customer Kafka users can produce to. On a Managed Kafka cluster
@@ -3660,7 +3699,10 @@ paths:
         - kafka:write
         retrySemantics: safe-after-state-check
         title: Create a Kafka topic
-        triggerDescription: Use when you need to create a Kafka topic.
+        triggerDescription: Creates a topic with topic, partitionCount, replicationFactor
+          and optional configEntries. On a BYOC cluster the name must start with <companyUUID>.customer.;
+          on a Managed cluster any name works except the cluster's own (__ and strimzi.cruisecontrol.*),
+          and the cluster must be active. Confirm the settings with the user first.
   /kafka-clusters/{uuid}/topics/{topic}:
     delete:
       description: Deletes a topic and all of its messages. On a shared cluster only
@@ -3710,7 +3752,10 @@ paths:
         - kafka:delete
         retrySemantics: safe
         title: Delete a Kafka topic
-        triggerDescription: Use when you need to delete a Kafka topic.
+        triggerDescription: Deletes a topic and every message in it; this can't be
+          undone. Don't delete a topic with artieManaged true (it feeds Artie pipelines)
+          unless the user asked for that exact topic. Confirm the topic name with
+          the user first.
     get:
       description: Retrieves topic metadata and partition sizes. Includes the owning
         source reader name, table name, and pipeline names and UUIDs when the topic
@@ -3758,7 +3803,10 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: Get Kafka topic detail
-        triggerDescription: Use when you need to get Kafka topic detail.
+        triggerDescription: One topic's per-partition sizes, replication, leaders
+          and offsets, plus the Artie pipelines (names and uuids) that read it. topic
+          comes from kafka_topic_list. Use before changing or deleting a topic to
+          see what depends on it.
     post:
       description: 'Changes a topic''s retention and tiered storage; send only the
         settings to change. Potentially destructive: Kafka deletes messages older
@@ -3818,7 +3866,10 @@ paths:
         - kafka:write
         retrySemantics: safe
         title: Change Kafka topic settings
-        triggerDescription: Use when you need to change Kafka topic settings.
+        triggerDescription: Changes a topic's retentionMS, localRetentionMS and tieredStorage;
+          send only what changes. Shorter retention deletes older messages for good,
+          and on an artieManaged topic can drop change events before pipelines read
+          them. Confirm the change with the user first.
   /kafka-clusters/{uuid}/topics/{topic}/latest-message:
     get:
       description: Retrieves the newest message from partition 0, including its contents.
@@ -3867,7 +3918,10 @@ paths:
         - kafka:read
         retrySemantics: safe
         title: Get latest Kafka topic message
-        triggerDescription: Use when you need to get latest Kafka topic message.
+        triggerDescription: Returns the contents of the newest message on partition
+          0 of a topic. It can be customer data, so call it only when the user asks
+          to see a message, and quote no more than needed. Fails unless the company
+          allows reading Kafka messages.
   /kafka-clusters/{uuid}/topics/{topic}/messages:
     get:
       description: Retrieves the newest messages across all partitions of a Managed
@@ -3997,7 +4051,10 @@ paths:
         - kafka:write
         retrySemantics: safe-after-state-check
         title: Increase Kafka topic partitions
-        triggerDescription: Use when you need to increase Kafka topic partitions.
+        triggerDescription: Adds partitions to a topic; this can't be undone and changes
+          which partition each key lands on. Refused on artieManaged topics. Send
+          currentPartitionCount from kafka_topic_list and the new total as newPartitionCount.
+          Confirm with the user first.
   /kafka-clusters/{uuid}/topics/{topic}/retention:
     post:
       description: 'Sets a topic''s `retention.ms`. Potentially destructive: Kafka
@@ -4054,7 +4111,9 @@ paths:
         - kafka:write
         retrySemantics: safe
         title: Change Kafka topic retention
-        triggerDescription: Use when you need to change Kafka topic retention.
+        triggerDescription: Sets only a topic's retention.ms. Prefer kafka_topic_settings_update,
+          which also handles local retention and tiered storage. Shorter retention
+          deletes older messages for good. Confirm the change with the user first.
   /kafka-clusters/{uuid}/users:
     get:
       description: Retrieves the Kafka users for the cluster. Passwords are never
@@ -4093,7 +4152,11 @@ paths:
         - kafka_users:read
         retrySemantics: safe
         title: List Kafka users
-        triggerDescription: Use when you need to list Kafka users.
+        triggerDescription: 'BYOC clusters only; Managed clusters return 400, so use
+          kafka_managed_user_list there. Lists Kafka users of both access profiles,
+          without passwords. accessProfile picks the tools for a user: producer_consumer
+          uses kafka_user_detail and kafka_user_delete, admin uses kafka_admin_user_detail
+          and kafka_admin_user_delete.'
     post:
       description: Creates a Kafka user. Strimzi generates its password, which is
         returned if the user becomes active within a few seconds; otherwise the response
@@ -4202,7 +4265,9 @@ paths:
         - kafka_users:delete
         retrySemantics: safe
         title: Delete a Kafka user
-        triggerDescription: Use when you need to delete a Kafka user.
+        triggerDescription: Deletes a producer_consumer Kafka user on a BYOC cluster.
+          Kafka revokes its access within seconds, so clients using it stop working.
+          userUUID comes from kafka_user_list. Confirm with the user first.
     get:
       description: Retrieves a Kafka user. Its password is never included; get it
         from the credentials endpoint. Admin-profile users are not found here.
@@ -4245,7 +4310,9 @@ paths:
         - kafka_users:read
         retrySemantics: safe
         title: Get a Kafka user
-        triggerDescription: Use when you need to get a Kafka user.
+        triggerDescription: One producer_consumer Kafka user on a BYOC cluster, without
+          its password. userUUID comes from kafka_user_list. Passwords aren't available
+          through MCP; the user can copy one from the Artie dashboard.
   /kafka-clusters/{uuid}/users/{userUUID}/credentials:
     get:
       description: Returns the Kafka user's password, which lets the caller act as
