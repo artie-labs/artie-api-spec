@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.218
+  version: v1.0.221
 servers:
 - url: https://api.artie.com
 paths:
@@ -5859,6 +5859,53 @@ paths:
         title: Deploy a source reader
         triggerDescription: Deploys a shared, validated source reader. To take a draft
           pipeline live, use pipeline_start.
+  /source-readers/{uuid}/share:
+    post:
+      description: Turns a dedicated source reader into a shared one that other pipelines
+        can use, without a backfill. Its tables are taken from its pipeline, and a
+        running pipeline is redeployed, which restarts the reader once. The source
+        reader can't be shared while its pipeline publishes to a Kafka destination,
+        is deploying, is backfilling a table or is being migrated.
+      operationId: source_reader_share
+      parameters:
+      - in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsSourceReader'
+          description: OK
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+        "500":
+          description: Internal Server Error
+      summary: Share a source reader
+      tags:
+      - Source readers
+      x-artie-mcp:
+        destructiveHint: false
+        exclusionReason: Returns source-reader configuration that can contain credentials.
+        exposure: excluded
+        idempotentHint: false
+        inputSensitivity: none
+        openWorldHint: true
+        operationId: source_reader_share
+        outputSensitivity: restricted-credentials
+        readOnlyHint: false
+        remediation: Share source readers through the authenticated Dashboard.
+        requiredScopes:
+        - source_readers:write
+        retrySemantics: safe-after-state-check
+        title: Share a source reader
+        triggerDescription: Use when you need to turn a pipeline's dedicated source
+          reader into a shared one.
   /source-readers/{uuid}/status:
     post:
       description: Changes the status of a shared source reader (e.g. running, paused).
@@ -8645,8 +8692,6 @@ components:
       type: object
     PayloadsPhysicalCTIDRangeSettings:
       properties:
-        enabled:
-          type: boolean
         pagesPerRange:
           minimum: 0
           type: integer
@@ -9399,6 +9444,10 @@ components:
           type:
           - "null"
           - string
+        rescaleTimestampsPastYear9999:
+          type:
+          - "null"
+          - boolean
         s3PathMappings:
           items:
             $ref: '#/components/schemas/PayloadsS3PathMapping'
@@ -11414,6 +11463,11 @@ components:
           type:
           - "null"
           - string
+        shareSourceReader:
+          description: Create the draft's source reader as shared, so other pipelines
+            can read from it later. Requires shared source readers to be enabled for
+            the account.
+          type: boolean
         sourceConnectorUUID:
           description: UUID of an existing source connector. Creates a dedicated reader
             and draft pipeline against that source.
