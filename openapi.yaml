@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.216
+  version: v1.0.218
 servers:
 - url: https://api.artie.com
 paths:
@@ -115,7 +115,10 @@ paths:
         - column_hashing_salts:read
         retrySemantics: safe
         title: List column hashing salts
-        triggerDescription: Lists column hashing salt names and UUIDs (no secret).
+        triggerDescription: Lists the company's column hashing salts (uuid, name,
+          description; never the salt). A pipeline uses the one in its columnHashingSaltUUID
+          (pipeline_detail) to hash the columnsToHash in each table's advancedSettings.
+          Use a uuid here for column_hashing_salt_preview, _update or _delete.
     post:
       description: Creates a new column hashing salt for the authenticated company.
       operationId: column_hashing_salt_create
@@ -323,8 +326,11 @@ paths:
         - column_hashing_salts:read
         retrySemantics: safe
         title: Preview a column hashing salt
-        triggerDescription: Hashes a sample string with this salt and returns the
-          hex digest.
+        triggerDescription: Hashes a sample value the way pipelines do (HMAC-SHA256
+          keyed on the salt, or SHA-256 if the salt is empty) and returns the hex
+          digest, without revealing the salt. Use it to check which salt produced
+          a hashed value or to get the hash to look a row up by. The uuid comes from
+          column_hashing_salt_list.
   /company/automatic-schema-changes:
     post:
       description: Enqueues automatic schema changes for all eligible running pipelines
@@ -1183,7 +1189,8 @@ paths:
     post:
       description: Tests network connectivity and authentication for a connector configuration
         before saving it. Pass type, sharedConfig, and connectionRole. Success is
-        204; 422 means the connection attempt failed, with the reason in error.
+        204; 422 means the connection attempt failed, with the reason in error; 400
+        means the request itself is invalid.
       operationId: unsaved_connector_ping
       requestBody:
         content:
@@ -1223,9 +1230,10 @@ paths:
           sharedConfig (host, user, password, and type-specific fields), and connectionRole
           (source or destination). This is not a uuid ping — do not pass a pipeline
           uuid or sourceReaderUUID. Postgres needs a database name, Oracle a service
-          name, S3 a bucket. Success is {"success": true}. A 422 error means the connection
-          failed (unreachable host, bad credentials, missing permissions) and its
-          message says why; a 400 means the request itself is invalid.'
+          name, S3 a bucket. Success is HTTP 204 with no body, which this tool returns
+          as {"success": true}. A 422 error means the connection failed (unreachable
+          host, bad credentials, missing permissions) and its message says why; a
+          400 means the request itself is invalid.'
   /connectors/postgres-publications:
     post:
       description: Lists logical replication publications on a PostgreSQL source using
@@ -1424,7 +1432,10 @@ paths:
         - encryption_keys:read
         retrySemantics: safe
         title: List encryption keys
-        triggerDescription: Lists encryption key names and UUIDs (no secret material).
+        triggerDescription: Lists the company's encryption keys (uuid, name, description,
+          type, kmsKeyUUID; never key material). A pipeline uses the one in its encryptionKeyUUID
+          (pipeline_detail) to encrypt the columnsToEncrypt in each table's advancedSettings.
+          Use a uuid here for encryption_key_update or _delete.
     post:
       description: Creates a new encryption key for the authenticated company.
       operationId: encryption_key_create
@@ -1659,7 +1670,10 @@ paths:
         - ingestion_api_keys:delete
         retrySemantics: safe-after-state-check
         title: Delete an ingestion API key
-        triggerDescription: Deletes an ingestion API key by UUID.
+        triggerDescription: 'Deletes an ingestion API key so it stops working after
+          the next deploy: of the source reader''s pipelines (they are marked as having
+          undeployed changes), or of the source reader itself if it is shared. There
+          is no list tool, so get the key''s uuid from the user.'
     post:
       description: Updates an existing ingestion API key by UUID.
       operationId: ingestion_api_key_update
@@ -2813,9 +2827,9 @@ paths:
       tags:
       - Kafka clusters
       x-artie-mcp:
-        destructiveHint: false
+        destructiveHint: true
         exposure: exposed
-        idempotentHint: false
+        idempotentHint: true
         inputSensitivity: none
         openWorldHint: false
         operationId: kafka_managed_user_update
@@ -2823,7 +2837,7 @@ paths:
         readOnlyHint: false
         requiredScopes:
         - kafka_admin_users:write
-        retrySemantics: safe-after-state-check
+        retrySemantics: safe
         title: Change a Managed Kafka cluster's user's ACLs
         triggerDescription: 'Managed clusters only: replaces a login''s ACLs with
           the acls you send, so any ACL left out is removed. The password stays the
@@ -4042,7 +4056,7 @@ paths:
       - Kafka clusters
       x-artie-mcp:
         bodilessSuccess: true
-        destructiveHint: false
+        destructiveHint: true
         exposure: exposed
         idempotentHint: false
         inputSensitivity: none
@@ -4529,8 +4543,11 @@ paths:
         - pipelines:delete
         retrySemantics: safe-after-state-check
         title: Delete pipeline
-        triggerDescription: Permanently deletes a pipeline by UUID. Does not delete
-          connectors.
+        triggerDescription: Permanently deletes a pipeline (uuid from pipeline_list)
+          and tears down its deployment, along with its source reader unless that
+          is shared. Saved connectors stay, except ones made just for a draft pipeline
+          that nothing else uses. To stop syncing but keep the pipeline, pause it
+          with pipeline_update_status.
     get:
       description: Returns FullPipeline for the pipeline uuid (tables with uuid/status,
         destinationUUID, specificDestCfg, sourceReaderUUID). MCP clients must omit
@@ -4614,7 +4631,7 @@ paths:
       tags:
       - Pipelines
       x-artie-mcp:
-        destructiveHint: false
+        destructiveHint: true
         exposure: exposed
         idempotentHint: false
         inputSensitivity: none
@@ -4677,9 +4694,19 @@ paths:
           eligible pipeline, use company_trigger_automatic_schema_changes.
   /pipelines/{uuid}/backfill:
     post:
-      description: Triggers a backfill for specified tables in the pipeline. Supports
-        options for pre-backfill behavior (drop, truncate, or do nothing) and schema/database
-        filtering.
+      description: 'Triggers a backfill for the given tables in the pipeline and redeploys
+        it. beforeBackfill sets what happens to the destination table first: the empty
+        string keeps its rows, truncate_table empties it, drop_table drops it, and
+        swap_table rebuilds the table on the side and swaps it in once the backfill
+        finishes. swap_table must be enabled for the company, works only on Snowflake
+        and Databricks destinations, and can''t be used for history tables. keepOldTable,
+        with swap_table only, keeps the old rows in a separate table until the next
+        swap_table backfill of that table. backfillFromSchemas and backfillFromDatabases
+        narrow a regular-table backfill and need the empty-string option. A Kafka
+        destination only accepts the empty-string option. backfillBatchSize and backfillDefaults
+        set the backfill speed and are saved on the pipeline''s source reader before
+        the backfill starts, so later backfills use them too; a shared source reader
+        rejects them.'
       operationId: pipeline_backfill_tables
       parameters:
       - in: path
@@ -4763,7 +4790,10 @@ paths:
         - pipelines:write
         retrySemantics: safe-after-state-check
         title: Cancel backfill
-        triggerDescription: Cancels an in-progress backfill for the given table UUIDs.
+        triggerDescription: Stops a backfill that is queued or running and redeploys
+          the pipeline. Pass table UUIDs from pipeline_detail in tableUUIDs for regular
+          tables and in historyTableUUIDs for history tables; both are required, so
+          send [] for the one you don't need. Returns 400 if none of them are backfilling.
   /pipelines/{uuid}/detect-schema-changes:
     post:
       description: Enqueues a background job that checks the pipeline's source database
@@ -4801,8 +4831,10 @@ paths:
         - pipelines:write
         retrySemantics: unsafe
         title: Detect schema changes
-        triggerDescription: Checks the source for table or schema drift. To apply
-          destination DDL, use pipeline_trigger_automatic_schema_changes.
+        triggerDescription: 'Queues a check of the source for table or schema drift.
+          Not read-only: on pipelines with auto-replicate or auto-history mode, newly
+          found tables are added to the pipeline and a summary is emailed, so confirm
+          with the user first. To apply destination DDL, use pipeline_trigger_automatic_schema_changes.'
   /pipelines/{uuid}/error-logs:
     get:
       description: Returns recent error logs for the specified pipeline (message,
@@ -5061,12 +5093,12 @@ paths:
         - pipelines:read
         retrySemantics: safe
         title: Get pipeline usage
-        triggerDescription: Returns per-table ingestion lag and row counts for a saved
-          pipeline over a time range. Pass the pipeline uuid plus from and to as RFC3339
-          timestamps; set excludeBackfills=true to leave backfill rows out of row
-          counts. Use when the user asks about lag, throughput, or rows processed.
-          This is not slot health, warehouse correctness, pipeline_list status, pipeline_detail
-          table status, or error logs (pipeline_error_logs).
+        triggerDescription: 'Returns one ingestion lag (latency) and row count per
+          table for a saved pipeline (uuid from pipeline_list) over from and to (RFC3339);
+          set excludeBackfills=true to count only CDC rows. Its lag is ingestion lag
+          only: for lag over time, or total lag (readerLag plus ingestionLag), use
+          analytics_query. This is not slot health, warehouse correctness, table status
+          (pipeline_detail) or error logs (pipeline_error_logs).'
   /pipelines/create-from-source:
     post:
       description: Creates a draft pipeline and a dedicated source reader. Provide
@@ -5283,7 +5315,11 @@ paths:
         - private_link_connections:delete
         retrySemantics: safe-after-state-check
         title: Delete a PrivateLink connection
-        triggerDescription: Permanently deletes a PrivateLink connection by UUID.
+        triggerDescription: Permanently deletes a PrivateLink connection and tears
+          down its Artie endpoint. Returns 400 naming the connectors or source readers
+          that still use it; move them off it first. The uuid is a connector's privateLinkUUID
+          or snapshotPrivateLinkUUID from connector_list or connector_detail, or the
+          one private_link_connection_create returned.
     get:
       description: 'Retrieves the details of a PrivateLink connection by UUID, including
         its status, cloud provider, region, Private Link target (vpcServiceName and
@@ -5323,7 +5359,11 @@ paths:
         - private_link_connections:read
         retrySemantics: safe
         title: Get a PrivateLink connection
-        triggerDescription: Returns one PrivateLink connection by UUID.
+        triggerDescription: 'Returns a PrivateLink connection''s status, Private Link
+          target and the Artie endpoint''s address (dnsEntry). There is no list tool:
+          the uuid is a connector''s privateLinkUUID or snapshotPrivateLinkUUID from
+          connector_list or connector_detail, or the one private_link_connection_create
+          returned.'
     post:
       description: Updates an existing PrivateLink connection by UUID. The name can
         always be updated. The data plane and Private Link target (vpcServiceName
@@ -5482,8 +5522,10 @@ paths:
         - snowflake_eco_schedules:delete
         retrySemantics: safe-after-state-check
         title: Delete a Snowflake Eco Mode schedule
-        triggerDescription: Deletes a Snowflake Eco Mode schedule that no pipeline
-          uses.
+        triggerDescription: Deletes a schedule (uuid from snowflake_eco_schedule_list).
+          Returns 400 naming the pipelines that still use it; detach each first by
+          sending its pipeline_detail body back through pipeline_update with snowflakeEcoScheduleUUID
+          set to null.
     get:
       description: Retrieves a Snowflake eco schedule by UUID.
       operationId: snowflake_eco_schedule_detail
@@ -5520,7 +5562,9 @@ paths:
         - snowflake_eco_schedules:read
         retrySemantics: safe
         title: Get a Snowflake Eco Mode schedule
-        triggerDescription: Returns one Snowflake Eco Mode schedule by UUID.
+        triggerDescription: Returns one schedule's peak hours (timezone, days, startTimeOfDay,
+          endTimeOfDay) and its off-peak flush settings. The uuid comes from snowflake_eco_schedule_list
+          or a pipeline's snowflakeEcoScheduleUUID in pipeline_detail.
     post:
       description: Updates an existing Snowflake eco schedule by UUID.
       operationId: snowflake_eco_schedule_update
@@ -5553,7 +5597,7 @@ paths:
       tags:
       - Snowflake Eco schedules
       x-artie-mcp:
-        destructiveHint: false
+        destructiveHint: true
         exposure: exposed
         idempotentHint: false
         inputSensitivity: none
@@ -5565,7 +5609,10 @@ paths:
         - snowflake_eco_schedules:write
         retrySemantics: unsafe
         title: Update a Snowflake Eco Mode schedule
-        triggerDescription: Replaces a schedule's name and settings.
+        triggerDescription: Replaces a schedule's name and every setting, so read
+          it with snowflake_eco_schedule_detail first and send it back with only the
+          intended change. The schedule is shared, so the change affects every pipeline
+          attached to it. The uuid comes from snowflake_eco_schedule_list.
   /source-readers:
     get:
       description: Lists all source readers for the authenticated company.
@@ -5757,7 +5804,7 @@ paths:
       tags:
       - Source readers
       x-artie-mcp:
-        destructiveHint: false
+        destructiveHint: true
         exposure: exposed
         idempotentHint: false
         inputSensitivity: restricted-credentials
@@ -5950,7 +5997,7 @@ paths:
   /ssh-tunnels/{uuid}:
     delete:
       description: Permanently deletes an SSH tunnel by UUID. The tunnel must not
-        be in use by any connectors or pipelines before it can be deleted.
+        be in use by any connectors before it can be deleted.
       operationId: ssh_tunnel_delete
       parameters:
       - in: path
@@ -5982,7 +6029,10 @@ paths:
         - ssh_tunnels:delete
         retrySemantics: safe-after-state-check
         title: Delete an SSH tunnel
-        triggerDescription: Deletes an SSH tunnel unused by any connector or pipeline.
+        triggerDescription: Deletes an SSH tunnel. Returns 400 naming the connectors
+          that still use it (ssh_tunnel_detail isInUse shows whether any do). The
+          uuid is a connector's sshTunnelUUID from connector_detail or the one ssh_tunnel_create
+          returned.
     get:
       description: Retrieves the details of an SSH tunnel by UUID, including its host,
         port, username, public key, and whether it is currently in use.
@@ -6020,7 +6070,10 @@ paths:
         - ssh_tunnels:read
         retrySemantics: safe
         title: Get an SSH tunnel
-        triggerDescription: Returns one SSH tunnel by UUID (no private key).
+        triggerDescription: 'Returns an SSH tunnel''s host, port, username, publicKey
+          (to add to the bastion''s authorized_keys) and isInUse; never a private
+          key. There is no list tool: the uuid is a connector''s sshTunnelUUID from
+          connector_list or connector_detail, or the one ssh_tunnel_create returned.'
     post:
       description: Updates an existing SSH tunnel by UUID. You can modify the name,
         host, port, and username. Changes will mark associated pipelines as having
@@ -11296,7 +11349,8 @@ components:
         beforeBackfill:
           description: 'Destination handling before the backfill: empty string leaves
             existing data unchanged, truncate_table truncates the destination table,
-            and drop_table drops it.'
+            drop_table drops it, and swap_table rebuilds it on the side and swaps
+            it in once the backfill finishes.'
           enum:
           - ""
           - truncate_table
@@ -11363,6 +11417,14 @@ components:
         sourceConnectorUUID:
           description: UUID of an existing source connector. Creates a dedicated reader
             and draft pipeline against that source.
+          format: uuid
+          type:
+          - "null"
+          - string
+        sourceReaderUUID:
+          description: UUID of a shared source reader for the draft to read from.
+            No source reader is created. Can't be combined with sourceType or sourceConnectorUUID.
+            Requires shared source readers to be enabled for the account.
           format: uuid
           type:
           - "null"
