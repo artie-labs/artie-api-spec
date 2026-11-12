@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.221
+  version: v1.0.222
 servers:
 - url: https://api.artie.com
 paths:
@@ -10060,6 +10060,13 @@ components:
             type: string
           properties:
             properties:
+              ddl_event:
+                description: 'The DDL operation: eventType (createTable, addColumns
+                  or dropColumns), schema, table, and columns with name, dataType
+                  and primaryKey.'
+                items:
+                  type: object
+                type: array
               queries:
                 description: SQL statements executed for this DDL operation.
                 items:
@@ -10089,6 +10096,14 @@ components:
         - name: Production Postgres → Snowflake
           uuid: 22222222-2222-2222-2222-222222222222
         properties:
+          ddl_event:
+          - columns:
+            - dataType: VARCHAR(32)
+              name: promo_code
+              primaryKey: false
+            eventType: addColumns
+            schema: public
+            table: orders
           queries:
           - ALTER TABLE orders ADD COLUMN promo_code VARCHAR(32)
           schema: public
