@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.222
+  version: v1.0.223
 servers:
 - url: https://api.artie.com
 paths:
@@ -164,10 +164,14 @@ paths:
       description: Deletes a column hashing salt by UUID.
       operationId: column_hashing_salt_delete
       parameters:
-      - in: path
+      - description: The UUID of the column hashing salt, as returned by its list
+          or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the column hashing salt, as returned by its list
+            or create endpoint.
           type: string
       responses:
         "204":
@@ -200,10 +204,14 @@ paths:
         salt. Requires company admin.
       operationId: column_hashing_salt_detail
       parameters:
-      - in: path
+      - description: The UUID of the column hashing salt, as returned by its list
+          or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the column hashing salt, as returned by its list
+            or create endpoint.
           type: string
       responses:
         "200":
@@ -239,10 +247,14 @@ paths:
       description: Updates the name and description of a column hashing salt.
       operationId: column_hashing_salt_update
       parameters:
-      - in: path
+      - description: The UUID of the column hashing salt, as returned by its list
+          or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the column hashing salt, as returned by its list
+            or create endpoint.
           type: string
       requestBody:
         content:
@@ -286,10 +298,14 @@ paths:
         salt is empty). Returns the hex-encoded hash.
       operationId: column_hashing_salt_preview
       parameters:
-      - in: path
+      - description: The UUID of the column hashing salt, as returned by its list
+          or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the column hashing salt, as returned by its list
+            or create endpoint.
           type: string
       requestBody:
         content:
@@ -452,10 +468,14 @@ paths:
         This stops any active replication pipelines that depend on the connector.
       operationId: connector_delete
       parameters:
-      - in: path
+      - description: The UUID of the connector, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the connector, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "204":
@@ -489,10 +509,14 @@ paths:
         may be masked.
       operationId: connector_detail
       parameters:
-      - in: path
+      - description: The UUID of the connector, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the connector, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -532,10 +556,14 @@ paths:
         for a running pipeline.
       operationId: connector_update
       parameters:
-      - in: path
+      - description: The UUID of the connector, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the connector, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -582,10 +610,14 @@ paths:
         defaults.
       operationId: connector_fetch_databases
       parameters:
-      - in: path
+      - description: The UUID of the connector, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the connector, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: databaseName
@@ -629,10 +661,14 @@ paths:
         isView is optional.
       operationId: connector_fetch_table_detail
       parameters:
-      - in: path
+      - description: The UUID of the connector, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the connector, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: databaseName
@@ -689,10 +725,14 @@ paths:
         replication.
       operationId: connector_generate_shadow_script
       parameters:
-      - in: path
+      - description: The UUID of the connector, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the connector, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -736,10 +776,14 @@ paths:
         on the source.
       operationId: connector_drop_postgres_replication_slot
       parameters:
-      - in: path
+      - description: The UUID of the connector, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the connector, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -782,10 +826,14 @@ paths:
         connector.
       operationId: connector_fetch_postgres_replication_slots
       parameters:
-      - in: path
+      - description: The UUID of the connector, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the connector, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: databaseName
@@ -832,10 +880,14 @@ paths:
         for the specified connector.
       operationId: connector_fetch_postgres_settings
       parameters:
-      - in: path
+      - description: The UUID of the connector, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the connector, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: databaseName
@@ -884,10 +936,14 @@ paths:
         configuration. Pass 'databaseName' as a query parameter.
       operationId: connector_fetch_schemas
       parameters:
-      - in: path
+      - description: The UUID of the connector, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the connector, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: databaseName
@@ -930,10 +986,14 @@ paths:
         data.
       operationId: connector_start_dynamo_db_export
       parameters:
-      - in: path
+      - description: The UUID of the connector, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the connector, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -976,10 +1036,14 @@ paths:
         for Postgres, 'dbo' for SQL Server).
       operationId: connector_fetch_tables
       parameters:
-      - in: path
+      - description: The UUID of the connector, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the connector, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: databaseName
@@ -1481,10 +1545,14 @@ paths:
       description: Deletes an encryption key by UUID.
       operationId: encryption_key_delete
       parameters:
-      - in: path
+      - description: The UUID of the encryption key, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the encryption key, as returned by its list or
+            create endpoint.
           type: string
       responses:
         "204":
@@ -1517,10 +1585,14 @@ paths:
         Requires company admin.
       operationId: encryption_key_detail
       parameters:
-      - in: path
+      - description: The UUID of the encryption key, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the encryption key, as returned by its list or
+            create endpoint.
           type: string
       responses:
         "200":
@@ -1556,10 +1628,14 @@ paths:
       description: Updates the name and description of an encryption key.
       operationId: encryption_key_update
       parameters:
-      - in: path
+      - description: The UUID of the encryption key, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the encryption key, as returned by its list or
+            create endpoint.
           type: string
       requestBody:
         content:
@@ -1643,10 +1719,14 @@ paths:
       description: Deletes an ingestion API key by UUID.
       operationId: ingestion_api_key_delete
       parameters:
-      - in: path
+      - description: The UUID of the ingestion API key, as returned by its list or
+          create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the ingestion API key, as returned by its list
+            or create endpoint.
           type: string
       responses:
         "204":
@@ -1678,10 +1758,14 @@ paths:
       description: Updates an existing ingestion API key by UUID.
       operationId: ingestion_api_key_update
       parameters:
-      - in: path
+      - description: The UUID of the ingestion API key, as returned by its list or
+          create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the ingestion API key, as returned by its list
+            or create endpoint.
           type: string
       requestBody:
         content:
@@ -1820,10 +1904,14 @@ paths:
         only.
       operationId: kafka_cluster_delete
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "204":
@@ -1862,10 +1950,14 @@ paths:
         by UUID.
       operationId: kafka_cluster_detail
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -1909,10 +2001,14 @@ paths:
         a previous change is still being applied. Company admins only.
       operationId: kafka_cluster_update
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -1967,10 +2063,14 @@ paths:
         only.
       operationId: kafka_cluster_admin_credentials
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -2018,10 +2118,14 @@ paths:
         password login and has no admin password to change. Company admins only.
       operationId: kafka_cluster_admin_password_rotate
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -2068,10 +2172,14 @@ paths:
         including every replicated topic. Company admins only.
       operationId: kafka_admin_user_create
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -2122,15 +2230,23 @@ paths:
         200 with a warning while deletion is pending reconciliation.
       operationId: kafka_admin_user_delete
       parameters:
-      - in: path
+      - description: The UUID of the Kafka user, as returned by the cluster's user
+          list.
+        in: path
         name: userUUID
         required: true
         schema:
+          description: The UUID of the Kafka user, as returned by the cluster's user
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -2175,15 +2291,23 @@ paths:
         here.
       operationId: kafka_admin_user_detail
       parameters:
-      - in: path
+      - description: The UUID of the Kafka user, as returned by the cluster's user
+          list.
+        in: path
         name: userUUID
         required: true
         schema:
+          description: The UUID of the Kafka user, as returned by the cluster's user
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -2224,15 +2348,23 @@ paths:
         replicated topic. Company admins only.
       operationId: kafka_admin_user_credentials
       parameters:
-      - in: path
+      - description: The UUID of the Kafka user, as returned by the cluster's user
+          list.
+        in: path
         name: userUUID
         required: true
         schema:
+          description: The UUID of the Kafka user, as returned by the cluster's user
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -2277,10 +2409,14 @@ paths:
         change to the cluster is still being applied. Company admins only.
       operationId: kafka_cluster_allowed_cidrs_update
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -2335,10 +2471,14 @@ paths:
         Company admins only.'
       operationId: kafka_cluster_broker_settings_update
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -2391,10 +2531,14 @@ paths:
         any change to the cluster is still being applied. Company admins only.'
       operationId: kafka_cluster_brokers_update
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -2446,10 +2590,14 @@ paths:
         unless forceRefresh is true. Returns 400 for other clusters.
       operationId: kafka_consumer_group_details
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: forceRefresh
@@ -2494,10 +2642,14 @@ paths:
         is true.
       operationId: kafka_consumer_group_list
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: forceRefresh
@@ -2540,15 +2692,23 @@ paths:
         unless forceRefresh is true.
       operationId: kafka_consumer_group_detail
       parameters:
-      - in: path
+      - description: The ID of the Kafka consumer group, as returned by the cluster's
+          consumer group list.
+        in: path
         name: groupID
         required: true
         schema:
+          description: The ID of the Kafka consumer group, as returned by the cluster's
+            consumer group list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: forceRefresh
@@ -2593,10 +2753,14 @@ paths:
         any change to the cluster is still being applied. Company admins only.
       operationId: kafka_cluster_instance_type_update
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -2648,10 +2812,14 @@ paths:
         ACLs. Passwords are never included.
       operationId: kafka_managed_user_list
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -2691,10 +2859,14 @@ paths:
         only.
       operationId: kafka_managed_user_create
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -2745,15 +2917,23 @@ paths:
         to retry. Company admins only.
       operationId: kafka_managed_user_delete
       parameters:
-      - in: path
+      - description: The UUID of the Kafka user, as returned by the cluster's user
+          list.
+        in: path
         name: userUUID
         required: true
         schema:
+          description: The UUID of the Kafka user, as returned by the cluster's user
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "204":
@@ -2792,15 +2972,23 @@ paths:
         deleted. Company admins only.
       operationId: kafka_managed_user_update
       parameters:
-      - in: path
+      - description: The UUID of the Kafka user, as returned by the cluster's user
+          list.
+        in: path
         name: userUUID
         required: true
         schema:
+          description: The UUID of the Kafka user, as returned by the cluster's user
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -2850,15 +3038,23 @@ paths:
         deleted. Company admins only.
       operationId: kafka_managed_user_credentials
       parameters:
-      - in: path
+      - description: The UUID of the Kafka user, as returned by the cluster's user
+          list.
+        in: path
         name: userUUID
         required: true
         schema:
+          description: The UUID of the Kafka user, as returned by the cluster's user
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -2903,10 +3099,14 @@ paths:
         metrics for a Strimzi Kafka cluster.
       operationId: kafka_cluster_metrics_graph
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: from
@@ -2961,10 +3161,14 @@ paths:
         shutting down. Company admins only.
       operationId: kafka_cluster_permanent_delete
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "204":
@@ -3008,10 +3212,14 @@ paths:
         and 409 if the cluster isn't active.
       operationId: kafka_cluster_rates
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       - description: How far back the topic and consumer group series go, defaults
           to 1h
@@ -3070,10 +3278,14 @@ paths:
         only.
       operationId: kafka_cluster_rename
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -3120,10 +3332,14 @@ paths:
         and passwords, until its data is deleted for good. Company admins only.
       operationId: kafka_cluster_restore
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -3166,10 +3382,14 @@ paths:
         or that has been deploying for over 20 minutes. Company admins only.
       operationId: kafka_cluster_retry
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -3214,10 +3434,14 @@ paths:
         and MSK clusters get supported false.
       operationId: kafka_cluster_settings
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: forceRefresh
@@ -3263,10 +3487,14 @@ paths:
         applied. Company admins only.
       operationId: kafka_cluster_storage_update
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -3322,10 +3550,14 @@ paths:
         to the cluster. Company admins only.
       operationId: kafka_cluster_storage_autoscale_update
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -3373,10 +3605,14 @@ paths:
         cluster.
       operationId: kafka_cluster_storage_graph
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: from
@@ -3428,10 +3664,14 @@ paths:
         unless forceRefresh is true.
       operationId: kafka_cluster_summary
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: forceRefresh
@@ -3478,10 +3718,14 @@ paths:
         being applied. Company admins only.
       operationId: kafka_cluster_tiered_storage_update
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -3533,10 +3777,14 @@ paths:
         only.
       operationId: kafka_cluster_tiered_storage_sync
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "202":
@@ -3577,10 +3825,14 @@ paths:
         unless forceRefresh is true.
       operationId: kafka_topic_sizes
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: forceRefresh
@@ -3624,10 +3876,14 @@ paths:
         Artie pipeline.
       operationId: kafka_topic_list
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: forceRefresh
@@ -3672,10 +3928,14 @@ paths:
         otherwise).
       operationId: kafka_topic_create
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -3729,15 +3989,23 @@ paths:
         otherwise).
       operationId: kafka_topic_delete
       parameters:
-      - in: path
+      - description: The name of the Kafka topic, as returned by the cluster's topic
+          list.
+        in: path
         name: topic
         required: true
         schema:
+          description: The name of the Kafka topic, as returned by the cluster's topic
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "204":
@@ -3779,15 +4047,23 @@ paths:
         belongs to an Artie pipeline.
       operationId: kafka_topic_detail
       parameters:
-      - in: path
+      - description: The name of the Kafka topic, as returned by the cluster's topic
+          list.
+        in: path
         name: topic
         required: true
         schema:
+          description: The name of the Kafka topic, as returned by the cluster's topic
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: forceRefresh
@@ -3834,15 +4110,23 @@ paths:
         is a 400 that says why.'
       operationId: kafka_topic_settings_update
       parameters:
-      - in: path
+      - description: The name of the Kafka topic, as returned by the cluster's topic
+          list.
+        in: path
         name: topic
         required: true
         schema:
+          description: The name of the Kafka topic, as returned by the cluster's topic
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -3894,15 +4178,23 @@ paths:
         messages.
       operationId: kafka_topic_latest_message
       parameters:
-      - in: path
+      - description: The name of the Kafka topic, as returned by the cluster's topic
+          list.
+        in: path
         name: topic
         required: true
         schema:
+          description: The name of the Kafka topic, as returned by the cluster's topic
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -3947,15 +4239,23 @@ paths:
         are not cached. Only available when the company allows reading Kafka messages.
       operationId: kafka_topic_messages
       parameters:
-      - in: path
+      - description: The name of the Kafka topic, as returned by the cluster's topic
+          list.
+        in: path
         name: topic
         required: true
         schema:
+          description: The name of the Kafka topic, as returned by the cluster's topic
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       - description: How many messages to return, 20 if left out.
         in: query
@@ -4022,15 +4322,23 @@ paths:
         active (409 otherwise).
       operationId: kafka_topic_partitions_increase
       parameters:
-      - in: path
+      - description: The name of the Kafka topic, as returned by the cluster's topic
+          list.
+        in: path
         name: topic
         required: true
         schema:
+          description: The name of the Kafka topic, as returned by the cluster's topic
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -4082,15 +4390,23 @@ paths:
         (409 otherwise).'
       operationId: kafka_topic_retention_update
       parameters:
-      - in: path
+      - description: The name of the Kafka topic, as returned by the cluster's topic
+          list.
+        in: path
         name: topic
         required: true
         schema:
+          description: The name of the Kafka topic, as returned by the cluster's topic
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -4137,10 +4453,14 @@ paths:
         included.
       operationId: kafka_user_list
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -4184,10 +4504,14 @@ paths:
         /admin-users.
       operationId: kafka_user_create
       parameters:
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -4239,15 +4563,23 @@ paths:
         are deleted under /admin-users.
       operationId: kafka_user_delete
       parameters:
-      - in: path
+      - description: The UUID of the Kafka user, as returned by the cluster's user
+          list.
+        in: path
         name: userUUID
         required: true
         schema:
+          description: The UUID of the Kafka user, as returned by the cluster's user
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -4290,15 +4622,23 @@ paths:
         from the credentials endpoint. Admin-profile users are not found here.
       operationId: kafka_user_detail
       parameters:
-      - in: path
+      - description: The UUID of the Kafka user, as returned by the cluster's user
+          list.
+        in: path
         name: userUUID
         required: true
         schema:
+          description: The UUID of the Kafka user, as returned by the cluster's user
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -4341,15 +4681,23 @@ paths:
         Admin-profile users are managed under /admin-users.
       operationId: kafka_user_credentials
       parameters:
-      - in: path
+      - description: The UUID of the Kafka user, as returned by the cluster's user
+          list.
+        in: path
         name: userUUID
         required: true
         schema:
+          description: The UUID of the Kafka user, as returned by the cluster's user
+            list.
           type: string
-      - in: path
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -4516,10 +4864,13 @@ paths:
       description: Deletes a pipeline by UUID.
       operationId: pipeline_delete
       parameters:
-      - in: path
+      - description: The UUID of the pipeline, as returned by its list or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the pipeline, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "204":
@@ -4555,10 +4906,13 @@ paths:
         to wrap sourceReader and connectors; that body is not the documented 200 schema.
       operationId: pipeline_detail
       parameters:
-      - in: path
+      - description: The UUID of the pipeline, as returned by its list or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the pipeline, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: includeRelatedObjects
@@ -4605,10 +4959,13 @@ paths:
         fields.'
       operationId: pipeline_update
       parameters:
-      - in: path
+      - description: The UUID of the pipeline, as returned by its list or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the pipeline, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -4655,10 +5012,13 @@ paths:
         is accepted before reconciliation completes.
       operationId: pipeline_trigger_automatic_schema_changes
       parameters:
-      - in: path
+      - description: The UUID of the pipeline, as returned by its list or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the pipeline, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: forceRefresh
@@ -4709,10 +5069,13 @@ paths:
         rejects them.'
       operationId: pipeline_backfill_tables
       parameters:
-      - in: path
+      - description: The UUID of the pipeline, as returned by its list or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the pipeline, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -4755,10 +5118,13 @@ paths:
         UUIDs.
       operationId: pipeline_cancel_backfill_tables
       parameters:
-      - in: path
+      - description: The UUID of the pipeline, as returned by its list or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the pipeline, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -4802,10 +5168,13 @@ paths:
         pipeline automatically. An email summary is sent if changes are detected.
       operationId: pipeline_detect_schema_changes
       parameters:
-      - in: path
+      - description: The UUID of the pipeline, as returned by its list or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the pipeline, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "204":
@@ -4842,10 +5211,13 @@ paths:
         only.
       operationId: pipeline_error_logs
       parameters:
-      - in: path
+      - description: The UUID of the pipeline, as returned by its list or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the pipeline, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -4886,10 +5258,13 @@ paths:
         Optional body: keepPaused, disableBackFill.'
       operationId: pipeline_start
       parameters:
-      - in: path
+      - description: The UUID of the pipeline, as returned by its list or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the pipeline, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -4937,10 +5312,13 @@ paths:
         reader.
       operationId: pipeline_update_status
       parameters:
-      - in: path
+      - description: The UUID of the pipeline, as returned by its list or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the pipeline, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -4987,10 +5365,13 @@ paths:
         Accepts gzip-encoded body.
       operationId: pipeline_update_with_source_reader
       parameters:
-      - in: path
+      - description: The UUID of the pipeline, as returned by its list or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the pipeline, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -5037,10 +5418,13 @@ paths:
         format. Pass 'excludeBackfills=true' to exclude backfill rows from row counts.
       operationId: pipeline_usage
       parameters:
-      - in: path
+      - description: The UUID of the pipeline, as returned by its list or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the pipeline, as returned by its list or create
+            endpoint.
           type: string
       - in: query
         name: from
@@ -5286,10 +5670,14 @@ paths:
         cannot be undone and will remove the connection from your account.
       operationId: private_link_connection_delete
       parameters:
-      - in: path
+      - description: The UUID of the PrivateLink connection, as returned by its list
+          or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the PrivateLink connection, as returned by its
+            list or create endpoint.
           type: string
       responses:
         "204":
@@ -5327,10 +5715,14 @@ paths:
         endpoint''s address (dnsEntry: a DNS name on AWS, a private IP on Azure).'
       operationId: private_link_connection_detail
       parameters:
-      - in: path
+      - description: The UUID of the PrivateLink connection, as returned by its list
+          or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the PrivateLink connection, as returned by its
+            list or create endpoint.
           type: string
       responses:
         "200":
@@ -5373,10 +5765,14 @@ paths:
         are immutable.
       operationId: private_link_connection_update
       parameters:
-      - in: path
+      - description: The UUID of the PrivateLink connection, as returned by its list
+          or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the PrivateLink connection, as returned by its
+            list or create endpoint.
           type: string
       requestBody:
         content:
@@ -5491,10 +5887,14 @@ paths:
         the schedule.
       operationId: snowflake_eco_schedule_delete
       parameters:
-      - in: path
+      - description: The UUID of the Snowflake eco schedule, as returned by its list
+          or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Snowflake eco schedule, as returned by its
+            list or create endpoint.
           type: string
       responses:
         "204":
@@ -5530,10 +5930,14 @@ paths:
       description: Retrieves a Snowflake eco schedule by UUID.
       operationId: snowflake_eco_schedule_detail
       parameters:
-      - in: path
+      - description: The UUID of the Snowflake eco schedule, as returned by its list
+          or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Snowflake eco schedule, as returned by its
+            list or create endpoint.
           type: string
       responses:
         "200":
@@ -5569,10 +5973,14 @@ paths:
       description: Updates an existing Snowflake eco schedule by UUID.
       operationId: snowflake_eco_schedule_update
       parameters:
-      - in: path
+      - description: The UUID of the Snowflake eco schedule, as returned by its list
+          or create endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the Snowflake eco schedule, as returned by its
+            list or create endpoint.
           type: string
       requestBody:
         content:
@@ -5695,10 +6103,14 @@ paths:
         must not be associated with any active pipelines before deletion.
       operationId: source_reader_delete
       parameters:
-      - in: path
+      - description: The UUID of the source reader, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the source reader, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "204":
@@ -5732,10 +6144,14 @@ paths:
         echo this payload into source_reader_update.
       operationId: source_reader_detail
       parameters:
-      - in: path
+      - description: The UUID of the source reader, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the source reader, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -5778,10 +6194,14 @@ paths:
         overwrites them with empty values.
       operationId: source_reader_update
       parameters:
-      - in: path
+      - description: The UUID of the source reader, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the source reader, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -5828,10 +6248,14 @@ paths:
         must be shared and pass validation before it can be deployed.
       operationId: source_reader_deploy
       parameters:
-      - in: path
+      - description: The UUID of the source reader, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the source reader, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "204":
@@ -5868,10 +6292,14 @@ paths:
         is deploying, is backfilling a table or is being migrated.
       operationId: source_reader_share
       parameters:
-      - in: path
+      - description: The UUID of the source reader, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the source reader, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -5915,10 +6343,14 @@ paths:
         the pipeline status endpoint instead.
       operationId: source_reader_update_status
       parameters:
-      - in: path
+      - description: The UUID of the source reader, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the source reader, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
@@ -6047,10 +6479,14 @@ paths:
         be in use by any connectors before it can be deleted.
       operationId: ssh_tunnel_delete
       parameters:
-      - in: path
+      - description: The UUID of the SSH tunnel, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the SSH tunnel, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "204":
@@ -6085,10 +6521,14 @@ paths:
         port, username, public key, and whether it is currently in use.
       operationId: ssh_tunnel_detail
       parameters:
-      - in: path
+      - description: The UUID of the SSH tunnel, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the SSH tunnel, as returned by its list or create
+            endpoint.
           type: string
       responses:
         "200":
@@ -6127,10 +6567,14 @@ paths:
         undeployed changes.
       operationId: ssh_tunnel_update
       parameters:
-      - in: path
+      - description: The UUID of the SSH tunnel, as returned by its list or create
+          endpoint.
+        in: path
         name: uuid
         required: true
         schema:
+          description: The UUID of the SSH tunnel, as returned by its list or create
+            endpoint.
           type: string
       requestBody:
         content:
