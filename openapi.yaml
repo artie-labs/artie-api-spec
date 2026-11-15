@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.223
+  version: v1.0.225
 servers:
 - url: https://api.artie.com
 paths:
@@ -14,44 +14,72 @@ paths:
         are floored to 30 s and results are cached for up to 1 minute.
       operationId: analytics_query
       parameters:
-      - in: query
+      - description: Start of the time window, in RFC 3339.
+        in: query
         name: from
         required: true
         schema:
+          description: Start of the time window, in RFC 3339.
           type: string
-      - in: query
+      - description: End of the time window, in RFC 3339. The window must be 1 second
+          to 15 months long and can't start in the future.
+        in: query
         name: to
         required: true
         schema:
+          description: End of the time window, in RFC 3339. The window must be 1 second
+            to 15 months long and can't start in the future.
           type: string
-      - in: query
+      - description: Datasets to return, such as rowsSyncedByTime, ingestionLag or
+          rowLag; repeat the parameter for each. Unknown names are ignored.
+        in: query
         name: datasets[]
         required: true
         schema:
+          description: Datasets to return, such as rowsSyncedByTime, ingestionLag
+            or rowLag; repeat the parameter for each. Unknown names are ignored.
           items:
             type: string
           type: array
-      - in: query
+      - description: Only include this pipeline's metrics. Required for environment-scoped
+          API keys.
+        in: query
         name: pipelineUUID
         schema:
+          description: Only include this pipeline's metrics. Required for environment-scoped
+            API keys.
           type: string
-      - in: query
+      - description: Only include these table names; repeat the parameter for each.
+        in: query
         name: tables[]
         schema:
+          description: Only include these table names; repeat the parameter for each.
           items:
             type: string
           type: array
-      - in: query
+      - description: exclude leaves out rows written by backfills, only keeps just
+          those rows, and empty includes both.
+        in: query
         name: backfillOptions
         schema:
+          description: exclude leaves out rows written by backfills, only keeps just
+            those rows, and empty includes both.
           type: string
-      - in: query
+      - description: replication or history to only count rows Transfer wrote in that
+          mode; empty includes both.
+        in: query
         name: transferMode
         schema:
+          description: replication or history to only count rows Transfer wrote in
+            that mode; empty includes both.
           type: string
-      - in: query
+      - description: pipeline or table to return one series per pipeline or table;
+          empty returns one series per dataset.
+        in: query
         name: groupBy
         schema:
+          description: pipeline or table to return one series per pipeline or table;
+            empty returns one series per dataset.
           type: string
       responses:
         "200":
@@ -3108,15 +3136,21 @@ paths:
           description: The UUID of the Kafka cluster, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Start of the time window, in RFC 3339.
+        in: query
         name: from
         required: true
         schema:
+          description: Start of the time window, in RFC 3339.
           type: string
-      - in: query
+      - description: End of the time window, in RFC 3339. The window must be 1 second
+          to 15 months long and can't start in the future.
+        in: query
         name: to
         required: true
         schema:
+          description: End of the time window, in RFC 3339. The window must be 1 second
+            to 15 months long and can't start in the future.
           type: string
       responses:
         "200":
@@ -3614,15 +3648,21 @@ paths:
           description: The UUID of the Kafka cluster, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Start of the time window, in RFC 3339.
+        in: query
         name: from
         required: true
         schema:
+          description: Start of the time window, in RFC 3339.
           type: string
-      - in: query
+      - description: End of the time window, in RFC 3339. The window must be 1 second
+          to 15 months long and can't start in the future.
+        in: query
         name: to
         required: true
         schema:
+          description: End of the time window, in RFC 3339. The window must be 1 second
+            to 15 months long and can't start in the future.
           type: string
       responses:
         "200":
@@ -4914,9 +4954,13 @@ paths:
           description: The UUID of the pipeline, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: When true, the response also carries the source reader and connectors.
+          MCP clients must leave it out.
+        in: query
         name: includeRelatedObjects
         schema:
+          description: When true, the response also carries the source reader and
+            connectors. MCP clients must leave it out.
           type: boolean
       responses:
         "200":
@@ -5020,9 +5064,13 @@ paths:
           description: The UUID of the pipeline, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: When true, runs even if the pipeline's schema changes were checked
+          in the last two hours.
+        in: query
         name: forceRefresh
         schema:
+          description: When true, runs even if the pipeline's schema changes were
+            checked in the last two hours.
           type: boolean
       responses:
         "202":
@@ -5426,16 +5474,22 @@ paths:
           description: The UUID of the pipeline, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Start of the time window, in RFC 3339.
+        in: query
         name: from
         required: true
         schema:
+          description: Start of the time window, in RFC 3339.
           format: date-time
           type: string
-      - in: query
+      - description: End of the time window, in RFC 3339. The window must be 1 second
+          to 15 months long and can't start in the future.
+        in: query
         name: to
         required: true
         schema:
+          description: End of the time window, in RFC 3339. The window must be 1 second
+            to 15 months long and can't start in the future.
           format: date-time
           type: string
       - description: When true, rows processed by backfills are excluded from row
@@ -7112,187 +7166,280 @@ components:
     PayloadsAdvancedPipelineSettingsPayload:
       properties:
         appendOnly:
+          description: When true, rows are always appended instead of merged into
+            the destination table. Use for append-only data such as event tracking.
           type:
           - "null"
           - boolean
         autoEnableHistoryForNewTables:
+          description: When true, new source tables are added with history mode on;
+            without autoReplicateNewTables they are added history-only.
           type:
           - "null"
           - boolean
         autoEnableHistoryIgnoreRegex:
+          description: Regex of full table names that are skipped while autoEnableHistoryForNewTables
+            is on. Can't be combined with autoEnableHistoryIncludeRegex.
           type:
           - "null"
           - string
         autoEnableHistoryIncludeRegex:
+          description: Regex of full table names; while autoEnableHistoryForNewTables
+            is on, only new tables that match are auto-added. Can't be combined with
+            autoEnableHistoryIgnoreRegex.
           type:
           - "null"
           - string
         autoReplicateIgnoreRegex:
+          description: Regex of full table names that auto-replication skips. Can't
+            be combined with autoReplicateIncludeRegex.
           type:
           - "null"
           - string
         autoReplicateIncludeRegex:
+          description: Regex of full table names; only new tables that match are auto-added.
+            Can't be combined with autoReplicateIgnoreRegex.
           type:
           - "null"
           - string
         autoReplicateNewTables:
+          description: When true, new tables found in the source are added to the
+            pipeline automatically.
           type:
           - "null"
           - boolean
         backfillMySQLFloatsAsShortestDecimal:
+          description: 'MySQL and PlanetScale sources only: backfills write FLOAT
+            columns as their shortest decimal, as replication does, instead of the
+            exact float32.'
           type:
           - "null"
           - boolean
         bigQueryReservation:
+          description: 'BigQuery only: the reservation Transfer''s queries run in;
+            empty uses the project default.'
           type:
           - "null"
           - string
         bufferRows:
+          description: Rows to buffer before flushing to the destination, at least
+            5.
           type:
           - "null"
           - integer
         castAllColumnsToString:
+          description: 'MongoDB and DocumentDB sources only: write every column, including
+            the primary key, as a string. __artie_* columns keep their types.'
           type:
           - "null"
           - boolean
         databricksAutoLiquidClustering:
+          description: 'Databricks only: turn on automatic liquid clustering for every
+            destination table.'
           type:
           - "null"
           - boolean
         databricksDisableVariantShredding:
+          description: 'Databricks only: turn off variant shredding on new tables
+            and, after each deploy, existing ones. Already shredded data isn''t rewritten.'
           type:
           - "null"
           - boolean
         defaultSourceSchema:
+          description: Source schema whose tables aren't prefixed with the schema
+            name in the destination.
           type:
           - "null"
           - string
         disableAlerts:
+          description: When true, Artie stops sending email alerts for this pipeline.
+            Health is still tracked in the dashboard.
           type:
           - "null"
           - boolean
         dropDeletedColumns:
+          description: When true, columns dropped in the source are dropped in the
+            destination too. History tables never drop columns.
           type:
           - "null"
           - boolean
         dynamoDBBackfillConfig:
           $ref: '#/components/schemas/PayloadsDynamoDBSnapshotConfig'
+          description: 'DynamoDB sources only: how backfills read the table from a
+            DynamoDB export to S3.'
         enableSoftDelete:
+          description: When true, rows deleted in the source are kept and marked in
+            an __artie_delete column instead of being deleted.
           type:
           - "null"
           - boolean
         flushIntervalSeconds:
+          description: Seconds between flushes to the destination, from 5 to 86400.
+            Transfer flushes sooner when bufferRows or flushSizeKb is reached.
           type:
           - "null"
           - integer
         flushSizeKb:
+          description: Buffered data, in KB, that triggers a flush to the destination,
+            up to 1.5 GB.
           type:
           - "null"
           - integer
         forceUTCTimezone:
+          description: When true, source timestamp columns without a time zone are
+            written as UTC timestamps with a time zone.
           type:
           - "null"
           - boolean
         includeArtieOperationColumn:
+          description: When true, each row gets an __artie_operation column with the
+            change type that wrote it.
           type:
           - "null"
           - boolean
         includeArtieUpdatedAtColumn:
+          description: When true, each row gets an __artie_updated_at column with
+            the time Artie wrote it.
           type:
           - "null"
           - boolean
         includeDatabaseUpdatedAtColumn:
+          description: When true, each row gets an __artie_db_updated_at column with
+            the time the change happened in the source. Always on for history tables.
           type:
           - "null"
           - boolean
         includeFullSourceTableNameColumn:
+          description: When true, each row gets an __artie_full_source_table_name
+            column with its source table's full name.
           type:
           - "null"
           - boolean
         includeFullSourceTableNameColumnAsPrimaryKey:
+          description: When true, the __artie_full_source_table_name column is added
+            to the primary key. Requires includeFullSourceTableNameColumn.
           type:
           - "null"
           - boolean
         includeSourceMetadataColumn:
+          description: When true, each row gets an __artie_source_metadata column
+            with the change's source metadata.
           type:
           - "null"
           - boolean
         jsonAsVarchar:
+          description: 'Redshift only: store struct values as JSON text in VARCHAR(MAX)
+            instead of SUPER.'
           type:
           - "null"
           - boolean
         jsonParseTruncateStrings:
+          description: 'Redshift only: truncate strings inside SUPER values that are
+            over Redshift''s limit instead of failing the load.'
           type:
           - "null"
           - boolean
         maxConcurrentSnapshots:
+          description: Most table backfills this pipeline runs at once; 0 uses the
+            company limit, and a set value must be between 1 and that limit.
           minimum: 0
           type:
           - "null"
           - integer
         postgresPartitionMirroring:
+          description: 'Postgres source and destination only: create each partitioned
+            source table''s partitions in the destination, including ones added later.'
           type:
           - "null"
           - boolean
         snowpipeStreamingMaxChannels:
+          description: 'Snowflake only: the most Snowpipe Streaming channels Transfer
+            opens.'
           type:
           - "null"
           - integer
         splitEventsByType:
+          description: 'API sources only: when true, each event type gets its own
+            table; when false, all events share one table with the event type as a
+            column.'
           type:
           - "null"
           - boolean
         stagingSchema:
+          description: Schema to create staging tables in; empty uses each table's
+            own schema.
           type:
           - "null"
           - string
         staticColumns:
+          description: Columns with fixed values added to every destination table.
           items:
             $ref: '#/components/schemas/PayloadsStaticColumn'
           type:
           - "null"
           - array
         structAsVariant:
+          description: 'Databricks only: store new struct and array columns as VARIANT
+            instead of STRING or ARRAY<string>.'
           type:
           - "null"
           - boolean
         truncateExceededValues:
+          description: 'Redshift and BigQuery only: truncate values that are too large
+            for their column instead of replacing them with __artie_exceeded_value.'
           type:
           - "null"
           - boolean
         turboLatencyThresholdMinutes:
+          description: 'Snowflake Turbo Mode: ingestion lag, in minutes, that must
+            be exceeded to switch to turboWarehouse. Defaults to 30.'
           type:
           - "null"
           - integer
         turboRowThreshold:
+          description: 'Snowflake Turbo Mode: row lag that must be exceeded to switch
+            to turboWarehouse. Defaults to 5,000,000.'
           type:
           - "null"
           - integer
         turboWarehouse:
+          description: 'Snowflake only: a larger warehouse Turbo Mode switches to
+            while the pipeline is behind.'
           type:
           - "null"
           - string
         useBQBatchPriority:
+          description: 'BigQuery only: run Transfer''s queries with batch priority
+            instead of interactive.'
           type:
           - "null"
           - boolean
         useBigNumericForVariableNumeric:
+          description: 'BigQuery only: write variable-precision numeric columns as
+            BIGNUMERIC.'
           type:
           - "null"
           - boolean
         useDoubleForVariableNumeric:
+          description: 'MotherDuck only: write variable-precision numeric columns
+            as DOUBLE.'
           type:
           - "null"
           - boolean
         useNewStringMethod:
+          description: 'Databricks only: use Transfer''s newer string conversion;
+            omitted uses the company setting.'
           type:
           - "null"
           - boolean
         useSnowpipeStreaming:
+          description: 'Snowflake only: load data with Snowpipe Streaming.'
           type:
           - "null"
           - boolean
         writeRawBinaryValues:
+          description: 'Databricks and MSSQL only: write binary values as raw binary
+            instead of Base64-encoded strings.'
           type:
           - "null"
           - boolean
@@ -7425,26 +7572,37 @@ components:
     PayloadsAnalyticsDimensions:
       properties:
         operation:
+          description: 'The row operation the series counts: create, backfill, update,
+            delete or other.'
           type: string
         pipelineUUID:
+          description: UUID of the pipeline the series belongs to, when grouped by
+            pipeline.
           format: uuid
           type:
           - "null"
           - string
         reason:
+          description: Why Transfer flushed, for the flushCount dataset.
           type: string
         slot:
+          description: Postgres replication slot name, for the replicationSlotSize
+            dataset.
           type: string
         table:
+          description: The table the series belongs to, when grouped by table.
           type: string
         warehouseName:
+          description: Snowflake warehouse name, for the Snowflake datasets.
           type: string
         warehouseSize:
+          description: Snowflake warehouse size, for the Snowflake datasets.
           type: string
       type: object
     PayloadsAnalyticsScalarIntPoint:
       properties:
         value:
+          description: The value over the whole time window, in the dataset's unit.
           format: int64
           type: integer
       type: object
@@ -7452,11 +7610,14 @@ components:
       properties:
         dimensions:
           $ref: '#/components/schemas/PayloadsAnalyticsDimensions'
+          description: The tags that identify this series.
         granularityInterval:
+          description: Seconds between points in a timeseries; null for scalar results.
           type:
           - "null"
           - integer
         points:
+          description: The series' data points.
           items:
             $ref: '#/components/schemas/PayloadsAnalyticsScalarIntPoint'
           type:
@@ -7467,11 +7628,14 @@ components:
       properties:
         dimensions:
           $ref: '#/components/schemas/PayloadsAnalyticsDimensions'
+          description: The tags that identify this series.
         granularityInterval:
+          description: Seconds between points in a timeseries; null for scalar results.
           type:
           - "null"
           - integer
         points:
+          description: The series' data points.
           items:
             $ref: '#/components/schemas/PayloadsAnalyticsTimeseriesPoint'
           type:
@@ -7481,9 +7645,11 @@ components:
     PayloadsAnalyticsTimeseriesPoint:
       properties:
         time:
+          description: The point's time, in Unix milliseconds.
           format: int64
           type: integer
         value:
+          description: The metric value at that time, in the dataset's unit.
           format: double
           type: number
       type: object
@@ -7525,24 +7691,32 @@ components:
     PayloadsBackfillDefaultsPayload:
       properties:
         chunkSize:
+          description: Size of each chunk a range or CTID backfill reads.
           maximum: 1e+08
           minimum: 100000
           type: integer
         pagination:
+          description: Whether backfill queries page through rows on the client or
+            on the database server.
           enum:
           - client
           - server
           type: string
         parallelism:
+          description: How many chunks a range or CTID backfill reads at once.
           maximum: 50
           minimum: 1
           type: integer
         preset:
+          description: Backfill speed preset. Range reads only use chunkSize and parallelism
+            with the performance preset.
           enum:
           - normal
           - performance
           type: string
         readMode:
+          description: How backfills read each table; range and ctid split it into
+            chunks read in parallel.
           enum:
           - primaryKey
           - range
@@ -7552,13 +7726,17 @@ components:
     PayloadsBackfillStageEvent:
       properties:
         error:
+          description: Why the backfill failed, sent with the failed stage.
           type: string
         rowsWritten:
+          description: Rows the reader reported with the stage, such as on done.
           format: int64
           type: integer
         stage:
           $ref: '#/components/schemas/EnumsBackfillStage'
+          description: The backfill stage reached.
         timestamp:
+          description: When the stage was reached, in RFC 3339.
           format: date-time
           type: string
       required:
@@ -7644,17 +7822,25 @@ components:
     PayloadsCompactionConfig:
       properties:
         enabled:
+          description: When true, Transfer compacts Delta tables on a schedule.
           type: boolean
         everySeconds:
+          description: How often each table is compacted, in seconds; 0 uses Transfer's
+            default of 86400.
           type: integer
         quietWindow:
           $ref: '#/components/schemas/PayloadsCompactionQuietWindow'
+          description: Optional UTC time window compaction is limited to.
       type: object
     PayloadsCompactionQuietWindow:
       properties:
         end:
+          description: End of the window in HH:MM UTC, such as 06:00. Must differ
+            from start.
           type: string
         start:
+          description: Start of the window in HH:MM UTC, such as 02:00. Set together
+            with end.
           type: string
       type: object
     PayloadsConnectorColumn:
@@ -7847,15 +8033,22 @@ components:
     PayloadsDynamoDBSnapshotConfig:
       properties:
         bucket:
+          description: S3 bucket for a new export. Not needed when exportArn is set.
           type: string
         enabled:
+          description: When true, backfills read the table from a DynamoDB export
+            to S3.
           type: boolean
         exportArn:
+          description: ARN of the DynamoDB export to backfill from.
           type: string
         maxParallelism:
+          description: How many export files the backfill reads and writes at once;
+            0 uses the reader's default of 1.
           minimum: 0
           type: integer
         optionalFolder:
+          description: Folder in the bucket that holds the export.
           type: string
       type: object
     PayloadsEncryptionKey:
@@ -7984,89 +8177,124 @@ components:
       properties:
         advancedSettings:
           $ref: '#/components/schemas/PayloadsPipelineAdvancedSettings'
+          description: The pipeline's advanced settings.
         backfillStages:
+          description: The latest backfill stage of each regular table that recorded
+            one. Can be stale once a table stops backfilling; read with hasBackfillingTables.
           items:
             $ref: '#/components/schemas/PayloadsBackfillStageEvent'
           type: array
         columnHashingSaltUUID:
+          description: UUID of the salt used to hash columnsToHash, if any.
           format: uuid
           type:
           - "null"
           - string
         companyUUID:
+          description: UUID of the company that owns the pipeline.
           format: uuid
           type: string
         createdAt:
+          description: When the pipeline was created, in RFC 3339.
           format: date-time
           type: string
         dataPlaneName:
+          description: Name of the data plane the pipeline runs on.
           type: string
         destinationUUID:
+          description: UUID of the destination connector.
           format: uuid
           type:
           - "null"
           - string
         encryptionKeyUUID:
+          description: UUID of the encryption key used for columnsToEncrypt, if any.
           format: uuid
           type:
           - "null"
           - string
         environmentUUID:
+          description: UUID of the environment the pipeline belongs to.
           format: uuid
           type: string
         forceFlushUntil:
+          description: When the current force flush ends, in RFC 3339. Set only while
+            a force flush overrides the flush settings.
           format: date-time
           type:
           - "null"
           - string
         hasBackfillingTables:
+          description: True when one or more tables are in their initial backfill.
           type: boolean
         hasUndeployedChanges:
+          description: True when the pipeline has saved changes that haven't been
+            deployed.
           type: boolean
         historyBackfillStages:
+          description: The latest backfill stage of each history table that recorded
+            one. Can be stale once a table stops backfilling; read with hasBackfillingTables.
           items:
             $ref: '#/components/schemas/PayloadsBackfillStageEvent'
           type: array
         icebergNativeEngine:
+          description: True when an Iceberg pipeline writes with the native engine,
+            the only one that can create v3 tables.
           type: boolean
         isDeploying:
+          description: True while a deploy of the pipeline is in progress.
           type: boolean
         lastDeployError:
+          description: Why the last deploy failed. Cleared once a later deploy succeeds.
           type: string
         lastDeployFailedAt:
+          description: When the last deploy failed, in RFC 3339. Cleared once a later
+            deploy succeeds.
           format: date-time
           type:
           - "null"
           - string
         lastDeployedAt:
+          description: When the pipeline was last deployed, in RFC 3339. Omitted if
+            it never was.
           format: date-time
           type:
           - "null"
           - string
         lastUpdatedAt:
+          description: When the pipeline was last saved, in RFC 3339.
           format: date-time
           type: string
         name:
+          description: The pipeline's display name.
           type: string
         snowflakeEcoScheduleUUID:
+          description: UUID of the Snowflake eco schedule the pipeline uses, if any.
           format: uuid
           type:
           - "null"
           - string
         sourceReaderUUID:
+          description: UUID of the source reader the pipeline reads from, for source_reader_detail.
           format: uuid
           type: string
         sourceType:
           $ref: '#/components/schemas/EnumsConnectorSlug'
+          description: The source connector's type.
         specificDestCfg:
           $ref: '#/components/schemas/PayloadsSpecificConfig'
+          description: Destination-specific settings, such as the database, schema
+            or bucket to write to.
         status:
           $ref: '#/components/schemas/EnumsPipelineStatus'
+          description: The pipeline's run state.
         tables:
+          description: The pipeline's tables, with their UUIDs and status.
           items:
             $ref: '#/components/schemas/PayloadsTable'
           type: array
         uuid:
+          description: The pipeline's UUID.
           format: uuid
           type: string
       required:
@@ -9015,75 +9243,102 @@ components:
     PayloadsLightPipeline:
       properties:
         backfillStages:
+          description: The latest backfill stage of each regular table that recorded
+            one. Can be stale once a table stops backfilling; read with hasBackfillingTables.
           items:
             $ref: '#/components/schemas/PayloadsBackfillStageEvent'
           type: array
         columnHashingSaltUUID:
+          description: UUID of the salt used to hash columnsToHash, if any.
           format: uuid
           type:
           - "null"
           - string
         companyUUID:
+          description: UUID of the company that owns the pipeline.
           format: uuid
           type: string
         createdAt:
+          description: When the pipeline was created, in RFC 3339.
           format: date-time
           type: string
         dataPlaneName:
+          description: Name of the data plane the pipeline runs on.
           type: string
         destinationUUID:
+          description: UUID of the destination connector.
           format: uuid
           type:
           - "null"
           - string
         encryptionKeyUUID:
+          description: UUID of the encryption key used for columnsToEncrypt, if any.
           format: uuid
           type:
           - "null"
           - string
         environmentUUID:
+          description: UUID of the environment the pipeline belongs to.
           format: uuid
           type: string
         hasBackfillingTables:
+          description: True when one or more tables are in their initial backfill.
           type: boolean
         hasUndeployedChanges:
+          description: True when the pipeline has saved changes that haven't been
+            deployed.
           type: boolean
         historyBackfillStages:
+          description: The latest backfill stage of each history table that recorded
+            one. Can be stale once a table stops backfilling; read with hasBackfillingTables.
           items:
             $ref: '#/components/schemas/PayloadsBackfillStageEvent'
           type: array
         isDeploying:
+          description: True while a deploy of the pipeline is in progress.
           type: boolean
         lastDeployError:
+          description: Why the last deploy failed. Cleared once a later deploy succeeds.
           type: string
         lastDeployFailedAt:
+          description: When the last deploy failed, in RFC 3339. Cleared once a later
+            deploy succeeds.
           format: date-time
           type:
           - "null"
           - string
         lastDeployedAt:
+          description: When the pipeline was last deployed, in RFC 3339. Omitted if
+            it never was.
           format: date-time
           type:
           - "null"
           - string
         lastUpdatedAt:
+          description: When the pipeline was last saved, in RFC 3339.
           format: date-time
           type: string
         name:
+          description: The pipeline's display name.
           type: string
         snowflakeEcoScheduleUUID:
+          description: UUID of the Snowflake eco schedule the pipeline uses, if any.
           format: uuid
           type:
           - "null"
           - string
         sourceReaderUUID:
+          description: UUID of the source reader the pipeline reads from, for source_reader_detail.
           format: uuid
           type: string
         sourceType:
           $ref: '#/components/schemas/EnumsConnectorSlug'
+          description: The source connector's type.
         status:
           $ref: '#/components/schemas/EnumsPipelineStatus'
+          description: The pipeline's run state.
         uuid:
+          description: The pipeline's UUID.
           format: uuid
           type: string
       required:
@@ -9143,149 +9398,264 @@ components:
     PayloadsPipelineAdvancedSettings:
       properties:
         appendOnly:
+          description: When true, rows are always appended instead of merged into
+            the destination table. Use for append-only data such as event tracking.
           type: boolean
         autoEnableHistoryForNewTables:
+          description: When true, new source tables are added with history mode on;
+            without autoReplicateNewTables they are added history-only.
           type: boolean
         autoEnableHistoryIgnoreRegex:
+          description: Regex of full table names that are skipped while autoEnableHistoryForNewTables
+            is on. Can't be combined with autoEnableHistoryIncludeRegex.
           type: string
         autoEnableHistoryIncludeRegex:
+          description: Regex of full table names; while autoEnableHistoryForNewTables
+            is on, only new tables that match are auto-added. Can't be combined with
+            autoEnableHistoryIgnoreRegex.
           type: string
         autoReplicateIgnoreRegex:
+          description: Regex of full table names that auto-replication skips. Can't
+            be combined with autoReplicateIncludeRegex.
           type: string
         autoReplicateIncludeRegex:
+          description: Regex of full table names; only new tables that match are auto-added.
+            Can't be combined with autoReplicateIgnoreRegex.
           type: string
         autoReplicateNewTables:
+          description: When true, new tables found in the source are added to the
+            pipeline automatically.
           type: boolean
         backfillMySQLFloatsAsShortestDecimal:
+          description: 'MySQL and PlanetScale sources only: backfills write FLOAT
+            columns as their shortest decimal, as replication does, instead of the
+            exact float32.'
           type: boolean
         bigQueryReservation:
+          description: 'BigQuery only: the reservation Transfer''s queries run in;
+            empty uses the project default.'
           type: string
         bufferRows:
+          description: Rows to buffer before flushing to the destination, at least
+            5.
           type: integer
         castAllColumnsToString:
+          description: 'MongoDB and DocumentDB sources only: write every column, including
+            the primary key, as a string. __artie_* columns keep their types.'
           type: boolean
         databricksAutoLiquidClustering:
+          description: 'Databricks only: turn on automatic liquid clustering for every
+            destination table.'
           type: boolean
         databricksDisableVariantShredding:
+          description: 'Databricks only: turn off variant shredding on new tables
+            and, after each deploy, existing ones. Already shredded data isn''t rewritten.'
           type: boolean
         defaultSourceSchema:
+          description: Source schema whose tables aren't prefixed with the schema
+            name in the destination.
           type: string
         disableAlerts:
+          description: When true, Artie stops sending email alerts for this pipeline.
+            Health is still tracked in the dashboard.
           type: boolean
         dropDeletedColumns:
+          description: When true, columns dropped in the source are dropped in the
+            destination too. History tables never drop columns.
           type: boolean
         dynamoDBBackfillConfig:
           $ref: '#/components/schemas/PayloadsDynamoDBSnapshotConfig'
+          description: 'DynamoDB sources only: how backfills read the table from a
+            DynamoDB export to S3.'
         enableSoftDelete:
+          description: When true, rows deleted in the source are kept and marked in
+            an __artie_delete column instead of being deleted.
           type: boolean
         flushIntervalSeconds:
+          description: Seconds between flushes to the destination, from 5 to 86400.
+            Transfer flushes sooner when bufferRows or flushSizeKb is reached.
           type: integer
         flushSizeKb:
+          description: Buffered data, in KB, that triggers a flush to the destination,
+            up to 1.5 GB.
           type: integer
         forceUTCTimezone:
+          description: When true, source timestamp columns without a time zone are
+            written as UTC timestamps with a time zone.
           type: boolean
         includeArtieOperationColumn:
+          description: When true, each row gets an __artie_operation column with the
+            change type that wrote it.
           type: boolean
         includeArtieUpdatedAtColumn:
+          description: When true, each row gets an __artie_updated_at column with
+            the time Artie wrote it.
           type: boolean
         includeDatabaseUpdatedAtColumn:
+          description: When true, each row gets an __artie_db_updated_at column with
+            the time the change happened in the source. Always on for history tables.
           type: boolean
         includeFullSourceTableNameColumn:
+          description: When true, each row gets an __artie_full_source_table_name
+            column with its source table's full name.
           type: boolean
         includeFullSourceTableNameColumnAsPrimaryKey:
+          description: When true, the __artie_full_source_table_name column is added
+            to the primary key. Requires includeFullSourceTableNameColumn.
           type: boolean
         includeSourceMetadataColumn:
+          description: When true, each row gets an __artie_source_metadata column
+            with the change's source metadata.
           type: boolean
         jsonAsVarchar:
+          description: 'Redshift only: store struct values as JSON text in VARCHAR(MAX)
+            instead of SUPER.'
           type: boolean
         jsonParseTruncateStrings:
+          description: 'Redshift only: truncate strings inside SUPER values that are
+            over Redshift''s limit instead of failing the load.'
           type: boolean
         maxConcurrentSnapshots:
+          description: Most table backfills this pipeline runs at once; 0 uses the
+            company limit, and a set value must be between 1 and that limit.
           minimum: 0
           type: integer
         nullOutInvalidValues:
+          description: 'Snowflake and BigQuery only: skip invalid values, such as
+            bad timestamps, instead of failing the load. Set by Artie.'
           type: boolean
         postgresPartitionMirroring:
+          description: 'Postgres source and destination only: create each partitioned
+            source table''s partitions in the destination, including ones added later.'
           type: boolean
         reuseStagingTable:
+          description: When true, Transfer truncates and reuses staging tables instead
+            of dropping them. Set by Artie.
           type: boolean
         snowpipeStreamingMaxChannels:
+          description: 'Snowflake only: the most Snowpipe Streaming channels Transfer
+            opens.'
           type: integer
         splitEventsByType:
+          description: 'API sources only: when true, each event type gets its own
+            table; when false, all events share one table with the event type as a
+            column.'
           type: boolean
         stagingSchema:
+          description: Schema to create staging tables in; empty uses each table's
+            own schema.
           type: string
         staticColumns:
+          description: Columns with fixed values added to every destination table.
           items:
             $ref: '#/components/schemas/PayloadsStaticColumn'
           type:
           - array
           - "null"
         structAsVariant:
+          description: 'Databricks only: store new struct and array columns as VARIANT
+            instead of STRING or ARRAY<string>.'
           type: boolean
         truncateExceededValues:
+          description: 'Redshift and BigQuery only: truncate values that are too large
+            for their column instead of replacing them with __artie_exceeded_value.'
           type: boolean
         turboLatencyThresholdMinutes:
+          description: 'Snowflake Turbo Mode: ingestion lag, in minutes, that must
+            be exceeded to switch to turboWarehouse. Defaults to 30.'
           type: integer
         turboRowThreshold:
+          description: 'Snowflake Turbo Mode: row lag that must be exceeded to switch
+            to turboWarehouse. Defaults to 5,000,000.'
           type: integer
         turboWarehouse:
+          description: 'Snowflake only: a larger warehouse Turbo Mode switches to
+            while the pipeline is behind.'
           type: string
         useBQBatchPriority:
+          description: 'BigQuery only: run Transfer''s queries with batch priority
+            instead of interactive.'
           type: boolean
         useBigNumericForVariableNumeric:
+          description: 'BigQuery only: write variable-precision numeric columns as
+            BIGNUMERIC.'
           type: boolean
         useDoubleForVariableNumeric:
+          description: 'MotherDuck only: write variable-precision numeric columns
+            as DOUBLE.'
           type: boolean
         useNewStringMethod:
+          description: 'Databricks only: use Transfer''s newer string conversion;
+            omitted uses the company setting.'
           type:
           - "null"
           - boolean
         useSnowpipeStreaming:
+          description: 'Snowflake only: load data with Snowpipe Streaming.'
           type: boolean
         writeRawBinaryValues:
+          description: 'Databricks and MSSQL only: write binary values as raw binary
+            instead of Base64-encoded strings.'
           type: boolean
       type: object
     PayloadsPipelineErrorLog:
       properties:
         createdAt:
+          description: When Artie recorded the error, in RFC 3339.
           format: date-time
           type: string
         database:
+          description: The database of the table the error is about, if any.
           type: string
         destination:
+          description: The destination connector type, such as bigquery.
           type: string
         errorDetail:
+          description: The full error text, with secrets redacted.
           type: string
         eventType:
+          description: The type of the event that reported the error.
           type: string
         message:
+          description: A short summary of the event type.
           type: string
         mode:
+          description: 'Transfer''s run mode when the error happened: replication
+            or history.'
           type: string
         pipelineUUID:
+          description: UUID of the pipeline the error belongs to.
           format: uuid
           type: string
         schema:
+          description: The schema of the table the error is about, if any.
           type: string
         service:
+          description: The Artie service that reported the error, such as transfer
+            or reader.
           type: string
         source:
+          description: The source connector type, such as postgresql.
           type: string
         sourceReaderUUID:
+          description: UUID of the pipeline's source reader.
           format: uuid
           type: string
         table:
+          description: The table the error is about, if any.
           type: string
         timestamp:
+          description: When the service reported the error, in RFC 3339.
           format: date-time
           type:
           - "null"
           - string
         uuid:
+          description: The error log entry's UUID.
           format: uuid
           type: string
         version:
+          description: The version of the service that reported the error.
           type: string
       required:
       - uuid
@@ -9294,36 +9664,53 @@ components:
       properties:
         advancedSettings:
           $ref: '#/components/schemas/PayloadsAdvancedPipelineSettingsPayload'
+          description: Pipeline settings to change; omitted fields keep their current
+            values.
         columnHashingSaltUUID:
+          description: UUID of the salt used to hash columnsToHash; null hashes with
+            plain SHA-256.
           format: uuid
           type:
           - "null"
           - string
         dataPlaneName:
+          description: Name of the data plane that runs the pipeline. On create, empty
+            uses the company's default data plane.
           type: string
         destinationUUID:
+          description: UUID of the destination connector, from the connector list.
           format: uuid
           type:
           - "null"
           - string
         encryptionKeyUUID:
+          description: UUID of the encryption key used for columnsToEncrypt; null
+            for none.
           format: uuid
           type:
           - "null"
           - string
         name:
+          description: The pipeline's display name.
           type: string
         snowflakeEcoScheduleUUID:
+          description: UUID of a Snowflake eco schedule for the pipeline; null for
+            none.
           format: uuid
           type:
           - "null"
           - string
         sourceReaderUUID:
+          description: UUID of the source reader the pipeline reads from, from pipeline_get
+            or the source reader list.
           format: uuid
           type: string
         specificDestCfg:
           $ref: '#/components/schemas/PayloadsSpecificConfig'
+          description: Destination-specific settings, such as the database, schema
+            or bucket to write to.
         tables:
+          description: The tables to replicate.
           items:
             $ref: '#/components/schemas/PayloadsTablePayload'
           type:
@@ -9965,44 +10352,73 @@ components:
     PayloadsSpecificConfig:
       properties:
         bucketName:
+          description: 'S3, GCS and Delta Lake only: the bucket to write to.'
           type: string
         checkpointInterval:
+          description: 'Delta Lake only: commits per table between checkpoints. Defaults
+            to 10; -1 turns checkpoints off.'
           type: integer
         compaction:
           $ref: '#/components/schemas/PayloadsCompactionConfig'
+          description: 'Delta Lake only: Transfer''s scheduled compaction settings.'
         containerName:
+          description: 'Oracle only: the container name used to connect.'
           type: string
         database:
+          description: The destination database; for BigQuery, the dataset, and for
+            Oracle, the service name.
           type: string
         dynamicallyCreateNamespaces:
+          description: When true, deploys create missing destination schemas (databases
+            in MySQL) and skip namespace validation. Ignored for Oracle.
           type: boolean
         externalStageName:
+          description: 'Snowflake only: the external stage to load data through; empty
+            doesn''t use one.'
           type: string
         externalStageS3Bucket:
+          description: 'Snowflake only: the S3 bucket behind the external stage.'
           type: string
         externalStageS3Prefix:
+          description: 'Snowflake only: the path prefix in the external stage''s bucket.'
           type: string
         folderName:
+          description: 'S3, GCS and Delta Lake only: the folder in the bucket to write
+            under.'
           type: string
         icebergFormatVersion:
+          description: 'Iceberg only: the format new tables are created with on REST
+            catalogs with the native engine; empty means v2. Tables can''t be downgraded
+            from v3.'
           enum:
           - v2
           - v3
           type: string
         schema:
+          description: Destination schema for every table when useSameSchemaAsSource
+            is false.
           type: string
         schemaNamePrefix:
+          description: Prefix added to source schema names when useSameSchemaAsSource
+            is true.
           type: string
         tableNameSeparator:
+          description: 'S3, GCS and Delta Lake only: separator between the parts of
+            a table''s name in object paths; defaults to /.'
           type: string
         useSameSchemaAsSource:
+          description: When true, each table goes to a destination schema named after
+            its source schema, with schemaNamePrefix; otherwise every table goes to
+            schema.
           type: boolean
       type: object
     PayloadsStaticColumn:
       properties:
         column:
+          description: Name of the column added to every destination table.
           type: string
         value:
+          description: The value written to that column on every row.
           type: string
       type: object
     PayloadsTable:
@@ -10063,6 +10479,8 @@ components:
         bigQueryPartitionSettings:
           $ref: '#/components/schemas/PayloadsBigQuerySettings'
         bufferRows:
+          description: Rows to buffer before flushing to the destination, at least
+            5.
           type: integer
         columnsToCompress:
           items:
@@ -10100,8 +10518,12 @@ components:
           minimum: 0
           type: integer
         flushIntervalSeconds:
+          description: Seconds between flushes to the destination, from 5 to 86400.
+            Transfer flushes sooner when bufferRows or flushSizeKb is reached.
           type: integer
         flushSizeKb:
+          description: Buffered data, in KB, that triggers a flush to the destination,
+            up to 1.5 GB.
           type: integer
         historyTableBackfillFromSchemas:
           items:
@@ -11887,6 +12309,7 @@ components:
     RouterPipelineCancelBackfillRequest:
       properties:
         historyTableUUIDs:
+          description: UUIDs of the tables whose history-table backfill to cancel.
           items:
             format: uuid
             type: string
@@ -11894,6 +12317,7 @@ components:
         optionalReason:
           type: string
         tableUUIDs:
+          description: UUIDs of the tables whose regular-table backfill to cancel.
           items:
             format: uuid
             type: string
@@ -11905,6 +12329,8 @@ components:
     RouterPipelineCreateFromSourceRequest:
       properties:
         dataPlaneName:
+          description: Data plane for the new pipeline; empty uses the company's default.
+            With sourceReaderUUID, it must match the source reader's data plane.
           type: string
         database:
           description: Database name written onto the new source reader. Postgres,
@@ -11952,32 +12378,43 @@ components:
       properties:
         pipeline:
           $ref: '#/components/schemas/PayloadsPipelinePayload'
+          description: The pipeline to create.
       required:
       - pipeline
       type: object
     RouterPipelineStartRequest:
       properties:
         disableBackFill:
+          description: When true, new tables skip their initial backfill and start
+            streaming.
           type: boolean
         keepPaused:
+          description: When true, deploys a paused pipeline's changes without resuming
+            it. Ignored when the pipeline isn't paused.
           type: boolean
       type: object
     RouterPipelineTableStats:
       properties:
         count:
+          description: Rows processed in the time window.
           format: int64
           type: integer
         latency:
+          description: Average ingestion lag over the time window, in seconds; null
+            when there is no data.
           type:
           - "null"
           - number
         tableName:
+          description: The table's name as reported in metrics.
           type: string
       type: object
     RouterPipelineUpdateRequest:
       properties:
         pipeline:
           $ref: '#/components/schemas/PayloadsPipelinePayload'
+          description: The pipeline to save. Start from the pipeline_get response
+            and change what you need.
       required:
       - pipeline
       type: object
