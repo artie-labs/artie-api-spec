@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.225
+  version: v1.0.229
 servers:
 - url: https://api.artie.com
 paths:
@@ -6995,6 +6995,7 @@ components:
     ListResponseBodyColumnHashingSalt:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsColumnHashingSalt'
           type: array
@@ -7004,6 +7005,7 @@ components:
     ListResponseBodyConnectorTable:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/RouterConnectorTable'
           type: array
@@ -7013,6 +7015,7 @@ components:
     ListResponseBodyConnectorTableDetailResponse:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsConnectorTableDetailResponse'
           type: array
@@ -7022,6 +7025,7 @@ components:
     ListResponseBodyDataCatalogMatch:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsDataCatalogMatch'
           type: array
@@ -7031,6 +7035,7 @@ components:
     ListResponseBodyEncryptionKey:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsEncryptionKey'
           type: array
@@ -7040,6 +7045,7 @@ components:
     ListResponseBodyKafkaCluster:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsKafkaCluster'
           type: array
@@ -7049,6 +7055,7 @@ components:
     ListResponseBodyKafkaConsumerGroup:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsKafkaConsumerGroup'
           type: array
@@ -7058,6 +7065,7 @@ components:
     ListResponseBodyKafkaConsumerGroupDetail:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsKafkaConsumerGroupDetail'
           type: array
@@ -7067,6 +7075,7 @@ components:
     ListResponseBodyKafkaTopic:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsKafkaTopic'
           type: array
@@ -7076,6 +7085,7 @@ components:
     ListResponseBodyKafkaTopicSize:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsKafkaTopicSize'
           type: array
@@ -7085,6 +7095,7 @@ components:
     ListResponseBodyKafkaUser:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsKafkaUser'
           type: array
@@ -7094,6 +7105,7 @@ components:
     ListResponseBodyLightConnector:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsLightConnector'
           type: array
@@ -7103,6 +7115,7 @@ components:
     ListResponseBodyLightPipeline:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsLightPipeline'
           type: array
@@ -7112,6 +7125,7 @@ components:
     ListResponseBodyManagedKafkaUser:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsManagedKafkaUser'
           type: array
@@ -7121,6 +7135,7 @@ components:
     ListResponseBodyPipelineErrorLog:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsPipelineErrorLog'
           type: array
@@ -7130,6 +7145,7 @@ components:
     ListResponseBodyPostgresPublication:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsPostgresPublication'
           type: array
@@ -7139,6 +7155,7 @@ components:
     ListResponseBodyPostgresReplicationSlot:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsPostgresReplicationSlot'
           type: array
@@ -7148,6 +7165,7 @@ components:
     ListResponseBodySchemaResponse:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsSchemaResponse'
           type: array
@@ -7157,6 +7175,7 @@ components:
     ListResponseBodySnowflakeEcoSchedule:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsSnowflakeEcoSchedule'
           type: array
