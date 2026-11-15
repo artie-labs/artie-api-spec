@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.232
+  version: v1.0.233
 servers:
 - url: https://api.artie.com
 paths:
@@ -7899,16 +7899,21 @@ components:
     PayloadsColumnHashingSalt:
       properties:
         createdAt:
+          description: When the salt was created.
           format: date-time
           type: string
         description:
+          description: Free-text notes about the salt.
           type: string
         name:
+          description: Display name for the salt.
           type: string
         updatedAt:
+          description: When the salt was last changed.
           format: date-time
           type: string
         uuid:
+          description: The column hashing salt's UUID. Pipelines reference it in columnHashingSaltUUID.
           format: uuid
           type: string
       required:
@@ -7918,18 +7923,25 @@ components:
     PayloadsColumnHashingSaltDetail:
       properties:
         createdAt:
+          description: When the salt was created.
           format: date-time
           type: string
         description:
+          description: Free-text notes about the salt.
           type: string
         name:
+          description: Display name for the salt.
           type: string
         salt:
+          description: The decrypted salt that keys the HMAC-SHA256 hash of hashed
+            columns.
           type: string
         updatedAt:
+          description: When the salt was last changed.
           format: date-time
           type: string
         uuid:
+          description: The column hashing salt's UUID. Pipelines reference it in columnHashingSaltUUID.
           format: uuid
           type: string
       required:
@@ -8172,23 +8184,32 @@ components:
     PayloadsEncryptionKey:
       properties:
         createdAt:
+          description: When the key was created.
           format: date-time
           type: string
         description:
+          description: Free-text notes about the key.
           type: string
         kmsKeyUUID:
+          description: The KMS key that generated this data key. Only set when type
+            is kms.
           format: uuid
           type:
           - "null"
           - string
         name:
+          description: Display name for the key.
           type: string
         type:
+          description: 'How the key was made: passphrase for an Artie-generated passphrase,
+            kms for a data key generated with the customer''s AWS KMS key.'
           type: string
         updatedAt:
+          description: When the key was last changed.
           format: date-time
           type: string
         uuid:
+          description: The encryption key's UUID.
           format: uuid
           type: string
       required:
@@ -8199,25 +8220,36 @@ components:
     PayloadsEncryptionKeyDetail:
       properties:
         createdAt:
+          description: When the key was created.
           format: date-time
           type: string
         description:
+          description: Free-text notes about the key.
           type: string
         key:
+          description: 'The secret key: the plaintext passphrase, or for kms keys
+            the KMS-encrypted data key.'
           type: string
         kmsKeyUUID:
+          description: The KMS key that generated this data key. Only set when type
+            is kms.
           format: uuid
           type:
           - "null"
           - string
         name:
+          description: Display name for the key.
           type: string
         type:
+          description: 'How the key was made: passphrase for an Artie-generated passphrase,
+            kms for a data key generated with the customer''s AWS KMS key.'
           type: string
         updatedAt:
+          description: When the key was last changed.
           format: date-time
           type: string
         uuid:
+          description: The encryption key's UUID.
           format: uuid
           type: string
       required:
@@ -8433,27 +8465,37 @@ components:
     PayloadsIngestionAPIKey:
       properties:
         companyUUID:
+          description: The company that owns the key.
           format: uuid
           type: string
         createdAt:
+          description: When the key was created.
           format: date-time
           type: string
         expiresAt:
+          description: When the key stops working. Null or left out means it never
+            expires.
           format: date-time
           type:
           - "null"
           - string
         last4:
+          description: The last four characters of the secret, to tell keys apart.
+            The full secret is only returned on create.
           type: string
         name:
+          description: Display name for the key.
           type: string
         sourceReaderUUID:
+          description: The source reader that accepts events sent with this key.
           format: uuid
           type: string
         updatedAt:
+          description: When the key was last changed.
           format: date-time
           type: string
         uuid:
+          description: The ingestion API key's UUID.
           format: uuid
           type: string
       required:
@@ -10056,52 +10098,81 @@ components:
     PayloadsPrivateLinkConnection:
       properties:
         approvedAt:
+          description: When the connection was approved for provisioning. Left out
+            while it awaits approval.
           format: date-time
           type:
           - "null"
           - string
         availabilityZoneIds:
+          description: AWS availability zone IDs, such as use1-az1, that the endpoint
+            is placed in. Empty on Azure.
           items:
             type: string
           type: array
         companyUUID:
+          description: The company that owns the connection.
           format: uuid
           type: string
         createdAt:
+          description: When the connection was created.
           format: date-time
           type: string
         createdBy:
+          description: Display name of who created the connection, or API key or Artie
+            for non-account actors. Only set on the list response.
           type: string
         dataPlaneName:
+          description: The data plane the connection is restricted to. Left out when
+            it uses the company's default data plane.
           type:
           - "null"
           - string
         dnsEntry:
+          description: 'The address of Artie''s endpoint that connectors use as their
+            host: a DNS name on AWS, a private IP on Azure. Empty until provisioned.'
           type: string
         environmentUUID:
+          description: The environment the connection belongs to.
           format: uuid
           type: string
         name:
+          description: Display name for the connection.
           type: string
         privateLinkServiceAlias:
+          description: The Azure Private Link service alias Artie connects to. Empty
+            on AWS.
           type: string
         provider:
           $ref: '#/components/schemas/EnumsCloudProvider'
+          description: The cloud the connection is in, set by its data plane.
         provisioningError:
+          description: 'The raw error that put the connection in errored status: a
+            failed provisioning attempt, a health check that found the endpoint dead
+            or gone, or a failed teardown. Only set while status is errored.'
           type: string
         region:
+          description: 'The cloud region of the connection: parsed from the VPC service
+            name on AWS, the data plane''s region on Azure.'
           type: string
         status:
+          description: Where the connection is in review and provisioning.
           type: string
         updatedAt:
+          description: When the connection was last changed.
           format: date-time
           type: string
         uuid:
+          description: The PrivateLink connection's UUID.
           format: uuid
           type: string
         vpcEndpointId:
+          description: 'The ID of Artie''s endpoint: the VPC endpoint ID on AWS, the
+            private endpoint resource ID on Azure. Empty until provisioned.'
           type: string
         vpcServiceName:
+          description: The AWS VPC endpoint service name Artie connects to, such as
+            com.amazonaws.vpce.us-west-2.vpce-svc-<id>. Empty on Azure.
           type: string
       required:
       - uuid
@@ -10223,32 +10294,48 @@ components:
     PayloadsSSHTunnel:
       properties:
         companyUUID:
+          description: The company that owns the tunnel.
           format: uuid
           type: string
         createdAt:
+          description: When the tunnel was created.
           format: date-time
           type: string
         environmentUUID:
+          description: The environment the tunnel belongs to.
           format: uuid
           type: string
         host:
+          description: Hostname or IP address of the SSH bastion server Artie connects
+            to.
           type: string
         isInUse:
+          description: Whether any connector uses this tunnel. Only set on the detail
+            response.
           type:
           - "null"
           - boolean
         name:
+          description: Display name for the tunnel.
           type: string
         port:
+          description: Port the SSH bastion server listens on.
           type: integer
         publicKey:
+          description: The public key Artie generated for this tunnel; add it to the
+            bastion user's authorized_keys. The private key is never returned.
           type: string
         updatedAt:
+          description: When the tunnel was last changed.
           format: date-time
           type: string
         username:
+          description: The user Artie logs in to the bastion as. Empty for callers
+            who can't edit connectors.
           type: string
         uuid:
+          description: The SSH tunnel's UUID. Connectors reference it to connect through
+            this tunnel.
           format: uuid
           type: string
       required:
@@ -10311,22 +10398,29 @@ components:
     PayloadsSnowflakeEcoSchedule:
       properties:
         company:
+          description: The UUID of the company that owns the schedule.
           format: uuid
           type: string
         createdAt:
+          description: When the schedule was created.
           format: date-time
           type: string
         environmentUUID:
+          description: The environment the schedule belongs to.
           format: uuid
           type: string
         name:
+          description: Display name for the schedule.
           type: string
         settings:
           $ref: '#/components/schemas/PayloadsSnowflakeEcoScheduleSettings'
+          description: Peak hours and the flush rules used outside them.
         updatedAt:
+          description: When the schedule was last changed.
           format: date-time
           type: string
         uuid:
+          description: The Snowflake Eco Mode schedule's UUID.
           format: uuid
           type: string
       required:
@@ -10341,20 +10435,33 @@ components:
     PayloadsSnowflakeEcoScheduleSettings:
       properties:
         days:
+          description: Days with peak hours, as English weekday names such as Monday.
+            Every hour of the other days is off-peak. At least one is required.
           items:
             type: string
           type: array
         endTimeOfDay:
+          description: When peak hours end each peak day, as 24-hour HH:MM.
           type: string
         offPeakBufferRows:
+          description: Rows to buffer before flushing during off-peak hours, at least
+            5.
           type: integer
         offPeakFlushIntervalSeconds:
+          description: Seconds between flushes to Snowflake during off-peak hours,
+            from 5 to 86400.
           type: integer
         offPeakFlushSizeKb:
+          description: Buffered data size, in KB, that triggers a flush during off-peak
+            hours. More than 0 and at most 1.5 GB.
           type: integer
         startTimeOfDay:
+          description: When peak hours start each peak day, as 24-hour HH:MM. Must
+            not be after endTimeOfDay.
           type: string
         timezone:
+          description: IANA time zone the peak hours are in, such as UTC or America/New_York.
+            Only common zones are accepted.
           type: string
       required:
       - timezone
@@ -12219,10 +12326,15 @@ components:
     RouterCreateColumnHashingSaltRequest:
       properties:
         description:
+          description: Free-text notes about the salt.
           type: string
         name:
+          description: Display name for the salt.
           type: string
         salt:
+          description: 'The salt to hash with. Left empty, Artie generates one: the
+            43-character base64url encoding of 32 random bytes. Hashes are keyed on
+            the salt string as given, not on decoded bytes.'
           type: string
       required:
       - name
@@ -12231,7 +12343,10 @@ components:
       properties:
         columnHashingSalt:
           $ref: '#/components/schemas/PayloadsColumnHashingSalt'
+          description: The new salt.
         salt:
+          description: The salt value, given or generated. Only the detail endpoint
+            returns it again.
           type: string
       required:
       - columnHashingSalt
@@ -12240,13 +12355,17 @@ components:
     RouterCreateEncryptionKeyRequest:
       properties:
         description:
+          description: Free-text notes about the key.
           type: string
         kmsKeyUUID:
+          description: A KMS key from the KMS key list to generate the data key with.
+            Left out, Artie generates a passphrase.
           format: uuid
           type:
           - "null"
           - string
         name:
+          description: Display name for the key.
           type: string
       required:
       - name
@@ -12255,7 +12374,10 @@ components:
       properties:
         encryptionKey:
           $ref: '#/components/schemas/PayloadsEncryptionKey'
+          description: The new key.
         key:
+          description: 'The secret key: the plaintext passphrase, or for kms keys
+            the KMS-encrypted data key. Only the detail endpoint returns it again.'
           type: string
       required:
       - encryptionKey
@@ -12264,8 +12386,12 @@ components:
     RouterCreateIngestionAPIKeyRequest:
       properties:
         name:
+          description: Display name for the key.
           type: string
         sourceReaderUUID:
+          description: The source reader the key sends events to, from source_reader_list.
+            Its pipelines are marked as having undeployed changes; a shared reader
+            needs source_reader_deploy instead.
           format: uuid
           type: string
       required:
@@ -12275,7 +12401,10 @@ components:
       properties:
         ingestionAPIKey:
           $ref: '#/components/schemas/PayloadsIngestionAPIKey'
+          description: The new key.
         secret:
+          description: The full secret to send with events. Returned only here; it
+            can't be fetched again.
           type: string
       required:
       - ingestionAPIKey
@@ -12992,6 +13121,7 @@ components:
     RouterPreviewColumnHashingSaltRequest:
       properties:
         value:
+          description: A sample column value to hash.
           type: string
       required:
       - value
@@ -12999,6 +13129,8 @@ components:
     RouterPreviewColumnHashingSaltResponse:
       properties:
         hash:
+          description: The hex-encoded hash of the value, as a pipeline would write
+            it.
           type: string
       required:
       - hash
@@ -13006,44 +13138,69 @@ components:
     RouterPrivateLinkConnectionCreateRequest:
       properties:
         availabilityZoneIds:
+          description: AWS availability zone IDs, such as use1-az1, to place the endpoint
+            in. Required on AWS data planes.
           items:
             type: string
           type:
           - array
           - "null"
         dataPlaneName:
+          description: The data plane to restrict the connection to. Left out, the
+            company's default data plane is used.
           type:
           - "null"
           - string
         environmentUUID:
+          description: The environment to create it in. Ignored when the API key or
+            MCP grant is scoped to one environment. Otherwise required for company-wide
+            API keys and MCP grants; for other callers it defaults to the company's
+            first environment.
           format: uuid
           type:
           - "null"
           - string
         name:
+          description: Display name for the connection.
           type: string
         privateLinkServiceAlias:
+          description: The Azure Private Link service alias to connect to. Required
+            on Azure data planes.
           type: string
         vpcServiceName:
+          description: The AWS VPC endpoint service name to connect to, as com.amazonaws.vpce.<region>.vpce-svc-<id>.
+            Required on AWS data planes.
           type: string
       type: object
     RouterPrivateLinkConnectionUpdateRequest:
       properties:
         availabilityZoneIds:
+          description: AWS availability zone IDs to place the endpoint in. Required
+            on AWS; only applied while the connection is under review or errored with
+            no endpoint.
           items:
             type: string
           type:
           - array
           - "null"
         dataPlaneName:
+          description: The data plane to restrict the connection to; left out means
+            the company's default. Only applied while the connection is under review
+            or errored with no endpoint.
           type:
           - "null"
           - string
         name:
+          description: New display name for the connection. Always editable.
           type: string
         privateLinkServiceAlias:
+          description: The Azure Private Link service alias. Required on Azure; only
+            applied while the connection is under review or errored with no endpoint.
           type: string
         vpcServiceName:
+          description: The AWS VPC endpoint service name, as com.amazonaws.vpce.<region>.vpce-svc-<id>.
+            Required on AWS; only applied while the connection is under review or
+            errored with no endpoint.
           type: string
       required:
       - name
@@ -13076,17 +13233,26 @@ components:
     RouterSSHTunnelCreateRequest:
       properties:
         environmentUUID:
+          description: The environment to create it in. Ignored when the API key or
+            MCP grant is scoped to one environment. Otherwise required for company-wide
+            API keys and MCP grants; for other callers it defaults to the company's
+            first environment.
           format: uuid
           type:
           - "null"
           - string
         host:
+          description: Public hostname or IP address of the SSH bastion server.
           type: string
         name:
+          description: Display name for the tunnel.
           type: string
         port:
+          description: Port the SSH bastion server listens on.
           type: integer
         username:
+          description: The bastion user Artie logs in as with the tunnel's generated
+            key.
           type: string
       required:
       - host
@@ -13096,12 +13262,16 @@ components:
     RouterSSHTunnelUpdateRequest:
       properties:
         host:
+          description: Public hostname or IP address of the SSH bastion server.
           type: string
         name:
+          description: New display name for the tunnel.
           type: string
         port:
+          description: Port the SSH bastion server listens on.
           type: integer
         username:
+          description: The bastion user Artie logs in as. Empty keeps the saved username.
           type: string
       required:
       - name
@@ -13112,14 +13282,20 @@ components:
     RouterSnowflakeEcoScheduleCreateRequest:
       properties:
         environmentUUID:
+          description: The environment to create it in. Ignored when the API key or
+            MCP grant is scoped to one environment. Otherwise required for company-wide
+            API keys and MCP grants; for other callers it defaults to the company's
+            first environment.
           format: uuid
           type:
           - "null"
           - string
         name:
+          description: Display name for the schedule.
           type: string
         settings:
           $ref: '#/components/schemas/PayloadsSnowflakeEcoScheduleSettings'
+          description: Peak hours and the flush rules used outside them.
       required:
       - name
       - settings
@@ -13127,9 +13303,11 @@ components:
     RouterSnowflakeEcoScheduleUpdateRequest:
       properties:
         name:
+          description: New display name for the schedule.
           type: string
         settings:
           $ref: '#/components/schemas/PayloadsSnowflakeEcoScheduleSettings'
+          description: The full new settings; they replace the old ones.
       required:
       - name
       - settings
@@ -13187,8 +13365,10 @@ components:
     RouterUpdateColumnHashingSaltRequest:
       properties:
         description:
+          description: New notes for the salt. Left empty, the notes are cleared.
           type: string
         name:
+          description: New display name for the salt.
           type: string
       required:
       - name
@@ -13196,8 +13376,10 @@ components:
     RouterUpdateEncryptionKeyRequest:
       properties:
         description:
+          description: New notes for the key. Left empty, the notes are cleared.
           type: string
         name:
+          description: New display name for the key.
           type: string
       required:
       - name
@@ -13205,11 +13387,16 @@ components:
     RouterUpdateIngestionAPIKeyRequest:
       properties:
         expiresAt:
+          description: When the key should stop working; must be in the future. Null
+            or left out removes the expiry. Ignored once the key has expired. A change
+            marks the source reader's pipelines as having undeployed changes; a shared
+            reader needs source_reader_deploy instead.
           format: date-time
           type:
           - "null"
           - string
         name:
+          description: New display name for the key. Left empty, the name is cleared.
           type: string
       type: object
     RouterUpdateKafkaClusterAllowedCIDRsRequest:
