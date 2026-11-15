@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.223
+  version: v1.0.224
 servers:
 - url: https://api.artie.com
 paths:
@@ -14,44 +14,72 @@ paths:
         are floored to 30 s and results are cached for up to 1 minute.
       operationId: analytics_query
       parameters:
-      - in: query
+      - description: Start of the time window, in RFC 3339.
+        in: query
         name: from
         required: true
         schema:
+          description: Start of the time window, in RFC 3339.
           type: string
-      - in: query
+      - description: End of the time window, in RFC 3339. The window must be 1 second
+          to 15 months long and can't start in the future.
+        in: query
         name: to
         required: true
         schema:
+          description: End of the time window, in RFC 3339. The window must be 1 second
+            to 15 months long and can't start in the future.
           type: string
-      - in: query
+      - description: Datasets to return, such as rowsSyncedByTime, ingestionLag or
+          rowLag; repeat the parameter for each. Unknown names are ignored.
+        in: query
         name: datasets[]
         required: true
         schema:
+          description: Datasets to return, such as rowsSyncedByTime, ingestionLag
+            or rowLag; repeat the parameter for each. Unknown names are ignored.
           items:
             type: string
           type: array
-      - in: query
+      - description: Only include this pipeline's metrics. Required for environment-scoped
+          API keys.
+        in: query
         name: pipelineUUID
         schema:
+          description: Only include this pipeline's metrics. Required for environment-scoped
+            API keys.
           type: string
-      - in: query
+      - description: Only include these table names; repeat the parameter for each.
+        in: query
         name: tables[]
         schema:
+          description: Only include these table names; repeat the parameter for each.
           items:
             type: string
           type: array
-      - in: query
+      - description: exclude leaves out rows written by backfills, only keeps just
+          those rows, and empty includes both.
+        in: query
         name: backfillOptions
         schema:
+          description: exclude leaves out rows written by backfills, only keeps just
+            those rows, and empty includes both.
           type: string
-      - in: query
+      - description: replication or history to only count rows Transfer wrote in that
+          mode; empty includes both.
+        in: query
         name: transferMode
         schema:
+          description: replication or history to only count rows Transfer wrote in
+            that mode; empty includes both.
           type: string
-      - in: query
+      - description: pipeline or table to return one series per pipeline or table;
+          empty returns one series per dataset.
+        in: query
         name: groupBy
         schema:
+          description: pipeline or table to return one series per pipeline or table;
+            empty returns one series per dataset.
           type: string
       responses:
         "200":
@@ -3108,15 +3136,21 @@ paths:
           description: The UUID of the Kafka cluster, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Start of the time window, in RFC 3339.
+        in: query
         name: from
         required: true
         schema:
+          description: Start of the time window, in RFC 3339.
           type: string
-      - in: query
+      - description: End of the time window, in RFC 3339. The window must be 1 second
+          to 15 months long and can't start in the future.
+        in: query
         name: to
         required: true
         schema:
+          description: End of the time window, in RFC 3339. The window must be 1 second
+            to 15 months long and can't start in the future.
           type: string
       responses:
         "200":
@@ -3614,15 +3648,21 @@ paths:
           description: The UUID of the Kafka cluster, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Start of the time window, in RFC 3339.
+        in: query
         name: from
         required: true
         schema:
+          description: Start of the time window, in RFC 3339.
           type: string
-      - in: query
+      - description: End of the time window, in RFC 3339. The window must be 1 second
+          to 15 months long and can't start in the future.
+        in: query
         name: to
         required: true
         schema:
+          description: End of the time window, in RFC 3339. The window must be 1 second
+            to 15 months long and can't start in the future.
           type: string
       responses:
         "200":
@@ -4914,9 +4954,13 @@ paths:
           description: The UUID of the pipeline, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: When true, the response also carries the source reader and connectors.
+          MCP clients must leave it out.
+        in: query
         name: includeRelatedObjects
         schema:
+          description: When true, the response also carries the source reader and
+            connectors. MCP clients must leave it out.
           type: boolean
       responses:
         "200":
@@ -5020,9 +5064,13 @@ paths:
           description: The UUID of the pipeline, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: When true, runs even if the pipeline's schema changes were checked
+          in the last two hours.
+        in: query
         name: forceRefresh
         schema:
+          description: When true, runs even if the pipeline's schema changes were
+            checked in the last two hours.
           type: boolean
       responses:
         "202":
@@ -5426,16 +5474,22 @@ paths:
           description: The UUID of the pipeline, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Start of the time window, in RFC 3339.
+        in: query
         name: from
         required: true
         schema:
+          description: Start of the time window, in RFC 3339.
           format: date-time
           type: string
-      - in: query
+      - description: End of the time window, in RFC 3339. The window must be 1 second
+          to 15 months long and can't start in the future.
+        in: query
         name: to
         required: true
         schema:
+          description: End of the time window, in RFC 3339. The window must be 1 second
+            to 15 months long and can't start in the future.
           format: date-time
           type: string
       - description: When true, rows processed by backfills are excluded from row
@@ -7425,26 +7479,37 @@ components:
     PayloadsAnalyticsDimensions:
       properties:
         operation:
+          description: 'The row operation the series counts: create, backfill, update,
+            delete or other.'
           type: string
         pipelineUUID:
+          description: UUID of the pipeline the series belongs to, when grouped by
+            pipeline.
           format: uuid
           type:
           - "null"
           - string
         reason:
+          description: Why Transfer flushed, for the flushCount dataset.
           type: string
         slot:
+          description: Postgres replication slot name, for the replicationSlotSize
+            dataset.
           type: string
         table:
+          description: The table the series belongs to, when grouped by table.
           type: string
         warehouseName:
+          description: Snowflake warehouse name, for the Snowflake datasets.
           type: string
         warehouseSize:
+          description: Snowflake warehouse size, for the Snowflake datasets.
           type: string
       type: object
     PayloadsAnalyticsScalarIntPoint:
       properties:
         value:
+          description: The value over the whole time window, in the dataset's unit.
           format: int64
           type: integer
       type: object
@@ -7452,11 +7517,14 @@ components:
       properties:
         dimensions:
           $ref: '#/components/schemas/PayloadsAnalyticsDimensions'
+          description: The tags that identify this series.
         granularityInterval:
+          description: Seconds between points in a timeseries; null for scalar results.
           type:
           - "null"
           - integer
         points:
+          description: The series' data points.
           items:
             $ref: '#/components/schemas/PayloadsAnalyticsScalarIntPoint'
           type:
@@ -7467,11 +7535,14 @@ components:
       properties:
         dimensions:
           $ref: '#/components/schemas/PayloadsAnalyticsDimensions'
+          description: The tags that identify this series.
         granularityInterval:
+          description: Seconds between points in a timeseries; null for scalar results.
           type:
           - "null"
           - integer
         points:
+          description: The series' data points.
           items:
             $ref: '#/components/schemas/PayloadsAnalyticsTimeseriesPoint'
           type:
@@ -7481,9 +7552,11 @@ components:
     PayloadsAnalyticsTimeseriesPoint:
       properties:
         time:
+          description: The point's time, in Unix milliseconds.
           format: int64
           type: integer
         value:
+          description: The metric value at that time, in the dataset's unit.
           format: double
           type: number
       type: object
@@ -11887,6 +11960,7 @@ components:
     RouterPipelineCancelBackfillRequest:
       properties:
         historyTableUUIDs:
+          description: UUIDs of the tables whose history-table backfill to cancel.
           items:
             format: uuid
             type: string
@@ -11894,6 +11968,7 @@ components:
         optionalReason:
           type: string
         tableUUIDs:
+          description: UUIDs of the tables whose regular-table backfill to cancel.
           items:
             format: uuid
             type: string
@@ -11905,6 +11980,8 @@ components:
     RouterPipelineCreateFromSourceRequest:
       properties:
         dataPlaneName:
+          description: Data plane for the new pipeline; empty uses the company's default.
+            With sourceReaderUUID, it must match the source reader's data plane.
           type: string
         database:
           description: Database name written onto the new source reader. Postgres,
@@ -11952,32 +12029,43 @@ components:
       properties:
         pipeline:
           $ref: '#/components/schemas/PayloadsPipelinePayload'
+          description: The pipeline to create.
       required:
       - pipeline
       type: object
     RouterPipelineStartRequest:
       properties:
         disableBackFill:
+          description: When true, new tables skip their initial backfill and start
+            streaming.
           type: boolean
         keepPaused:
+          description: When true, deploys a paused pipeline's changes without resuming
+            it. Ignored when the pipeline isn't paused.
           type: boolean
       type: object
     RouterPipelineTableStats:
       properties:
         count:
+          description: Rows processed in the time window.
           format: int64
           type: integer
         latency:
+          description: Average ingestion lag over the time window, in seconds; null
+            when there is no data.
           type:
           - "null"
           - number
         tableName:
+          description: The table's name as reported in metrics.
           type: string
       type: object
     RouterPipelineUpdateRequest:
       properties:
         pipeline:
           $ref: '#/components/schemas/PayloadsPipelinePayload'
+          description: The pipeline to save. Start from the pipeline_get response
+            and change what you need.
       required:
       - pipeline
       type: object
