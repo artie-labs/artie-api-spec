@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.225
+  version: v1.0.232
 servers:
 - url: https://api.artie.com
 paths:
@@ -1837,9 +1837,13 @@ paths:
         data plane.
       operationId: kafka_cluster_list
       parameters:
-      - in: query
+      - description: Also return deleted Managed Kafka clusters that can still be
+          restored. Defaults to false.
+        in: query
         name: includeDeleted
         schema:
+          description: Also return deleted Managed Kafka clusters that can still be
+            restored. Defaults to false.
           type: boolean
       responses:
         "200":
@@ -2627,9 +2631,13 @@ paths:
           description: The UUID of the Kafka cluster, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Skip the cached result and read the cluster again. Defaults to
+          false.
+        in: query
         name: forceRefresh
         schema:
+          description: Skip the cached result and read the cluster again. Defaults
+            to false.
           type: boolean
       responses:
         "200":
@@ -2679,9 +2687,13 @@ paths:
           description: The UUID of the Kafka cluster, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Skip the cached result and read the cluster again. Defaults to
+          false.
+        in: query
         name: forceRefresh
         schema:
+          description: Skip the cached result and read the cluster again. Defaults
+            to false.
           type: boolean
       responses:
         "200":
@@ -2738,9 +2750,13 @@ paths:
           description: The UUID of the Kafka cluster, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Skip the cached result and read the cluster again. Defaults to
+          false.
+        in: query
         name: forceRefresh
         schema:
+          description: Skip the cached result and read the cluster again. Defaults
+            to false.
           type: boolean
       responses:
         "200":
@@ -3477,9 +3493,13 @@ paths:
           description: The UUID of the Kafka cluster, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Skip the cached result and read the cluster again. Defaults to
+          false.
+        in: query
         name: forceRefresh
         schema:
+          description: Skip the cached result and read the cluster again. Defaults
+            to false.
           type: boolean
       responses:
         "200":
@@ -3713,9 +3733,13 @@ paths:
           description: The UUID of the Kafka cluster, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Skip the cached result and read the cluster again. Defaults to
+          false.
+        in: query
         name: forceRefresh
         schema:
+          description: Skip the cached result and read the cluster again. Defaults
+            to false.
           type: boolean
       responses:
         "200":
@@ -3874,9 +3898,13 @@ paths:
           description: The UUID of the Kafka cluster, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Skip the cached result and read the cluster again. Defaults to
+          false.
+        in: query
         name: forceRefresh
         schema:
+          description: Skip the cached result and read the cluster again. Defaults
+            to false.
           type: boolean
       responses:
         "200":
@@ -3925,9 +3953,13 @@ paths:
           description: The UUID of the Kafka cluster, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Skip the cached result and read the cluster again. Defaults to
+          false.
+        in: query
         name: forceRefresh
         schema:
+          description: Skip the cached result and read the cluster again. Defaults
+            to false.
           type: boolean
       responses:
         "200":
@@ -4105,9 +4137,13 @@ paths:
           description: The UUID of the Kafka cluster, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Skip the cached result and read the cluster again. Defaults to
+          false.
+        in: query
         name: forceRefresh
         schema:
+          description: Skip the cached result and read the cluster again. Defaults
+            to false.
           type: boolean
       responses:
         "200":
@@ -4137,9 +4173,9 @@ paths:
         retrySemantics: safe
         title: Get Kafka topic detail
         triggerDescription: One topic's per-partition sizes, replication, leaders
-          and offsets, plus the Artie pipelines (names and uuids) that read it. topic
-          comes from kafka_topic_list. Use before changing or deleting a topic to
-          see what depends on it.
+          and offsets, plus the Artie pipelines (names and uuids) on the source reader
+          that writes it. topic comes from kafka_topic_list. Use before changing or
+          deleting a topic to see what depends on it.
     post:
       description: 'Changes a topic''s retention and tiered storage; send only the
         settings to change. Potentially destructive: Kafka deletes messages older
@@ -6995,6 +7031,7 @@ components:
     ListResponseBodyColumnHashingSalt:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsColumnHashingSalt'
           type: array
@@ -7004,6 +7041,7 @@ components:
     ListResponseBodyConnectorTable:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/RouterConnectorTable'
           type: array
@@ -7013,6 +7051,7 @@ components:
     ListResponseBodyConnectorTableDetailResponse:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsConnectorTableDetailResponse'
           type: array
@@ -7022,6 +7061,7 @@ components:
     ListResponseBodyDataCatalogMatch:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsDataCatalogMatch'
           type: array
@@ -7031,6 +7071,7 @@ components:
     ListResponseBodyEncryptionKey:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsEncryptionKey'
           type: array
@@ -7040,6 +7081,7 @@ components:
     ListResponseBodyKafkaCluster:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsKafkaCluster'
           type: array
@@ -7049,6 +7091,7 @@ components:
     ListResponseBodyKafkaConsumerGroup:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsKafkaConsumerGroup'
           type: array
@@ -7058,6 +7101,7 @@ components:
     ListResponseBodyKafkaConsumerGroupDetail:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsKafkaConsumerGroupDetail'
           type: array
@@ -7067,6 +7111,7 @@ components:
     ListResponseBodyKafkaTopic:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsKafkaTopic'
           type: array
@@ -7076,6 +7121,7 @@ components:
     ListResponseBodyKafkaTopicSize:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsKafkaTopicSize'
           type: array
@@ -7085,6 +7131,7 @@ components:
     ListResponseBodyKafkaUser:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsKafkaUser'
           type: array
@@ -7094,6 +7141,7 @@ components:
     ListResponseBodyLightConnector:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsLightConnector'
           type: array
@@ -7103,6 +7151,7 @@ components:
     ListResponseBodyLightPipeline:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsLightPipeline'
           type: array
@@ -7112,6 +7161,7 @@ components:
     ListResponseBodyManagedKafkaUser:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsManagedKafkaUser'
           type: array
@@ -7121,6 +7171,7 @@ components:
     ListResponseBodyPipelineErrorLog:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsPipelineErrorLog'
           type: array
@@ -7130,6 +7181,7 @@ components:
     ListResponseBodyPostgresPublication:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsPostgresPublication'
           type: array
@@ -7139,6 +7191,7 @@ components:
     ListResponseBodyPostgresReplicationSlot:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsPostgresReplicationSlot'
           type: array
@@ -7148,6 +7201,7 @@ components:
     ListResponseBodySchemaResponse:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsSchemaResponse'
           type: array
@@ -7157,6 +7211,7 @@ components:
     ListResponseBodySnowflakeEcoSchedule:
       properties:
         items:
+          description: The results, empty when there are none.
           items:
             $ref: '#/components/schemas/PayloadsSnowflakeEcoSchedule'
           type: array
@@ -7447,90 +7502,134 @@ components:
     PayloadsAdvancedTableSettingsPayload:
       properties:
         alias:
+          description: Destination table name to use instead of the source table name.
           type:
           - "null"
           - string
         bufferRows:
+          description: Rows to buffer before flushing to the destination, at least
+            5. Only used, and required, with individualDeployment.
           type:
           - "null"
           - integer
         columnsToCompress:
+          description: 'Postgres sources only: columns the reader gzip-compresses
+            in transit. Transfer decompresses them before writing.'
           items:
             type: string
           type: array
         columnsToEncrypt:
+          description: Columns whose values are encrypted with the pipeline's encryption
+            key before they're written.
           items:
             type: string
           type: array
         columnsToHash:
+          description: 'Columns whose values are hashed before they''re written: HMAC-SHA256
+            with the pipeline''s column hashing salt, or SHA-256 without one.'
           items:
             type: string
           type: array
         columnsToTrim:
+          description: String columns whose leading and trailing whitespace is removed
+            before they're written.
           items:
             type: string
           type: array
         ctidSettings:
           $ref: '#/components/schemas/PayloadsCTIDSettings'
+          description: Postgres CTID backfill settings for this table; omitted uses
+            the source reader's backfill defaults.
         dynamicTableTargetLag:
+          description: Snowflake TARGET_LAG for the dynamic table, such as 1 minute;
+            empty uses Transfer's default. Only used with enableDynamicTable.
           type:
           - "null"
           - string
         enableDynamicTable:
+          description: 'Snowflake only: stream changes into <table>__artie_changes,
+            keep the latest row per key in a dynamic table, and make <table> a view
+            over it.'
           type:
           - "null"
           - boolean
         encryptJSONBColumns:
+          description: When true, the table's JSONB columns are encrypted with the
+            pipeline's encryption key.
           type:
           - "null"
           - boolean
         excludeColumns:
+          description: Source columns to leave out of the destination. Can't be combined
+            with includeColumns.
           items:
             type: string
           type: array
         flattenDocuments:
+          description: When true, nested document fields are flattened into their
+            own columns.
           type:
           - "null"
           - boolean
         flattenDocumentsMaxDepth:
+          description: How many levels of nesting flattenDocuments expands; 0 means
+            no limit.
           minimum: 0
           type:
           - "null"
           - integer
         flushIntervalSeconds:
+          description: Seconds between flushes to the destination, from 5 to 86400.
+            Transfer flushes sooner when bufferRows or flushSizeKb is reached. Only
+            used, and required, with individualDeployment.
           type:
           - "null"
           - integer
         flushSizeKb:
+          description: Buffered data, in KB, that triggers a flush to the destination,
+            up to 1.5 GB. Only used, and required, with individualDeployment.
           type:
           - "null"
           - integer
         includeColumns:
+          description: The only source columns to write to the destination. Can't
+            be combined with excludeColumns.
           items:
             type: string
           type: array
         k8sRequestCPU:
+          description: CPU request for the table's own Transfer pod, in millicores.
+            Only used with individualDeployment.
           minimum: 0
           type:
           - "null"
           - integer
         k8sRequestMemoryMB:
+          description: Memory request for the table's own Transfer pod, in MiB. Only
+            used with individualDeployment.
           minimum: 0
           type:
           - "null"
           - integer
         mergePredicates:
+          description: Partition columns Transfer adds to its MERGE condition.
           items:
             $ref: '#/components/schemas/PayloadsMergePredicates'
           type: array
         msmFlushCount:
+          description: 'Multi-step merge: how many flushes Transfer stages before
+            merging into the destination table; 0 turns it off.'
           minimum: 0
           type:
           - "null"
           - integer
         partitionRangeSettings:
           $ref: '#/components/schemas/PayloadsPartitionRangeSettings'
+          description: 'Postgres sources only: backfill a partitioned table by reading
+            each partition. Cannot be enabled together with rangeSettings or ctidSettings.'
         primaryKeysOverride:
+          description: Columns to use as the destination primary key instead of the
+            source table's primary key.
           items:
             type: string
           type:
@@ -7538,33 +7637,52 @@ components:
           - "null"
         rangeSettings:
           $ref: '#/components/schemas/PayloadsRangeSettings'
+          description: Range backfill settings for this table; omitted uses the source
+            reader's backfill defaults.
         shouldBackfillHistoryTable:
+          description: When true, the history table is backfilled too; otherwise only
+            the regular table is.
           type:
           - "null"
           - boolean
         skipBackfill:
+          description: When true, the table skips its initial backfill and starts
+            streaming when first deployed.
           type:
           - "null"
           - boolean
         skipDelete:
+          description: When true, delete events are skipped, so rows deleted in the
+            source stay in the destination.
           type:
           - "null"
           - boolean
         skipNoOpUpdates:
+          description: 'Postgres sources only: skip update events whose before and
+            after rows are identical after column filters. Requires REPLICA IDENTITY
+            FULL.'
           type:
           - "null"
           - boolean
         softPartitioning:
           $ref: '#/components/schemas/PayloadsSoftPartitioning'
+          description: Splits the destination table into time-based partition tables.
         streamARN:
+          description: 'Amazon Keyspaces only: the table''s CDC stream ARN.'
           type:
           - "null"
           - string
         unifyAcrossDatabases:
+          description: When the source reader unifies across databases, this table
+            is read from every matching database into one destination table. Only
+            PlanetScale reads it per table.
           type:
           - "null"
           - boolean
         unifyAcrossSchemas:
+          description: 'Postgres and MySQL: when the source reader unifies across
+            schemas, this table is read from every matching schema into one destination
+            table.'
           type:
           - "null"
           - boolean
@@ -8388,8 +8506,10 @@ components:
     PayloadsKafkaBrokerConfig:
       properties:
         name:
+          description: The broker config key, such as min.insync.replicas.
           type: string
         value:
+          description: The config's value, as a string.
           type: string
       required:
       - name
@@ -8398,8 +8518,10 @@ components:
     PayloadsKafkaCluster:
       properties:
         cloud:
+          description: The cloud provider the cluster runs in. Empty when unknown.
           type: string
         createdAt:
+          description: When the cluster was added to Artie.
           format: date-time
           type: string
         dataKeptUntil:
@@ -8413,8 +8535,11 @@ components:
             status is deploying, or failed, where it is the step the deploy stopped
             at.
         disableTLS:
+          description: Whether clients connect without TLS.
           type: boolean
         externalBootstrapURL:
+          description: Comma-separated host:port addresses clients connect to from
+            outside. The SASL listener's addresses when usesScram is true.
           type: string
         isManaged:
           description: Whether this is a Managed Kafka cluster that Artie runs for
@@ -8439,8 +8564,10 @@ components:
           description: A Managed Kafka cluster's configuration. Only set when isManaged,
             and only by Get a Kafka cluster.
         name:
+          description: The cluster's display name.
           type: string
         region:
+          description: The cloud region the cluster runs in. Empty when unknown.
           type: string
         shuttingDown:
           description: Whether a deleted Managed Kafka cluster is still being taken
@@ -8449,6 +8576,7 @@ components:
           type: boolean
         status:
           $ref: '#/components/schemas/EnumsKafkaStatus'
+          description: The cluster's lifecycle state.
         statusMessage:
           description: Why the last deploy of a Managed Kafka cluster failed. Only
             set while status is failed.
@@ -8476,8 +8604,13 @@ components:
           format: date-time
           type: string
         usesScram:
+          description: Whether a BYOC cluster has a SASL listener, so clients log
+            in with SCRAM usernames and passwords. Always false for Managed clusters,
+            whose clients still log in with SCRAM-SHA-512 over SASL_SSL.
           type: boolean
         uuid:
+          description: The cluster's ID, which every other Kafka cluster endpoint
+            takes.
           format: uuid
           type: string
       required:
@@ -8559,10 +8692,13 @@ components:
           $ref: '#/components/schemas/PayloadsKafkaClusterBrokerSettings'
           description: The broker settings customers can change.
         brokers:
+          description: How many brokers the cluster runs.
           type: integer
         instanceType:
+          description: The instance type each broker runs on.
           type: string
         kafkaVersion:
+          description: The Kafka version the brokers run.
           type: string
         pendingChange:
           $ref: '#/components/schemas/PayloadsKafkaClusterChange'
@@ -8584,13 +8720,18 @@ components:
       properties:
         cluster:
           $ref: '#/components/schemas/PayloadsKafkaClusterRatesCluster'
+          description: Traffic for the whole cluster.
         groups:
+          description: Each consumer group's lag per topic it reads.
           items:
             $ref: '#/components/schemas/PayloadsKafkaClusterRatesGroupLag'
           type: array
         seriesStepSeconds:
+          description: Seconds between two points of the topic and lag series. A point's
+            rate times this is how many messages it covers.
           type: integer
         topics:
+          description: Each topic's incoming message rate.
           items:
             $ref: '#/components/schemas/PayloadsKafkaClusterRatesTopic'
           type: array
@@ -8603,22 +8744,32 @@ components:
     PayloadsKafkaClusterRatesCluster:
       properties:
         bytesInPerSecond:
+          description: Bytes written per second, averaged over the last 5 minutes.
+            Null when Datadog has no data.
           type:
           - "null"
           - number
         bytesInSeries:
+          description: Bytes written per second over the last 15 minutes, one point
+            a minute. Empty when Datadog has no data.
           items:
             $ref: '#/components/schemas/PayloadsKafkaMetricsGraphPoint'
           type: array
         bytesOutPerSecond:
+          description: Bytes read per second, averaged over the last 5 minutes. Null
+            when Datadog has no data.
           type:
           - "null"
           - number
         bytesOutSeries:
+          description: Bytes read per second over the last 15 minutes, one point a
+            minute. Empty when Datadog has no data.
           items:
             $ref: '#/components/schemas/PayloadsKafkaMetricsGraphPoint'
           type: array
         messagesInPerSecond:
+          description: Messages written per second, averaged over the last 5 minutes.
+            Null when Datadog has no data.
           type:
           - "null"
           - number
@@ -8632,16 +8783,24 @@ components:
     PayloadsKafkaClusterRatesGroupLag:
       properties:
         group:
+          description: The consumer group ID.
           type: string
         lag:
+          description: Messages the group is behind on the topic, summed over its
+            partitions, over the requested range.
           items:
             $ref: '#/components/schemas/PayloadsKafkaMetricsGraphPoint'
           type: array
         readPerSecond:
+          description: 'Estimated messages the group reads per second: the topic''s
+            incoming rate minus how fast the lag grew over the last 5 minutes (not
+            the lag series here), at least 0. Null with fewer than two lag points,
+            or when Datadog returns no topic message rates.'
           type:
           - "null"
           - number
         topic:
+          description: The topic the group reads.
           type: string
       required:
       - group
@@ -8652,14 +8811,20 @@ components:
     PayloadsKafkaClusterRatesTopic:
       properties:
         messagesInPerSecond:
+          description: Messages written to the topic per second, averaged over the
+            last 5 minutes. Null when Datadog has no data, which usually means the
+            topic had no writes in that window.
           type:
           - "null"
           - number
         messagesInSeries:
+          description: 'Messages written per second over the requested range: a point
+            a minute over 1h, every 2 minutes over 6h.'
           items:
             $ref: '#/components/schemas/PayloadsKafkaMetricsGraphPoint'
           type: array
         topic:
+          description: The topic name.
           type: string
       required:
       - topic
@@ -8698,8 +8863,11 @@ components:
     PayloadsKafkaClusterSummary:
       properties:
         consumerGroupCount:
+          description: How many consumer groups the cluster has.
           type: integer
         topicCount:
+          description: How many topics the cluster has. On a Managed cluster, its
+            own topics (__* and strimzi.cruisecontrol.*) aren't counted.
           type: integer
       required:
       - topicCount
@@ -8708,6 +8876,8 @@ components:
     PayloadsKafkaConsumerGroup:
       properties:
         groupID:
+          description: The consumer group ID, which the consumer group detail endpoint
+            takes.
           type: string
       required:
       - groupID
@@ -8715,19 +8885,26 @@ components:
     PayloadsKafkaConsumerGroupDetail:
       properties:
         consumerCount:
+          description: How many consumers are in the group.
           type: integer
         groupID:
+          description: The consumer group ID.
           type: string
         members:
+          description: The group's consumers. Left out when it has none.
           items:
             $ref: '#/components/schemas/PayloadsKafkaConsumerGroupMember'
           type: array
         readAt:
+          description: When the group's offsets were read. A partition's time behind
+            is this minus its committedMessageTimestamp.
           format: date-time
           type: string
         state:
+          description: The group's state as Kafka reports it, such as Stable or Empty.
           type: string
         topics:
+          description: Each topic the group has offsets for, sorted by name.
           items:
             $ref: '#/components/schemas/PayloadsKafkaConsumerGroupTopic'
           type:
@@ -8743,8 +8920,10 @@ components:
     PayloadsKafkaConsumerGroupMember:
       properties:
         clientHost:
+          description: The IP address the consumer connected from.
           type: string
         clientID:
+          description: The client ID the consumer connected with.
           type: string
       required:
       - clientID
@@ -8753,12 +8932,14 @@ components:
     PayloadsKafkaConsumerGroupTopic:
       properties:
         partitions:
+          description: The group's offsets on each partition, sorted by partition.
           items:
             $ref: '#/components/schemas/PayloadsKafkaConsumerGroupTopicPartition'
           type:
           - array
           - "null"
         topic:
+          description: The topic name.
           type: string
       required:
       - topic
@@ -8767,18 +8948,27 @@ components:
     PayloadsKafkaConsumerGroupTopicPartition:
       properties:
         committedMessageTimestamp:
+          description: When the oldest message the group hasn't read was written.
+            Only set by the single consumer group read on a Managed Kafka cluster,
+            for partitions with lag, and only the 50 with the most lag. Also unset
+            when reading the message failed.
           format: date-time
           type: string
         currentOffset:
+          description: 'The group''s committed offset: the next message it will read.
+            Partitions without a committed offset are left out.'
           format: int64
           type: integer
         lag:
+          description: How many messages the group is behind on the partition.
           format: int64
           type: integer
         logEndOffset:
+          description: The offset the next message written to the partition gets.
           format: int64
           type: integer
         partition:
+          description: The partition ID.
           type: integer
       required:
       - partition
@@ -8807,25 +8997,33 @@ components:
           additionalProperties:
             format: base64
             type: string
+          description: The message headers, with each value base64-encoded.
           type:
           - object
           - "null"
         key:
+          description: The message key, base64-encoded. Null when the message has
+            no key.
           format: base64
           type:
           - string
           - "null"
         offset:
+          description: The message's offset in its partition.
           format: int64
           type: integer
         partition:
+          description: The partition the message is in.
           type: integer
         timestamp:
+          description: The message's Kafka timestamp.
           format: date-time
           type: string
         topic:
+          description: The topic the message is in.
           type: string
         value:
+          description: The message value, base64-encoded. Null for a tombstone.
           format: base64
           type:
           - string
@@ -8839,46 +9037,60 @@ components:
     PayloadsKafkaMetricsGraph:
       properties:
         brokerCount:
+          description: How many brokers reported in, over time.
           items:
             $ref: '#/components/schemas/PayloadsKafkaMetricsGraphSeries'
           type:
           - array
           - "null"
         cpuSystem:
+          description: CPU each broker pod spent in kernel mode, over time, one series
+            per broker. From Datadog's kubernetes.cpu.system.total.
           items:
             $ref: '#/components/schemas/PayloadsKafkaMetricsGraphSeries'
           type:
           - array
           - "null"
         cpuUser:
+          description: CPU each broker pod spent in user mode, over time, one series
+            per broker. From Datadog's kubernetes.cpu.user.total.
           items:
             $ref: '#/components/schemas/PayloadsKafkaMetricsGraphSeries'
           type:
           - array
           - "null"
         memoryUsage:
+          description: Memory each broker pod used, in bytes, over time, one series
+            per broker.
           items:
             $ref: '#/components/schemas/PayloadsKafkaMetricsGraphSeries'
           type:
           - array
           - "null"
         partitionCount:
+          description: How many partitions each broker hosts, over time, one series
+            per broker.
           items:
             $ref: '#/components/schemas/PayloadsKafkaMetricsGraphSeries'
           type:
           - array
           - "null"
         reason:
+          description: Why metrics aren't available. Only set when supported is false.
           type: string
         supported:
+          description: Whether metrics are available for this cluster. When false,
+            reason says why and every series is empty.
           type: boolean
         topicCount:
+          description: How many topics the cluster has, over time.
           items:
             $ref: '#/components/schemas/PayloadsKafkaMetricsGraphSeries'
           type:
           - array
           - "null"
         unit:
+          description: The unit of the broker, topic and partition count series.
           type: string
       required:
       - supported
@@ -8893,9 +9105,11 @@ components:
     PayloadsKafkaMetricsGraphPoint:
       properties:
         timestamp:
+          description: When the value was measured.
           format: date-time
           type: string
         value:
+          description: The measured value.
           format: double
           type: number
       required:
@@ -8905,8 +9119,10 @@ components:
     PayloadsKafkaMetricsGraphSeries:
       properties:
         label:
+          description: What the line is, such as Brokers, Topics or Broker 1.
           type: string
         points:
+          description: The series values, oldest first.
           items:
             $ref: '#/components/schemas/PayloadsKafkaMetricsGraphPoint'
           type:
@@ -8919,18 +9135,28 @@ components:
     PayloadsKafkaStorageGraph:
       properties:
         reason:
+          description: Why storage usage isn't available. Only set when supported
+            is false.
           type: string
         series:
+          description: 'Disk usage over time, one series per volume: only broker volumes
+            on a Managed Kafka cluster, every volume Datadog reports for the cluster
+            otherwise.'
           items:
             $ref: '#/components/schemas/PayloadsKafkaStorageGraphSeries'
           type:
           - array
           - "null"
         supported:
+          description: Whether storage usage is available for this cluster. When false,
+            reason says why and series is empty.
           type: boolean
         threshold:
+          description: The disk usage percent the dashboard marks as the limit.
           type: integer
         unit:
+          description: The unit of the series values, the percent of each volume's
+            capacity in use.
           type: string
       required:
       - supported
@@ -8941,9 +9167,11 @@ components:
     PayloadsKafkaStorageGraphPoint:
       properties:
         timestamp:
+          description: When the value was measured.
           format: date-time
           type: string
         value:
+          description: Percent of the volume's capacity in use.
           format: double
           type: number
       required:
@@ -8953,8 +9181,10 @@ components:
     PayloadsKafkaStorageGraphSeries:
       properties:
         label:
+          description: The volume's persistent volume claim name.
           type: string
         points:
+          description: The volume's usage over time, oldest first.
           items:
             $ref: '#/components/schemas/PayloadsKafkaStorageGraphPoint'
           type:
@@ -8976,16 +9206,25 @@ components:
             it.
           type: string
         partitionCount:
+          description: How many partitions the topic has.
           type: integer
         retentionMS:
+          description: How long the topic keeps messages, in ms, as a string (retention.ms).
+            -1 keeps them forever.
           type: string
         sourceName:
+          description: The name of the source reader that writes the topic. Empty
+            unless the topic belongs to one of the company's Artie pipelines.
           type: string
         tableName:
+          description: The source table whose changes the topic carries. Empty unless
+            the topic belongs to one of the company's Artie pipelines.
           type: string
         tieredStorage:
           $ref: '#/components/schemas/PayloadsKafkaTopicTieredStorage'
+          description: The topic's tiered storage state.
         topic:
+          description: The topic name, which the topic endpoints take.
           type: string
       required:
       - topic
@@ -8997,6 +9236,7 @@ components:
     PayloadsKafkaTopicCreateResponse:
       properties:
         topic:
+          description: The name of the topic created.
           type: string
       required:
       - topic
@@ -9007,12 +9247,16 @@ components:
           $ref: '#/components/schemas/PayloadsKafkaTopicDetailManaged'
           description: The topic's replication and per-partition leader and offsets.
         partitionSizes:
+          description: Each partition's size on broker disks, by partition.
           items:
             $ref: '#/components/schemas/PayloadsKafkaTopicPartitionSize'
           type:
           - array
           - "null"
         pipelines:
+          description: Every company pipeline on the source reader that writes the
+            topic, not only the ones that read this topic. Empty for topics Artie
+            doesn't write.
           items:
             $ref: '#/components/schemas/PayloadsKafkaTopicPipeline'
           type:
@@ -9020,6 +9264,7 @@ components:
           - "null"
         topic:
           $ref: '#/components/schemas/PayloadsKafkaTopic'
+          description: The topic, as in the topic list.
       required:
       - topic
       - partitionSizes
@@ -9028,6 +9273,7 @@ components:
     PayloadsKafkaTopicDetailManaged:
       properties:
         partitions:
+          description: Each partition's leader, in-sync copies and latest offset.
           items:
             $ref: '#/components/schemas/PayloadsKafkaTopicPartition'
           type: array
@@ -9044,8 +9290,11 @@ components:
           additionalProperties:
             format: int64
             type: integer
+          description: Each partition's highest offset seen, by partition ID. To get
+            newer messages, pass it back as after in partition:offset,... form.
           type: object
         messages:
+          description: The newest messages across the topic's partitions, newest first.
           items:
             $ref: '#/components/schemas/PayloadsKafkaMessage'
           type: array
@@ -9068,6 +9317,7 @@ components:
             was broker 0 still shows 0.
           type: integer
         partition:
+          description: The partition ID.
           type: integer
       required:
       - partition
@@ -9076,9 +9326,11 @@ components:
     PayloadsKafkaTopicPartitionSize:
       properties:
         partition:
+          description: The partition ID.
           format: int32
           type: integer
         sizeBytes:
+          description: The partition's size on disk, in bytes, from its largest copy.
           format: int64
           type: integer
       required:
@@ -9088,8 +9340,10 @@ components:
     PayloadsKafkaTopicPipeline:
       properties:
         name:
+          description: The pipeline's name.
           type: string
         uuid:
+          description: The pipeline's ID.
           type: string
       required:
       - uuid
@@ -9098,6 +9352,7 @@ components:
     PayloadsKafkaTopicSize:
       properties:
         partitions:
+          description: Each partition's size on broker disks, by partition.
           items:
             $ref: '#/components/schemas/PayloadsKafkaTopicPartitionSize'
           type:
@@ -9110,6 +9365,7 @@ components:
           - "null"
           - integer
         topic:
+          description: The topic name.
           type: string
       required:
       - topic
@@ -9139,17 +9395,25 @@ components:
     PayloadsKafkaUser:
       properties:
         accessProfile:
+          description: 'What the user can do: producer_consumer or admin.'
           type: string
         consumerGroupPrefix:
+          description: The prefix a producer_consumer user's consumer group IDs must
+            start with to read. Admin users can read any group.
           type: string
         createdAt:
+          description: When the user was created.
           format: date-time
           type: string
         status:
+          description: pending until the user is ready, then active; deleting while
+            it's being removed.
           type: string
         username:
+          description: The Kafka username clients log in with.
           type: string
         uuid:
+          description: The user's ID, which the user endpoints take.
           format: uuid
           type: string
       required:
@@ -9167,12 +9431,14 @@ components:
           type: string
         operation:
           $ref: '#/components/schemas/EnumsKafkaACLOperation'
+          description: The operation the ACL allows.
         patternType:
           $ref: '#/components/schemas/EnumsKafkaACLPatternType'
           description: literal matches name exactly, and "*" is every name; prefix
             matches names starting with it.
         resourceType:
           $ref: '#/components/schemas/EnumsKafkaACLResourceType'
+          description: The kind of Kafka resource the ACL covers.
       required:
       - resourceType
       - patternType
@@ -9356,15 +9622,19 @@ components:
     PayloadsManagedKafkaUser:
       properties:
         acls:
+          description: What the user is allowed. Kafka refuses it everything else.
           items:
             $ref: '#/components/schemas/PayloadsKafkaUserACL'
           type: array
         createdAt:
+          description: When the user was created.
           format: date-time
           type: string
         username:
+          description: The Kafka username clients log in with.
           type: string
         uuid:
+          description: The user's ID, which the managed user endpoints take.
           format: uuid
           type: string
       required:
@@ -9385,9 +9655,12 @@ components:
     PayloadsPartitionRangeSettings:
       properties:
         enabled:
+          description: When true, a partitioned Postgres table is backfilled by reading
+            each of its partitions.
           type: boolean
         range:
           $ref: '#/components/schemas/PayloadsRangeSettings'
+          description: Range settings for each partition's backfill.
       type: object
     PayloadsPhysicalCTIDRangeSettings:
       properties:
@@ -9701,7 +9974,7 @@ components:
           - "null"
           - string
         sourceReaderUUID:
-          description: UUID of the source reader the pipeline reads from, from pipeline_get
+          description: UUID of the source reader the pipeline reads from, from pipeline_detail
             or the source reader list.
           format: uuid
           type: string
@@ -9848,14 +10121,22 @@ components:
     PayloadsRangeSettings:
       properties:
         batchSize:
+          description: Rows per backfill query; 0 uses the source reader's backfill
+            batch size. Capped at 50,000 when enabled is true. Not used by partition
+            range backfills.
           minimum: 0
           type: integer
         chunksSize:
+          description: Width of each primary-key range, at least 100,000; 0 uses the
+            reader's default.
           minimum: 0
           type: integer
         enabled:
+          description: When true, the backfill splits the primary key into ranges
+            and reads them in parallel.
           type: boolean
         maxParallelism:
+          description: How many ranges are read at once; 0 uses the reader's default.
           minimum: 0
           type: integer
       type: object
@@ -9996,7 +10277,9 @@ components:
       properties:
         metadata:
           $ref: '#/components/schemas/PayloadsSeenTableColumnMetadata'
+          description: The column's type and constraints.
         name:
+          description: The column's name in the source table.
           type: string
       required:
       - name
@@ -10005,16 +10288,21 @@ components:
     PayloadsSeenTableColumnMetadata:
       properties:
         dataType:
+          description: The column's data type as the source reports it.
           type: string
         defaultValue:
+          description: The column's default value expression; null when it has none.
           type:
           - "null"
           - string
         isPrimaryKey:
+          description: True when the column is part of the primary key; null when
+            unknown.
           type:
           - "null"
           - boolean
         notNull:
+          description: True when the column is declared NOT NULL.
           type: boolean
       required:
       - dataType
@@ -10080,14 +10368,21 @@ components:
     PayloadsSoftPartitioning:
       properties:
         enabled:
+          description: When true, Transfer writes rows into time-based partition tables.
           type: boolean
         maxPartitions:
+          description: How many partition tables to keep before older ones are merged
+            into the compacted table; 0 keeps all of them.
           type: integer
         partitionColumn:
+          description: The timestamp column whose value picks each row's partition.
           type: string
         partitionFrequency:
+          description: 'How often a new partition table starts: monthly, daily or
+            hourly.'
           type: string
         partitionSchema:
+          description: Passed to Transfer, which does not use it.
           type: string
       type: object
     PayloadsSourceReader:
@@ -10425,52 +10720,79 @@ components:
       properties:
         advancedSettings:
           $ref: '#/components/schemas/PayloadsTableAdvancedSettings'
+          description: The table's advanced settings.
         backfillStages:
+          description: Every stage the regular table's backfills reached, oldest first;
+            the last entry is the current stage.
           items:
             $ref: '#/components/schemas/PayloadsBackfillStageEvent'
           type: array
         createdAt:
+          description: When the table was added to the pipeline, in RFC 3339.
           format: date-time
           type: string
         destinationTableName:
+          description: The table's name in the destination, after the alias and schema
+            prefix rules. Empty when the pipeline has no destination.
           type: string
         disableReplication:
           deprecated: true
+          description: 'Deprecated: true when the regular table is paused but its
+            history table isn''t.'
           type: boolean
         enableHistoryMode:
+          description: True when every change is also written to a <table>__history
+            table.
           type: boolean
         historyBackfillStages:
+          description: Every stage the history table's backfills reached, oldest first;
+            the last entry is the current stage.
           items:
             $ref: '#/components/schemas/PayloadsBackfillStageEvent'
           type: array
         historyTableStatus:
+          description: 'The history table''s replication state. Use enableHistoryMode
+            to tell whether the table has a history table: a paused table without
+            history mode reports paused here, and a new history table reports nothing
+            until it is deployed.'
           type: string
         individualDeployment:
+          description: True when the table runs in its own Transfer deployment.
           type: boolean
         name:
+          description: The source table's name.
           type: string
         schema:
+          description: The source table's schema; for MySQL, its database.
           type: string
         status:
+          description: The regular table's replication state.
           type: string
         updatedAt:
+          description: When the table was last changed, in RFC 3339.
           format: date-time
           type: string
         uuid:
+          description: The table's UUID, used for table updates and backfills.
           format: uuid
           type: string
       type: object
     PayloadsTableAdvancedSettings:
       properties:
         alias:
+          description: Destination table name to use instead of the source table name.
           type: string
         backfillFromDatabases:
+          description: Source databases the table's next backfill reads from, set
+            by the backfill request; empty reads every database.
           items:
             type: string
           type:
           - array
           - "null"
         backfillFromSchemas:
+          description: Source schemas the table's next backfill reads from, set by
+            the backfill request; empty reads every schema.
           items:
             type: string
           type:
@@ -10478,43 +10800,69 @@ components:
           - "null"
         bigQueryPartitionSettings:
           $ref: '#/components/schemas/PayloadsBigQuerySettings'
+          description: 'Deprecated: use mergePredicates.'
         bufferRows:
           description: Rows to buffer before flushing to the destination, at least
             5.
           type: integer
         columnsToCompress:
+          description: 'Postgres sources only: columns the reader gzip-compresses
+            in transit. Transfer decompresses them before writing.'
           items:
             type: string
           type: array
         columnsToEncrypt:
+          description: Columns whose values are encrypted with the pipeline's encryption
+            key before they're written.
           items:
             type: string
           type: array
         columnsToHash:
+          description: 'Columns whose values are hashed before they''re written: HMAC-SHA256
+            with the pipeline''s column hashing salt, or SHA-256 without one.'
           items:
             type: string
           type: array
         columnsToTrim:
+          description: String columns whose leading and trailing whitespace is removed
+            before they're written.
           items:
             type: string
           type: array
         ctidSettings:
           $ref: '#/components/schemas/PayloadsCTIDSettings'
+          description: Postgres CTID backfill settings for this table; omitted uses
+            the source reader's backfill defaults.
         dynamicTableTargetLag:
+          description: Snowflake TARGET_LAG for the dynamic table, such as 1 minute;
+            empty uses Transfer's default. Only used with enableDynamicTable.
           type: string
         enableDynamicTable:
+          description: 'Snowflake only: stream changes into <table>__artie_changes,
+            keep the latest row per key in a dynamic table, and make <table> a view
+            over it.'
           type: boolean
         encryptJSONBColumns:
+          description: When true, the table's JSONB columns are encrypted with the
+            pipeline's encryption key.
           type: boolean
         endingPrimaryKey:
+          description: Highest primary key value a restarted backfill reads; cleared
+            once the backfill completes.
           type: string
         excludeColumns:
+          description: Source columns to leave out of the destination. Can't be combined
+            with includeColumns.
           items:
             type: string
           type: array
         flattenDocuments:
+          description: When true, nested document fields are flattened into their
+            own columns.
           type: boolean
         flattenDocumentsMaxDepth:
+          description: How many levels of nesting flattenDocuments expands; 0 means
+            no limit.
           minimum: 0
           type: integer
         flushIntervalSeconds:
@@ -10532,29 +10880,46 @@ components:
           - array
           - "null"
         includeColumns:
+          description: The only source columns to write to the destination. Can't
+            be combined with excludeColumns.
           items:
             type: string
           type: array
         k8sRequestCPU:
+          description: CPU request for the table's own Transfer pod, in millicores.
+            Only used with individualDeployment.
           minimum: 0
           type: integer
         k8sRequestMemoryMB:
+          description: Memory request for the table's own Transfer pod, in MiB. Only
+            used with individualDeployment.
           minimum: 0
           type: integer
         keepOldSwapTable:
+          description: When true, a swap_table backfill keeps the destination table's
+            old rows in a separate table after the swap.
           type: boolean
         mergePredicates:
+          description: Partition columns Transfer adds to its MERGE condition.
           items:
             $ref: '#/components/schemas/PayloadsMergePredicates'
           type: array
         msmFlushCount:
+          description: 'Multi-step merge: how many flushes Transfer stages before
+            merging into the destination table; 0 turns it off.'
           minimum: 0
           type: integer
         partitionRangeSettings:
           $ref: '#/components/schemas/PayloadsPartitionRangeSettings'
+          description: 'Postgres sources only: backfill a partitioned table by reading
+            each partition. Cannot be enabled together with rangeSettings or ctidSettings.'
         previousSwapTableSuffix:
+          description: Suffix of the previous swap_table backfill's table, dropped
+            before the next one starts.
           type: string
         primaryKeysOverride:
+          description: Columns to use as the destination primary key instead of the
+            source table's primary key.
           items:
             type: string
           type:
@@ -10562,53 +10927,96 @@ components:
           - "null"
         rangeSettings:
           $ref: '#/components/schemas/PayloadsRangeSettings'
+          description: Range backfill settings for this table; omitted uses the source
+            reader's backfill defaults.
         shouldBackfillHistoryTable:
+          description: When true, the history table is backfilled too; otherwise only
+            the regular table is.
           type:
           - "null"
           - boolean
         skipBackfill:
+          description: When true, the table skips its initial backfill and starts
+            streaming when first deployed.
           type: boolean
         skipDelete:
+          description: When true, delete events are skipped, so rows deleted in the
+            source stay in the destination.
           type: boolean
         skipNoOpUpdates:
+          description: 'Postgres sources only: skip update events whose before and
+            after rows are identical after column filters. Requires REPLICA IDENTITY
+            FULL.'
           type: boolean
         softPartitioning:
           $ref: '#/components/schemas/PayloadsSoftPartitioning'
+          description: Splits the destination table into time-based partition tables.
         startingPrimaryKey:
+          description: Lowest primary key value a restarted backfill reads; cleared
+            once the backfill completes.
           type: string
         streamARN:
+          description: 'Amazon Keyspaces only: the table''s CDC stream ARN.'
           type: string
         swapTableSuffix:
+          description: Suffix of the table a swap_table backfill loads into. Kept
+            after the backfill so the next one can drop that table.
           type: string
         unifyAcrossDatabases:
+          description: When the source reader unifies across databases, this table
+            is read from every matching database into one destination table. Only
+            PlanetScale reads it per table.
           type: boolean
         unifyAcrossSchemas:
+          description: 'Postgres and MySQL: when the source reader unifies across
+            schemas, this table is read from every matching schema into one destination
+            table.'
           type: boolean
       type: object
     PayloadsTablePayload:
       properties:
         advancedSettings:
           $ref: '#/components/schemas/PayloadsAdvancedTableSettingsPayload'
+          description: Table settings to change; omitted fields keep their current
+            values. Nested objects (softPartitioning, rangeSettings, ctidSettings,
+            partitionRangeSettings) replace the current value whole.
         disableReplication:
           deprecated: true
+          description: 'Deprecated: use status instead. True pauses only the regular
+            table and keeps its history table replicating; false resumes it.'
           type:
           - "null"
           - boolean
         enableHistoryMode:
+          description: 'When true, every change is also written to a <table>__history
+            table. Always applied: leaving it out of an update turns history mode
+            off.'
           type: boolean
         individualDeployment:
+          description: When true, the table runs in its own Transfer deployment, which
+            allows per-table resources and flush settings. Omitted keeps the current
+            value.
           type:
           - "null"
           - boolean
         name:
+          description: The source table's name. Always applied on update.
           type: string
         schema:
+          description: The source table's schema; for MySQL, its database. Always
+            applied on update.
           type: string
         status:
+          description: Set to paused to pause the table or streaming to resume it.
+            Omitted keeps the current status; new tables start as draft.
           type:
           - "null"
           - string
         uuid:
+          description: The table's UUID from pipeline_detail, to update an existing
+            table. Without it, the table with the same name and schema is updated
+            (or the same name alone, for MongoDB and DocumentDB sources that match
+            tables by name); a new table is added only when none matches.
           format: uuid
           type: string
       type: object
@@ -11876,6 +12284,9 @@ components:
     RouterCreateKafkaAdminUserRequest:
       properties:
         username:
+          description: Lowercase letters, digits, '.' and '-', at most 64 characters.
+            Each '.'-separated part starts and ends with a letter or digit. admin,
+            artie and names starting with artie-kafka- are reserved.
           type: string
       required:
       - username
@@ -11890,12 +12301,14 @@ components:
           type: array
         brokers:
           default: 3
+          description: How many brokers to run.
           maximum: 30
           minimum: 3
           type: integer
         instanceType:
           $ref: '#/components/schemas/PayloadsKafkaInstanceType'
           default: r8g.large
+          description: The instance type each broker runs on.
         localRetentionBytes:
           description: 'Disk cap per partition: the most broker disk each partition
             of a tiered topic keeps, in bytes, at least 1073741824 (1 GiB). Null is
@@ -11918,6 +12331,8 @@ components:
           minLength: 3
           type: string
         region:
+          description: The region to run the cluster in. Must be one Managed Kafka
+            runs in, or the request gets a 400.
           type: string
         retentionMS:
           description: 'How long topics keep messages unless they set their own retention.ms,
@@ -11953,14 +12368,21 @@ components:
         configEntries:
           additionalProperties:
             type: string
+          description: Topic configs to set, by key. Only cleanup.policy, max.message.bytes,
+            min.insync.replicas, retention.bytes and retention.ms are accepted.
           type:
           - object
           - "null"
         partitionCount:
+          description: How many partitions to create, at least 1.
           type: integer
         replicationFactor:
+          description: How many copies of each partition the brokers keep, at least
+            1.
           type: integer
         topic:
+          description: 'The new topic''s name: up to 249 ASCII letters, digits, periods,
+            underscores or dashes.'
           type: string
       required:
       - topic
@@ -11974,6 +12396,9 @@ components:
             POST /kafka-clusters/{uuid}/admin-users.
           type: string
         username:
+          description: Lowercase letters, digits, '.' and '-', at most 64 characters.
+            Each '.'-separated part starts and ends with a letter or digit. admin,
+            artie and names starting with artie-kafka- are reserved.
           type: string
       required:
       - username
@@ -11982,8 +12407,10 @@ components:
     RouterIncreaseKafkaTopicPartitionsRequest:
       properties:
         currentPartitionCount:
+          description: The topic's partition count now, from the topic list.
           type: integer
         newPartitionCount:
+          description: The total partition count wanted. Must be more than currentPartitionCount.
           type: integer
       required:
       - currentPartitionCount
@@ -11992,14 +12419,19 @@ components:
     RouterKafkaClusterAdminCredentialsResponse:
       properties:
         bootstrapServers:
+          description: Comma-separated host:port addresses clients connect to.
           type: string
         password:
+          description: The admin user's password.
           type: string
         saslMechanism:
+          description: The Kafka sasl.mechanism clients use.
           type: string
         securityProtocol:
+          description: The Kafka security.protocol clients use.
           type: string
         username:
+          description: The admin user's Kafka username.
           type: string
       required:
       - username
@@ -12015,6 +12447,8 @@ components:
             a warning.
           type: string
         warning:
+          description: Set when the new password isn't live yet, so it's left out.
+            Get it from the admin credentials in a few minutes.
           type: string
       type: object
     RouterKafkaClusterEstimate:
@@ -12029,8 +12463,10 @@ components:
           format: double
           type: number
         feeUSD:
+          description: Artie's fee, in whole dollars a month.
           type: integer
         lineItems:
+          description: The cost lines, which add up to totalUSD less feeUSD.
           items:
             $ref: '#/components/schemas/RouterKafkaClusterEstimateLineItem'
           type: array
@@ -12042,8 +12478,10 @@ components:
           - "null"
           - string
         region:
+          description: The region priced.
           type: string
         totalUSD:
+          description: The monthly total in whole dollars, fee included.
           type: integer
       required:
       - region
@@ -12056,6 +12494,7 @@ components:
     RouterKafkaClusterEstimateEgress:
       properties:
         crossAZ:
+          description: GiB a month to other availability zones in the region.
           format: double
           minimum: 0
           type: number
@@ -12082,11 +12521,14 @@ components:
     RouterKafkaClusterEstimateEgressRate:
       properties:
         label:
+          description: The kind of outbound traffic.
           type: string
         maxUSDPerGB:
+          description: The highest price per GiB, in dollars.
           format: double
           type: number
         minUSDPerGB:
+          description: The lowest price per GiB, in dollars.
           format: double
           type: number
       required:
@@ -12097,6 +12539,7 @@ components:
     RouterKafkaClusterEstimateLineItem:
       properties:
         category:
+          description: The kind of cost.
           enum:
           - instance
           - block_storage
@@ -12105,11 +12548,14 @@ components:
           - network
           type: string
         label:
+          description: What the line prices, for display.
           type: string
         quantity:
+          description: How many units the month uses.
           format: double
           type: number
         unit:
+          description: What quantity counts.
           enum:
           - hour
           - gb_month
@@ -12123,6 +12569,7 @@ components:
           format: double
           type: number
         usd:
+          description: The line's monthly cost in whole dollars.
           type: integer
       required:
       - category
@@ -12135,15 +12582,18 @@ components:
     RouterKafkaClusterEstimateRequest:
       properties:
         brokers:
+          description: How many brokers to price.
           maximum: 30
           minimum: 3
           type: integer
         instanceType:
           $ref: '#/components/schemas/PayloadsKafkaInstanceType'
+          description: The instance type each broker runs on.
         region:
           description: Region code; defaults to the region Managed Kafka runs in.
           type: string
         storageGiBPerBroker:
+          description: Disk per broker in GiB, with the same sizes create accepts.
           type: integer
         tieredStorageGiB:
           description: Data in tiered storage, uncompressed. Billed on that size at
@@ -12153,6 +12603,7 @@ components:
           type: number
         traffic:
           $ref: '#/components/schemas/RouterKafkaClusterEstimateTraffic'
+          description: Expected monthly traffic. Left out is no traffic.
       required:
       - brokers
       - instanceType
@@ -12162,6 +12613,7 @@ components:
       properties:
         egressGiBPerMonth:
           $ref: '#/components/schemas/RouterKafkaClusterEstimateEgress'
+          description: Outbound traffic in GiB a month, by destination.
         ingressGiBPerMonth:
           description: From the internet.
           format: double
@@ -12172,12 +12624,15 @@ components:
       properties:
         kafkaUser:
           $ref: '#/components/schemas/PayloadsKafkaUser'
+          description: The user created.
         password:
           description: The SCRAM-SHA-512 password Strimzi generated, returned when
             the user is already active. Otherwise get it from the credentials endpoint
             once the user is active.
           type: string
         warning:
+          description: Set when the user isn't active yet, so there's no password
+            in the response.
           type: string
       required:
       - kafkaUser
@@ -12186,7 +12641,9 @@ components:
       properties:
         kafkaUser:
           $ref: '#/components/schemas/PayloadsKafkaUser'
+          description: The user the password belongs to.
         password:
+          description: The user's SCRAM-SHA-512 password.
           type: string
       required:
       - kafkaUser
@@ -12196,7 +12653,9 @@ components:
       properties:
         kafkaUser:
           $ref: '#/components/schemas/PayloadsKafkaUser'
+          description: The user being deleted.
         warning:
+          description: Says the deletion is still pending.
           type: string
       required:
       - kafkaUser
@@ -12242,7 +12701,9 @@ components:
           type: string
         user:
           $ref: '#/components/schemas/PayloadsManagedKafkaUser'
+          description: The user.
         warning:
+          description: Set when the password isn't live yet, so it's left out.
           type: string
       required:
       - user
@@ -12413,7 +12874,7 @@ components:
       properties:
         pipeline:
           $ref: '#/components/schemas/PayloadsPipelinePayload'
-          description: The pipeline to save. Start from the pipeline_get response
+          description: The pipeline to save. Start from the pipeline_detail response
             and change what you need.
       required:
       - pipeline
