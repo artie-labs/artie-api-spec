@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.235
+  version: v1.0.236
 servers:
 - url: https://api.artie.com
 paths:
@@ -21,14 +21,14 @@ paths:
         schema:
           description: Start of the time window, in RFC 3339.
           type: string
-      - description: End of the time window, in RFC 3339. The window must be 1 second
-          to 15 months long and can't start in the future.
+      - description: End of the time window, in RFC 3339. Keep the window between
+          1 second and 15 months long, starting no later than now.
         in: query
         name: to
         required: true
         schema:
-          description: End of the time window, in RFC 3339. The window must be 1 second
-            to 15 months long and can't start in the future.
+          description: End of the time window, in RFC 3339. Keep the window between
+            1 second and 15 months long, starting no later than now.
           type: string
       - description: Datasets to return, such as rowsSyncedByTime, ingestionLag or
           rowLag; repeat the parameter for each. Unknown names are ignored.
@@ -41,12 +41,14 @@ paths:
           items:
             type: string
           type: array
-      - description: Only include this pipeline's metrics. Required for environment-scoped
+      - description: UUID of the pipeline to include, from pipeline_list; left out,
+          metrics cover every pipeline in the company. Required for environment-scoped
           API keys.
         in: query
         name: pipelineUUID
         schema:
-          description: Only include this pipeline's metrics. Required for environment-scoped
+          description: UUID of the pipeline to include, from pipeline_list; left out,
+            metrics cover every pipeline in the company. Required for environment-scoped
             API keys.
           type: string
       - description: Only include these table names; repeat the parameter for each.
@@ -372,7 +374,7 @@ paths:
         requiredScopes:
         - column_hashing_salts:read
         retrySemantics: safe
-        title: Preview a column hashing salt
+        title: Hash a value with a column hashing salt
         triggerDescription: Hashes a sample value the way pipelines do (HMAC-SHA256
           keyed on the salt, or SHA-256 if the salt is empty) and returns the hex
           digest, without revealing the salt. Use it to check which salt produced
@@ -696,7 +698,9 @@ paths:
         title: Fetch databases for a saved connector
         triggerDescription: Lists database names a saved source can see. uuid must
           come from connector_list with includeSourceConnectors=true. Do not pass
-          a pipeline uuid or sourceReaderUUID.
+          a pipeline uuid or sourceReaderUUID. Returns items with each database's
+          name, plus metadata for catalogs that have catalog-level properties, such
+          as an Iceberg S3 Tables bucket.
   /connectors/{uuid}/detail:
     get:
       description: Returns detailed metadata for a specific table on the saved connector.
@@ -826,7 +830,8 @@ paths:
           table, grants, and AFTER triggers on the source tables that copy changes
           into the shadow tables. The tool itself changes nothing. Pass up to 10 tables
           with their columns (from connector_fetch_table_detail); a table without
-          columns returns 400. Oracle sources only.
+          columns returns 400. Oracle sources only. The result's script field holds
+          the SQL text.
   /connectors/{uuid}/postgres-drop-replication-slot:
     post:
       description: Drops a PostgreSQL replication slot that is inactive or orphaned.
@@ -960,10 +965,9 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/PayloadsPostgresSetting'
-                type: array
-          description: OK
+                $ref: '#/components/schemas/PayloadsPostgresSettings'
+          description: The source's replication-relevant settings, one per pg_settings
+            row.
         "400":
           description: Bad Request
         "404":
@@ -1042,7 +1046,9 @@ paths:
         title: Fetch schemas for a saved connector
         triggerDescription: Lists schemas on a saved connector. uuid must come from
           connector_list. Do not pass a pipeline uuid or sourceReaderUUID. Pass schemaName
-          into connector_fetch_tables when the destination requires it.
+          into connector_fetch_tables when the destination requires it. Returns items,
+          each with the schema name and whether the connector's user can read it (unreadable,
+          with unreadableReason when the source gives one).
   /connectors/{uuid}/start-dynamodb-export:
     post:
       description: Initiates a point-in-time export from Amazon DynamoDB for the specified
@@ -1093,7 +1099,9 @@ paths:
         triggerDescription: Starts a DynamoDB point-in-time export of a saved DynamoDB
           source's table to the given S3 bucket and prefix, and returns the export's
           ARN. Point-in-time recovery must be on for the table. DynamoDB sources only;
-          for SQL CDC use pipeline_start.
+          for SQL CDC use pipeline_start. The export runs in AWS with the connector's
+          credentials after the call returns, writes a full copy of the table under
+          the prefix, and is billed by AWS, so confirm with the user first.
   /connectors/{uuid}/tables:
     get:
       description: Lists available tables on the target using a saved connector's
@@ -1156,7 +1164,10 @@ paths:
         title: Fetch tables for a saved connector
         triggerDescription: Lists tables on a saved connector. uuid must come from
           connector_list. Do not pass a pipeline uuid or sourceReaderUUID. Use to
-          choose names for pipeline_update.tables.
+          choose names for pipeline_update.tables. Returns items with each table's
+          name, schema, isView, unreadable flag and, when the source reports them,
+          creation and modification times; columns are usually left empty, so use
+          connector_fetch_table_detail for them.
   /connectors/databases:
     post:
       description: Lists available databases on the target using an unsaved connector
@@ -2427,9 +2438,11 @@ paths:
         - kafka_admin_users:read
         retrySemantics: safe
         title: Get an admin Kafka user
-        triggerDescription: 'One admin Kafka user on a BYOC cluster, without its password.
-          There is no admin user list: find the userUUID in kafka_user_list where
-          accessProfile is admin.'
+        triggerDescription: 'One admin Kafka user on a BYOC cluster, without its password:
+          its uuid, username, accessProfile (admin), status (pending, active or deleting)
+          and createdAt. consumerGroupPrefix is also returned but doesn''t limit an
+          admin user, which can read any group. There is no admin user list: find
+          the userUUID in kafka_user_list where accessProfile is admin.'
   /kafka-clusters/{uuid}/admin-users/{userUUID}/credentials:
     get:
       description: Returns the admin-profile Kafka user's password, which lets the
@@ -2726,7 +2739,7 @@ paths:
         requiredScopes:
         - kafka:read
         retrySemantics: safe
-        title: Get every Kafka consumer group's detail
+        title: List Kafka consumer group details
         triggerDescription: 'Managed clusters only (400 otherwise): every consumer
           group''s members and per-topic offset lag in one call. Use instead of calling
           kafka_consumer_group_detail once per group.'
@@ -3218,14 +3231,14 @@ paths:
         schema:
           description: Start of the time window, in RFC 3339.
           type: string
-      - description: End of the time window, in RFC 3339. The window must be 1 second
-          to 15 months long and can't start in the future.
+      - description: End of the time window, in RFC 3339. Keep the window between
+          1 second and 15 months long, starting no later than now.
         in: query
         name: to
         required: true
         schema:
-          description: End of the time window, in RFC 3339. The window must be 1 second
-            to 15 months long and can't start in the future.
+          description: End of the time window, in RFC 3339. Keep the window between
+            1 second and 15 months long, starting no later than now.
           type: string
       responses:
         "200":
@@ -3734,14 +3747,14 @@ paths:
         schema:
           description: Start of the time window, in RFC 3339.
           type: string
-      - description: End of the time window, in RFC 3339. The window must be 1 second
-          to 15 months long and can't start in the future.
+      - description: End of the time window, in RFC 3339. Keep the window between
+          1 second and 15 months long, starting no later than now.
         in: query
         name: to
         required: true
         schema:
-          description: End of the time window, in RFC 3339. The window must be 1 second
-            to 15 months long and can't start in the future.
+          description: End of the time window, in RFC 3339. Keep the window between
+            1 second and 15 months long, starting no later than now.
           type: string
       responses:
         "200":
@@ -4802,9 +4815,11 @@ paths:
         - kafka_users:read
         retrySemantics: safe
         title: Get a Kafka user
-        triggerDescription: One producer_consumer Kafka user on a BYOC cluster, without
-          its password. userUUID comes from kafka_user_list. Passwords aren't available
-          through MCP; the user can copy one from the Artie dashboard.
+        triggerDescription: 'One producer_consumer Kafka user on a BYOC cluster, without
+          its password: its uuid, username, accessProfile, status (pending, active
+          or deleting), createdAt and the consumerGroupPrefix its consumer group IDs
+          must start with. userUUID comes from kafka_user_list. Passwords aren''t
+          available through MCP; the user can copy one from the Artie dashboard.'
   /kafka-clusters/{uuid}/users/{userUUID}/credentials:
     get:
       description: Returns the Kafka user's password, which lets the caller act as
@@ -4948,11 +4963,14 @@ paths:
         - pipelines:read
         retrySemantics: safe
         title: List pipelines
-        triggerDescription: Lists pipelines with uuid, name, and status. This is not
-          a full configuration — do not send it to pipeline_update. Full config, per-table
-          status, and table UUIDs are pipeline_detail. Failure messages are pipeline_error_logs,
-          not status. sourceReaderUUID is not a connector id; call connector_list
-          before connector_fetch_table_detail or other connector_fetch_* tools.
+        triggerDescription: Lists pipelines with their uuid, name, status, source
+          and destination IDs, deploy state (hasUndeployedChanges, isDeploying, lastDeployError)
+          and each table's latest backfill stage. It isn't a full configuration and
+          has no table list, so don't send it to pipeline_update; full config, tables
+          and table UUIDs are pipeline_detail. lastDeployError only covers deploys;
+          runtime failures are in pipeline_error_logs. sourceReaderUUID is not a connector
+          id; call connector_list before connector_fetch_table_detail or other connector_fetch_*
+          tools.
     post:
       description: Creates a pipeline attached to an existing source reader (pipeline.sourceReaderUUID).
         The reader must have no pipeline yet, or be shared. To start a new capture
@@ -5265,7 +5283,8 @@ paths:
           first, which deletes their current rows, so confirm with the user. Returns
           204 once queued; 400 if no listed table could start (not found, already
           backfilling, or replication disabled); 429 past 2,500 tables per company
-          per hour.
+          per hour. backfillBatchSize and backfillDefaults are saved on the pipeline
+          for later backfills too, and are rejected when the source reader is shared.
   /pipelines/{uuid}/backfill/cancel:
     post:
       description: Cancels backfilling for the given table UUIDs and/or history table
@@ -5309,7 +5328,7 @@ paths:
         requiredScopes:
         - pipelines:write
         retrySemantics: safe-after-state-check
-        title: Cancel backfill
+        title: Cancel table backfills
         triggerDescription: Stops a backfill that is queued or running and redeploys
           the pipeline. Pass table UUIDs from pipeline_detail in tableUUIDs for regular
           tables and in historyTableUUIDs for history tables; both are required, so
@@ -5585,22 +5604,22 @@ paths:
           description: The UUID of the pipeline, as returned by its list or create
             endpoint.
           type: string
-      - description: Start of the time window, in RFC 3339.
+      - description: Start of the time window.
         in: query
         name: from
         required: true
         schema:
-          description: Start of the time window, in RFC 3339.
+          description: Start of the time window.
           format: date-time
           type: string
-      - description: End of the time window, in RFC 3339. The window must be 1 second
-          to 15 months long and can't start in the future.
+      - description: End of the time window. Keep the window between 1 second and
+          15 months long, starting no later than now.
         in: query
         name: to
         required: true
         schema:
-          description: End of the time window, in RFC 3339. The window must be 1 second
-            to 15 months long and can't start in the future.
+          description: End of the time window. Keep the window between 1 second and
+            15 months long, starting no later than now.
           format: date-time
           type: string
       - description: When true, rows processed by backfills are excluded from row
@@ -5828,7 +5847,11 @@ paths:
         title: Create a PrivateLink connection
         triggerDescription: 'Creates a PrivateLink connection: pass vpcServiceName
           and availabilityZoneIds for an AWS data plane, or privateLinkServiceAlias
-          for an Azure one. Keep the returned UUID; there is no list tool.'
+          for an Azure one. Keep the returned UUID; there is no list tool. It returns
+          the connection with status under review: Artie reviews it and creates the
+          endpoint, the service owner may need to accept it (pending acceptance),
+          and dnsEntry, the host connectors use, is set once it''s available. Check
+          progress with private_link_connection_detail.'
   /privatelink-connections/{uuid}:
     delete:
       description: Permanently deletes a PrivateLink connection by UUID. This action
@@ -6009,8 +6032,10 @@ paths:
         - snowflake_eco_schedules:read
         retrySemantics: safe
         title: List Snowflake Eco Mode schedules
-        triggerDescription: Lists the company's Snowflake Eco Mode schedules. Use
-          a schedule's uuid as snowflakeEcoScheduleUUID on a pipeline update.
+        triggerDescription: 'Lists the company''s Snowflake Eco Mode schedules. Use
+          a schedule''s uuid as snowflakeEcoScheduleUUID on a pipeline update. Returns
+          items with each schedule''s uuid, name, environmentUUID, timestamps and
+          settings: the peak hours and the flush rules used outside them.'
     post:
       description: Creates a new Snowflake eco schedule for the authenticated user's
         company.
@@ -6455,6 +6480,7 @@ paths:
           take effect. Returns 204 once queued; 400 with the validation error, or
           if the reader isn't shared (a dedicated reader deploys with its pipeline
           via pipeline_start). The uuid comes from pipeline_detail.sourceReaderUUID.
+          The deploy applies to every pipeline that shares the reader.
   /source-readers/{uuid}/share:
     post:
       description: Turns a dedicated source reader into a shared one that other pipelines
@@ -6646,7 +6672,8 @@ paths:
         triggerDescription: Creates an SSH tunnel record with a new key pair and returns
           it, including the publicKey the user must add to the bastion host's authorized_keys
           before connectors can use it. A company can have at most 100 tunnels. Keep
-          the returned UUID; there is no list tool.
+          the returned UUID; there is no list tool. The result also has the tunnel's
+          uuid, name, host, port, username and environmentUUID.
   /ssh-tunnels/{uuid}:
     delete:
       description: Permanently deletes an SSH tunnel by UUID. The tunnel must not
@@ -7366,7 +7393,7 @@ components:
           - string
         bufferRows:
           description: Rows to buffer before flushing to the destination, at least
-            5.
+            5; 0 or left out keeps the current value.
           type:
           - "null"
           - integer
@@ -7417,14 +7444,15 @@ components:
           - "null"
           - boolean
         flushIntervalSeconds:
-          description: Seconds between flushes to the destination, from 5 to 86400.
-            Transfer flushes sooner when bufferRows or flushSizeKb is reached.
+          description: Seconds between flushes to the destination, 5 to 86400; 0 or
+            left out keeps the current value. Transfer flushes sooner when bufferRows
+            or flushSizeKb is reached.
           type:
           - "null"
           - integer
         flushSizeKb:
           description: Buffered data, in KB, that triggers a flush to the destination,
-            up to 1.5 GB.
+            up to 1572864 (1.5 GB); 0 or left out keeps the current value.
           type:
           - "null"
           - integer
@@ -7961,15 +7989,25 @@ components:
     PayloadsCTIDSettings:
       properties:
         chunkSize:
+          description: Target rows in each CTID range. 0 uses the reader's default;
+            a set value must be at least 100,000.
           minimum: 0
           type: integer
         enabled:
+          description: When true, the backfill reads the table in parallel ranges
+            of physical row locations (Postgres CTIDs) instead of by primary key.
+            Can't be combined with partitionRangeSettings.
           type: boolean
         maxParallelism:
+          description: How many CTID ranges are read at once, up to the company's
+            backfill parallelism limit; 0 uses the reader's default.
           minimum: 0
           type: integer
         physicalRanges:
           $ref: '#/components/schemas/PayloadsPhysicalCTIDRangeSettings'
+          description: Sizes each CTID range in heap pages instead of by chunkSize.
+            Needs enabled, and can't be used when the source reader unifies across
+            schemas.
       type: object
     PayloadsCatalogTableProperty:
       properties:
@@ -7981,6 +8019,7 @@ components:
           type: string
         value:
           $ref: '#/components/schemas/PayloadsJSONValue'
+          description: The property value, as the source reports it.
       required:
       - key
       - value
@@ -8464,6 +8503,8 @@ components:
           - string
         sharedConfig:
           $ref: '#/components/schemas/PayloadsJSONValue'
+          description: The type-specific connection settings. Secrets come back as
+            a masked placeholder for most callers, MCP clients included.
         snapshotPrivateLinkUUID:
           description: The PrivateLink connection used to reach the snapshot (read
             replica) host, if any.
@@ -9882,10 +9923,16 @@ components:
     PayloadsMergePredicates:
       properties:
         partitionBy:
+          description: 'BigQuery time partitions only: hourly, daily, monthly or yearly;
+            empty means daily. Not allowed with an integer partitionType.'
           type: string
         partitionField:
+          description: The destination column Transfer adds to its MERGE condition,
+            usually the table's partition column.
           type: string
         partitionType:
+          description: 'time or integer. Only BigQuery reads it: time also partitions
+            the table by partitionBy, and integer only adds the column to the MERGE.'
           type: string
       type: object
     PayloadsPartitionRangeSettings:
@@ -9901,6 +9948,7 @@ components:
     PayloadsPhysicalCTIDRangeSettings:
       properties:
         pagesPerRange:
+          description: Heap pages in each CTID range; 0 derives the width from chunkSize.
           minimum: 0
           type: integer
       type: object
@@ -10307,6 +10355,12 @@ components:
       - category
       - description
       type: object
+    PayloadsPostgresSettings:
+      description: The source's replication-relevant settings, one per pg_settings
+        row.
+      items:
+        $ref: '#/components/schemas/PayloadsPostgresSetting'
+      type: array
     PayloadsPrivateLinkConnection:
       properties:
         approvedAt:
@@ -10426,28 +10480,41 @@ components:
     PayloadsS3CSVParser:
       properties:
         commentPrefix:
+          description: A single character that marks a line as a comment to skip;
+            empty means no comment lines. Can't be the delimiter.
           type: string
         delimiter:
+          description: The single character between fields; empty means a comma.
           type: string
         headers:
+          description: Column names for files without a header row, in field order.
+            Empty means the first row of each file is the header.
           items:
             type: string
           type: array
         nullValues:
+          description: Field values to write as null, such as NULL or an empty string.
           items:
             type: string
           type: array
         trimWhitespace:
+          description: When true, leading and trailing whitespace is removed from
+            each field.
           type: boolean
       type: object
     PayloadsS3Match:
       properties:
         fileNameRegex:
+          description: Regex the object's file name, without its directory or compression
+            suffix, must match. Empty matches every object under prefix.
           type: string
       type: object
     PayloadsS3MetadataColumns:
       properties:
         columns:
+          description: Metadata columns to add, such as artieSourcePath (the object
+            key), artieSourceFileName or artieSourceRecordNumber (the record's position
+            in the file).
           items:
             enum:
             - artieSourcePath
@@ -10462,12 +10529,17 @@ components:
     PayloadsS3Parser:
       properties:
         columnOrder:
+          description: The order of the parsed columns in the destination table, after
+            the metadata columns; columns not listed follow in alphabetical order.
+            Must include every primaryKey column that isn't a metadata column.
           items:
             type: string
           type: array
         csv:
           $ref: '#/components/schemas/PayloadsS3CSVParser'
+          description: CSV options, for the csv type.
         type:
+          description: The format of the objects.
           enum:
           - csv
           - json
@@ -10480,20 +10552,32 @@ components:
     PayloadsS3PathMapping:
       properties:
         id:
+          description: The mapping's checkpoint ID. Leave it empty on a new mapping
+            and Artie generates one; keep it unchanged afterwards, since a new ID
+            re-reads every matching object from the start.
           type: string
         match:
           $ref: '#/components/schemas/PayloadsS3Match'
+          description: Narrows which objects under prefix the mapping reads.
         metadata:
           $ref: '#/components/schemas/PayloadsS3MetadataColumns'
+          description: Columns about the source object to add to each record.
         parser:
           $ref: '#/components/schemas/PayloadsS3Parser'
+          description: How each object's contents are parsed into records.
         prefix:
+          description: The object key prefix to read, such as exports/orders/.
           type: string
         primaryKey:
+          description: Columns that uniquely identify a record, used as its key. Left
+            empty, the mapping needs the artieSourcePath and artieSourceRecordNumber
+            metadata columns, which identify each record by file and position.
           items:
             type: string
           type: array
         referenceID:
+          description: The name of the destination table the matching objects' records
+            go to.
           type: string
       required:
       - id
@@ -10660,16 +10744,19 @@ components:
           description: When peak hours end each peak day, as 24-hour HH:MM.
           type: string
         offPeakBufferRows:
-          description: Rows to buffer before flushing during off-peak hours, at least
-            5.
+          description: Rows to buffer before flushing during off-peak hours.
+          minimum: 5
           type: integer
         offPeakFlushIntervalSeconds:
-          description: Seconds between flushes to Snowflake during off-peak hours,
-            from 5 to 86400.
+          description: Seconds between flushes to Snowflake during off-peak hours.
+          maximum: 86400
+          minimum: 5
           type: integer
         offPeakFlushSizeKb:
           description: Buffered data size, in KB, that triggers a flush during off-peak
-            hours. More than 0 and at most 1.5 GB.
+            hours; 1572864 KB is 1.5 GB.
+          maximum: 1.572864e+06
+          minimum: 1
           type: integer
         startTimeOfDay:
           description: When peak hours start each peak day, as 24-hour HH:MM. Must
@@ -12420,6 +12507,8 @@ components:
         datasets:
           additionalProperties:
             $ref: '#/components/schemas/RouterQueryResult'
+          description: Results keyed by dataset name, one entry per requested dataset
+            that exists; unknown names are left out.
           type: object
       required:
       - datasets
@@ -12527,6 +12616,8 @@ components:
     RouterConnectorGenerateShadowScriptResponse:
       properties:
         script:
+          description: The SQL script, for the user to review and run on the Oracle
+            database. Artie doesn't run it.
           type: string
       required:
       - script
@@ -12652,6 +12743,8 @@ components:
     RouterConnectorStartDynamoDBExportResponse:
       properties:
         exportARN:
+          description: The ARN of the export DynamoDB started, to track it in AWS.
+            The export runs in AWS after this returns.
           type: string
       required:
       - exportARN
@@ -12887,21 +12980,25 @@ components:
         configEntries:
           additionalProperties:
             type: string
-          description: Topic configs to set, by key. Only cleanup.policy, max.message.bytes,
-            min.insync.replicas, retention.bytes and retention.ms are accepted.
+          description: 'Kafka topic configs to set, keyed by config name with string
+            values, such as retention.ms: "604800000". The accepted names are cleanup.policy,
+            max.message.bytes, min.insync.replicas, retention.bytes and retention.ms.'
           type:
           - object
           - "null"
         partitionCount:
-          description: How many partitions to create, at least 1.
+          description: How many partitions to create. Partitions can be added later
+            but never removed.
+          minimum: 1
           type: integer
         replicationFactor:
-          description: How many copies of each partition the brokers keep, at least
-            1.
+          description: How many copies of each partition the brokers keep.
+          minimum: 1
           type: integer
         topic:
-          description: 'The new topic''s name: up to 249 ASCII letters, digits, periods,
-            underscores or dashes.'
+          description: The new topic's name; . and .. aren't allowed. See the tool
+            description for the prefix a BYOC cluster requires.
+          pattern: ^[a-zA-Z0-9._-]{1,249}$
           type: string
       required:
       - topic
@@ -13277,7 +13374,8 @@ components:
             of this table.'
           type: boolean
         tableUUIDs:
-          description: UUIDs of the regular or history tables to backfill.
+          description: UUIDs of the tables to backfill, from tables[].uuid in pipeline_detail.
+            With historyMode, the same table UUIDs select those tables' history tables.
           items:
             format: uuid
             type: string
@@ -13290,14 +13388,19 @@ components:
       properties:
         historyTableUUIDs:
           description: UUIDs of the tables whose history-table backfill to cancel.
+            These are the regular tables' UUIDs from tables[].uuid in pipeline_detail,
+            not separate history table IDs.
           items:
             format: uuid
             type: string
           type: array
         optionalReason:
+          description: Free-text reason for the cancel. Accepted but not stored or
+            used; leave it out.
           type: string
         tableUUIDs:
-          description: UUIDs of the tables whose regular-table backfill to cancel.
+          description: UUIDs of the tables whose regular-table backfill to cancel,
+            from tables[].uuid in pipeline_detail.
           items:
             format: uuid
             type: string
@@ -13551,7 +13654,9 @@ components:
           - "null"
           - string
         name:
-          description: Display name for the connection.
+          description: A label to tell the connection apart in Artie, such as the
+            database it reaches. On Azure it also appears in the connection request
+            the service owner approves.
           type: string
         privateLinkServiceAlias:
           description: The Azure Private Link service alias to connect to. Required
@@ -13565,9 +13670,10 @@ components:
     RouterPrivateLinkConnectionUpdateRequest:
       properties:
         availabilityZoneIds:
-          description: AWS availability zone IDs to place the endpoint in. Required
-            on AWS; only applied while the connection is under review or errored with
-            no endpoint.
+          description: 'AWS availability zone IDs, such as use1-az1, to place the
+            endpoint in. Only read while the connection is under review or errored
+            with no endpoint: then an AWS update must resend them, even unchanged,
+            from private_link_connection_detail. Otherwise ignored.'
           items:
             type: string
           type:
@@ -13584,13 +13690,16 @@ components:
           description: New display name for the connection. Always editable.
           type: string
         privateLinkServiceAlias:
-          description: The Azure Private Link service alias. Required on Azure; only
-            applied while the connection is under review or errored with no endpoint.
+          description: 'The alias of the Azure Private Link service to connect to,
+            which the service''s owner shares. Only read while the connection is under
+            review or errored with no endpoint: then an Azure update must resend it,
+            even unchanged, from private_link_connection_detail. Otherwise ignored.'
           type: string
         vpcServiceName:
-          description: The AWS VPC endpoint service name, as com.amazonaws.vpce.<region>.vpce-svc-<id>.
-            Required on AWS; only applied while the connection is under review or
-            errored with no endpoint.
+          description: 'The AWS VPC endpoint service name, as com.amazonaws.vpce.<region>.vpce-svc-<id>.
+            Only read while the connection is under review or errored with no endpoint:
+            then an AWS update must resend it, even unchanged, from private_link_connection_detail.
+            Otherwise ignored.'
           type: string
       required:
       - name
@@ -13639,7 +13748,8 @@ components:
           description: Public hostname or IP address of the SSH bastion server.
           type: string
         name:
-          description: Display name for the tunnel.
+          description: A label to tell the tunnel apart in Artie, such as the bastion
+            or network it reaches. Not sent to the bastion.
           type: string
         port:
           description: Port the SSH bastion server listens on.
@@ -13781,10 +13891,8 @@ components:
     RouterUpdateIngestionAPIKeyRequest:
       properties:
         expiresAt:
-          description: When the key should stop working; must be in the future. Null
-            or left out removes the expiry. Ignored once the key has expired. A change
-            marks the source reader's pipelines as having undeployed changes; a shared
-            reader needs source_reader_deploy instead.
+          description: When the key stops working, as a future time. Null or left
+            out removes the expiry. Ignored once the key has expired.
           format: date-time
           type:
           - "null"
@@ -13957,9 +14065,10 @@ components:
           - "null"
           - integer
         tieredStorage:
-          description: off, on or paused. A topic that's on can only be paused, and
-            only a paused topic can be turned off, which deletes its data in remote
-            storage. Pausing keeps that data readable until retention expires it.
+          description: Whether old segments move to remote storage. A topic that's
+            on can only be paused, and only a paused topic can be turned off, which
+            deletes its data in remote storage. Pausing keeps that data readable until
+            retention expires it.
           enum:
           - "off"
           - "on"
