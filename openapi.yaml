@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.233
+  version: v1.0.234
 servers:
 - url: https://api.artie.com
 paths:
@@ -225,8 +225,9 @@ paths:
         - column_hashing_salts:delete
         retrySemantics: safe-after-state-check
         title: Delete a column hashing salt
-        triggerDescription: Deletes a column hashing salt by UUID. Does not unhash
-          already-landed columns.
+        triggerDescription: Permanently deletes a column hashing salt. Returns 400
+          naming the pipelines that still use it; switch them to another salt first.
+          Values already hashed with it stay hashed. The uuid comes from column_hashing_salt_list.
     get:
       description: Retrieves a column hashing salt by UUID, including the decrypted
         salt. Requires company admin.
@@ -317,8 +318,10 @@ paths:
         - column_hashing_salts:write
         retrySemantics: unsafe
         title: Update a column hashing salt
-        triggerDescription: Updates the name and description of an existing column
-          hashing salt. Does not rotate the secret.
+        triggerDescription: Replaces a column hashing salt's name and description;
+          send both, since a missing one is blanked. The secret stays the same, so
+          values pipelines already hashed don't change. There is no tool to rotate
+          or create a salt. The uuid comes from column_hashing_salt_list.
   /column-hashing-salts/{uuid}/preview:
     post:
       description: Hashes a sample string value with this salt using the same function
@@ -405,8 +408,15 @@ paths:
         - pipelines:write
         retrySemantics: safe-after-state-check
         title: Trigger automatic schema changes for a company
-        triggerDescription: Enqueues automatic schema changes for all eligible running
-          pipelines. For one pipeline, use pipeline_trigger_automatic_schema_changes.
+        triggerDescription: 'Queues the automatic schema change job for every running,
+          unlocked pipeline in the company (or in the current environment): each adds
+          columns the source has and the destination lacks, drops columns deleted
+          from the source on pipelines with advancedSettings.dropDeletedColumns on
+          (irreversible), and emails a summary. Confirm with the user first. A pipeline
+          whose job ran or that was deployed in the last two hours is skipped silently,
+          and the call still returns 202. Returns 403 if the company hasn''t enabled
+          automatic schema changes. For one pipeline, or to skip the two-hour wait,
+          use pipeline_trigger_automatic_schema_changes.'
   /connectors:
     get:
       description: Returns all destination connectors for the authenticated company.
@@ -795,8 +805,12 @@ paths:
         - connectors:read
         retrySemantics: safe
         title: Generate Oracle shadow table script
-        triggerDescription: Returns SQL to create Oracle shadow tables for CDC. Oracle
-          sources only.
+        triggerDescription: Returns a SQL script for the user to run on a saved Oracle
+          source. The script creates a locked SHADOW user, a shadow table per source
+          table, grants, and AFTER triggers on the source tables that copy changes
+          into the shadow tables. The tool itself changes nothing. Pass up to 10 tables
+          with their columns (from connector_fetch_table_detail); a table without
+          columns returns 400. Oracle sources only.
   /connectors/{uuid}/postgres-drop-replication-slot:
     post:
       description: Drops a PostgreSQL replication slot that is inactive or orphaned.
@@ -1054,8 +1068,10 @@ paths:
         - connectors:write
         retrySemantics: unsafe
         title: Start a DynamoDB export
-        triggerDescription: Starts a DynamoDB point-in-time export. DynamoDB sources
-          only; for SQL CDC use pipeline_start.
+        triggerDescription: Starts a DynamoDB point-in-time export of a saved DynamoDB
+          source's table to the given S3 bucket and prefix, and returns the export's
+          ARN. Point-in-time recovery must be on for the table. DynamoDB sources only;
+          for SQL CDC use pipeline_start.
   /connectors/{uuid}/tables:
     get:
       description: Lists available tables on the target using a saved connector's
@@ -1493,7 +1509,13 @@ paths:
         - data_catalog:read
         retrySemantics: safe
         title: Search the data catalog
-        triggerDescription: Searches ingested catalog metadata. For live source tables,
+        triggerDescription: Searches the metadata Artie has ingested from the company's
+          connectors (in the current environment, if one is set). Returns matches
+          grouped by connector and then by kind, each with the connectorUUID, a score,
+          and the database, schema, or table it found (names only, no rows or columns).
+          Results are capped at about 10 connectors and 10 matches of each kind per
+          connector, so a missing table may simply have been cut off; narrow the query.
+          The catalog can lag the source; for a live list of a connector's tables
           use connector_fetch_tables.
   /encryption-keys:
     get:
@@ -1606,8 +1628,10 @@ paths:
         - encryption_keys:delete
         retrySemantics: safe-after-state-check
         title: Delete an encryption key
-        triggerDescription: Deletes an encryption key by UUID. Does not decrypt already-landed
-          columns.
+        triggerDescription: Permanently deletes an encryption key. Values already
+          encrypted with it can no longer be decrypted through Artie. Returns 400
+          naming the pipelines that still use it; switch them to another key first.
+          Confirm with the user. The uuid comes from encryption_key_list.
     get:
       description: Retrieves an encryption key by UUID, including the decrypted key.
         Requires company admin.
@@ -1828,8 +1852,13 @@ paths:
         - ingestion_api_keys:write
         retrySemantics: unsafe
         title: Update an ingestion API key
-        triggerDescription: Updates metadata on an existing ingestion API key. Does
-          not mint a new key.
+        triggerDescription: 'Replaces an ingestion API key''s name and expiresAt and
+          returns the key; it doesn''t mint a new key. Send both fields: a missing
+          name blanks it, and a missing expiresAt removes the expiry (expiresAt must
+          be in the future and is ignored on an already-expired key). Only an expiry
+          change needs a redeploy to take effect: the source reader''s pipelines are
+          marked as having undeployed changes, and a shared reader needs source_reader_deploy
+          instead.'
   /kafka-clusters:
     get:
       description: Retrieves the authenticated company's Managed Kafka clusters and,
@@ -5134,8 +5163,14 @@ paths:
         - pipelines:write
         retrySemantics: safe-after-state-check
         title: Trigger automatic schema changes for a pipeline
-        triggerDescription: Applies detected source DDL on one pipeline. For every
-          eligible pipeline, use company_trigger_automatic_schema_changes.
+        triggerDescription: 'Queues a job that brings one running pipeline''s destination
+          tables in line with the source: it adds columns the source has and the destination
+          lacks, drops columns deleted from the source when advancedSettings.dropDeletedColumns
+          is on (irreversible), and emails a summary of the DDL it ran. Confirm with
+          the user first. Runs at most once every two hours per pipeline unless forceRefresh
+          is true. Returns 202 once queued, not when the DDL finishes, and 409 if
+          the pipeline isn''t running, is locked, or the company hasn''t enabled automatic
+          schema changes. For every eligible pipeline at once, use company_trigger_automatic_schema_changes.'
   /pipelines/{uuid}/backfill:
     post:
       description: 'Triggers a backfill for the given tables in the pipeline and redeploys
@@ -5193,9 +5228,14 @@ paths:
         - pipelines:write
         retrySemantics: unsafe
         title: Backfill pipeline tables
-        triggerDescription: Backfills tables already on a running pipeline by table
-          UUID from pipeline_detail (not connector_fetch_tables). To attach tables,
-          use pipeline_update.
+        triggerDescription: Re-reads whole tables from the source into the destination
+          and redeploys the pipeline. Pass table UUIDs from pipeline_detail (not connector_fetch_tables)
+          of tables already on the running pipeline; to attach tables, use pipeline_update.
+          beforeBackfill can truncate, drop, or rebuild-and-swap the destination tables
+          first, which deletes their current rows, so confirm with the user. Returns
+          204 once queued; 400 if no listed table could start (not found, already
+          backfilling, or replication disabled); 429 past 2,500 tables per company
+          per hour.
   /pipelines/{uuid}/backfill/cancel:
     post:
       description: Cancels backfilling for the given table UUIDs and/or history table
@@ -5441,8 +5481,13 @@ paths:
         - pipelines:write
         retrySemantics: safe-after-state-check
         title: Update pipeline status
-        triggerDescription: Pauses or resumes an already-configured pipeline. For
-          first deploy, use pipeline_start.
+        triggerDescription: Pauses or resumes an already-deployed pipeline and queues
+          a deploy. status paused stops the pipeline's capture and writes (a shared
+          source reader keeps capturing for its other pipelines); transfer paused
+          stops writing to the destination while the source keeps being read (not
+          allowed for Kafka destinations); running resumes after validating the pipeline
+          and the company's table limit. Returns 409 if the pipeline already has that
+          status. For a first deploy, use pipeline_start.
   /pipelines/{uuid}/update-with-source-reader:
     post:
       description: Updates pipeline and optionally its source reader in one request.
@@ -5897,9 +5942,13 @@ paths:
         - private_link_connections:write
         retrySemantics: unsafe
         title: Update a PrivateLink connection
-        triggerDescription: Updates a PrivateLink connection. The data plane and Private
-          Link target (VPC service name and AZs on AWS, privateLinkServiceAlias on
-          Azure) are only mutable while under review or errored.
+        triggerDescription: Updates a PrivateLink connection, validates it against
+          its data plane, and returns it. The data plane and Private Link target (VPC
+          service name and AZs on AWS, privateLinkServiceAlias on Azure) only change
+          while the connection is under review or errored and has no endpoint yet;
+          otherwise the current ones are kept. The uuid is a connector's privateLinkUUID
+          or snapshotPrivateLinkUUID from connector_detail, or the one private_link_connection_create
+          returned.
   /snowflake-eco-schedules:
     get:
       description: Retrieves all Snowflake eco schedules for the authenticated user's
@@ -6371,8 +6420,11 @@ paths:
         - source_readers:write
         retrySemantics: safe-after-state-check
         title: Deploy a source reader
-        triggerDescription: Deploys a shared, validated source reader. To take a draft
-          pipeline live, use pipeline_start.
+        triggerDescription: Validates a shared source reader against its source and
+          queues a deploy of the reader, so changes such as a source_reader_update
+          take effect. Returns 204 once queued; 400 with the validation error, or
+          if the reader isn't shared (a dedicated reader deploys with its pipeline
+          via pipeline_start). The uuid comes from pipeline_detail.sourceReaderUUID.
   /source-readers/{uuid}/share:
     post:
       description: Turns a dedicated source reader into a shared one that other pipelines
@@ -6561,8 +6613,10 @@ paths:
         - ssh_tunnels:write
         retrySemantics: unsafe
         title: Create an SSH tunnel
-        triggerDescription: Creates an SSH tunnel record. Keep the returned UUID;
-          there is no list tool.
+        triggerDescription: Creates an SSH tunnel record with a new key pair and returns
+          it, including the publicKey the user must add to the bastion host's authorized_keys
+          before connectors can use it. A company can have at most 100 tunnels. Keep
+          the returned UUID; there is no list tool.
   /ssh-tunnels/{uuid}:
     delete:
       description: Permanently deletes an SSH tunnel by UUID. The tunnel must not
@@ -6699,8 +6753,12 @@ paths:
         - ssh_tunnels:write
         retrySemantics: unsafe
         title: Update an SSH tunnel
-        triggerDescription: Updates name, host, port, or username on an existing SSH
-          tunnel. Does not rotate keys.
+        triggerDescription: Replaces an SSH tunnel's name, host, and port, and its
+          username when one is sent (an empty username keeps the saved one), then
+          returns the tunnel. Send every field, starting from ssh_tunnel_detail. The
+          key pair doesn't change, so the bastion's authorized_keys entry stays valid.
+          Every pipeline whose connectors use the tunnel is marked as having undeployed
+          changes and needs a redeploy to pick up the change.
 webhooks:
   backfill.completed:
     post:
