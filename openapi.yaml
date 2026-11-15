@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.234
+  version: v1.0.235
 servers:
 - url: https://api.artie.com
 paths:
@@ -423,9 +423,13 @@ paths:
         Pass includeSourceConnectors=true to also include source connectors.
       operationId: connector_list
       parameters:
-      - in: query
+      - description: Set to true to list every connector, sources included. By default
+          only destination connectors are listed.
+        in: query
         name: includeSourceConnectors
         schema:
+          description: Set to true to list every connector, sources included. By default
+            only destination connectors are listed.
           type: boolean
       responses:
         "200":
@@ -657,9 +661,11 @@ paths:
           description: The UUID of the connector, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Database to connect to. Defaults to the connector's defaultDatabase.
+        in: query
         name: databaseName
         schema:
+          description: Database to connect to. Defaults to the connector's defaultDatabase.
           type: string
       responses:
         "200":
@@ -708,22 +714,32 @@ paths:
           description: The UUID of the connector, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Database to connect to. Defaults to the connector's defaultDatabase.
+        in: query
         name: databaseName
         schema:
+          description: Database to connect to. Defaults to the connector's defaultDatabase.
           type: string
-      - in: query
+      - description: The table's schema, from connector_fetch_schemas. Defaults to
+          the connector type's default schema, such as public for Postgres.
+        in: query
         name: schemaName
         schema:
+          description: The table's schema, from connector_fetch_schemas. Defaults
+            to the connector type's default schema, such as public for Postgres.
           type: string
-      - in: query
+      - description: The table name, from connector_fetch_tables.
+        in: query
         name: tableName
         required: true
         schema:
+          description: The table name, from connector_fetch_tables.
           type: string
-      - in: query
+      - description: Set to true when the object is a view (isView in connector_fetch_tables).
+        in: query
         name: isView
         schema:
+          description: Set to true when the object is a view (isView in connector_fetch_tables).
           type: boolean
       responses:
         "200":
@@ -877,9 +893,11 @@ paths:
           description: The UUID of the connector, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Database to connect to. Defaults to the connector's defaultDatabase.
+        in: query
         name: databaseName
         schema:
+          description: Database to connect to. Defaults to the connector's defaultDatabase.
           type: string
       responses:
         "200":
@@ -931,9 +949,11 @@ paths:
           description: The UUID of the connector, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Database to connect to. Defaults to the connector's defaultDatabase.
+        in: query
         name: databaseName
         schema:
+          description: Database to connect to. Defaults to the connector's defaultDatabase.
           type: string
       responses:
         "200":
@@ -987,9 +1007,11 @@ paths:
           description: The UUID of the connector, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Database to connect to. Defaults to the connector's defaultDatabase.
+        in: query
         name: databaseName
         schema:
+          description: Database to connect to. Defaults to the connector's defaultDatabase.
           type: string
       responses:
         "200":
@@ -1089,13 +1111,21 @@ paths:
           description: The UUID of the connector, as returned by its list or create
             endpoint.
           type: string
-      - in: query
+      - description: Database to connect to. Defaults to the connector's defaultDatabase.
+        in: query
         name: databaseName
         schema:
+          description: Database to connect to. Defaults to the connector's defaultDatabase.
           type: string
-      - in: query
+      - description: Schema to list tables from, from connector_fetch_schemas. Defaults
+          to the connector type's default schema, such as public for Postgres. Ignored
+          for PlanetScale, which lists the database's tables.
+        in: query
         name: schemaName
         schema:
+          description: Schema to list tables from, from connector_fetch_schemas. Defaults
+            to the connector type's default schema, such as public for Postgres. Ignored
+            for PlanetScale, which lists the database's tables.
           type: string
       responses:
         "200":
@@ -7944,8 +7974,10 @@ components:
     PayloadsCatalogTableProperty:
       properties:
         isDate:
+          description: Whether value is a timestamp.
           type: boolean
         key:
+          description: The property name.
           type: string
         value:
           $ref: '#/components/schemas/PayloadsJSONValue'
@@ -8035,7 +8067,9 @@ components:
       properties:
         metadata:
           $ref: '#/components/schemas/PayloadsConnectorColumnMetadata'
+          description: The column's type and constraints.
         name:
+          description: The column name.
           type: string
       required:
       - name
@@ -8044,14 +8078,20 @@ components:
     PayloadsConnectorColumnMetadata:
       properties:
         comment:
+          description: The column comment set in the source, if any.
           type: string
         dataType:
+          description: The column's data type, as the source names it.
           type: string
         defaultValue:
+          description: The column's default expression. Omitted when it has none.
           type: string
         isPrimaryKey:
+          description: Whether the column is part of the primary key. Omitted when
+            the source doesn't report it.
           type: boolean
         notNull:
+          description: Whether the column is NOT NULL.
           type: boolean
       required:
       - dataType
@@ -8060,10 +8100,13 @@ components:
     PayloadsConnectorFetchDatabasesResponse:
       properties:
         items:
+          description: The databases the connector can see.
           items:
             $ref: '#/components/schemas/PayloadsDatabaseListItem'
           type: array
         metadata:
+          description: Catalog-level properties, such as an Iceberg S3 Tables bucket's
+            maintenance settings. Omitted when the source has none.
           items:
             $ref: '#/components/schemas/PayloadsCatalogTableProperty'
           type: array
@@ -8073,8 +8116,13 @@ components:
     PayloadsConnectorPayload:
       properties:
         dataPlaneName:
+          description: The data plane to connect from. Empty uses the company's default
+            data plane.
           type: string
         defaultDatabase:
+          description: The database to connect to when a request doesn't name one.
+            Required to test a Postgres (database), Oracle (service name) or S3 (bucket)
+            connection. Omit on update to keep the saved value.
           type:
           - "null"
           - string
@@ -8085,64 +8133,95 @@ components:
           - "null"
           - string
         environmentUUID:
+          description: 'On create only: the environment for the new connector. Required
+            for company-wide API keys and MCP grants; ignored for environment-bound
+            credentials.'
           format: uuid
           type:
           - "null"
           - string
         label:
+          description: The connector's display name.
           type: string
         privateLinkUUID:
+          description: The PrivateLink connection to reach the database through; its
+            DNS entry replaces the host. Omit or null for none.
           format: uuid
           type:
           - "null"
           - string
         sharedConfig:
           additionalProperties: {}
+          description: The type-specific connection settings. To keep a saved secret,
+            send back the masked placeholder with the saved connector's uuid.
           type:
           - object
           - "null"
         snapshotPrivateLinkUUID:
+          description: The PrivateLink connection for the snapshot (read replica)
+            host; its DNS entry replaces the snapshot host. Omit or null for none.
           format: uuid
           type:
           - "null"
           - string
         sshTunnelUUID:
+          description: The SSH tunnel to reach the database through. Omit or null
+            for none.
           format: uuid
           type:
           - "null"
           - string
         type:
+          description: The connector type slug, matched case-insensitively.
           type: string
         uuid:
+          description: The saved connector's UUID, from connector_list. Send it when
+            testing or reusing a saved connector so masked secrets in sharedConfig
+            are filled from it; omit for a new connector.
           type: string
       type: object
     PayloadsConnectorTableDetailResponse:
       properties:
         columns:
+          description: The table's columns. Only filled in by connector_fetch_table_detail,
+            not when listing tables.
           items:
             $ref: '#/components/schemas/PayloadsConnectorColumn'
           type: array
         createdAt:
+          description: When the table was created. Null when the source doesn't report
+            it.
           format: date-time
           type:
           - "null"
           - string
         isView:
+          description: Whether this is a view rather than a table.
           type: boolean
         metadata:
+          description: Source-specific table properties, such as creation time or
+            a Postgres table's internal ID.
           items:
             $ref: '#/components/schemas/PayloadsCatalogTableProperty'
           type: array
         modifiedAt:
+          description: When the table was last modified. Null when the source doesn't
+            report it.
           format: date-time
           type:
           - "null"
           - string
         name:
+          description: The table name, to pass as tableName to connector_fetch_table_detail.
           type: string
         schema:
+          description: The table's schema (or namespace). Empty for sources without
+            schemas.
           type: string
         unreadable:
+          description: True when Artie can't read the table, such as a Postgres table
+            the connector's user can't select from or a Keyspaces table without a
+            stream.
           type: boolean
       required:
       - schema
@@ -8155,6 +8234,7 @@ components:
     PayloadsDataCatalogDatabase:
       properties:
         name:
+          description: The database name.
           type: string
       required:
       - name
@@ -8162,11 +8242,16 @@ components:
     PayloadsDataCatalogMatch:
       properties:
         connectorUUID:
+          description: The source connector the object belongs to, usable as {uuid}
+            in the connector_fetch_* tools.
           format: uuid
           type: string
         object:
           $ref: '#/components/schemas/PayloadsDataCatalogMatchedObject'
+          description: The matched database, schema or table; exactly one of its fields
+            is set.
         score:
+          description: Search relevance score; higher is a better match.
           format: double
           type: number
       required:
@@ -8178,16 +8263,21 @@ components:
       properties:
         database:
           $ref: '#/components/schemas/PayloadsDataCatalogDatabase'
+          description: Set when the hit is a database.
         schema:
           $ref: '#/components/schemas/PayloadsDataCatalogSchema'
+          description: Set when the hit is a schema.
         table:
           $ref: '#/components/schemas/PayloadsDataCatalogTable'
+          description: Set when the hit is a table.
       type: object
     PayloadsDataCatalogSchema:
       properties:
         databaseName:
+          description: The database the schema is in.
           type: string
         name:
+          description: The schema name.
           type: string
       required:
       - name
@@ -8196,15 +8286,20 @@ components:
     PayloadsDataCatalogSearchRequest:
       properties:
         query:
+          description: Text to match against database, schema and table names. Matches
+            substrings case-insensitively and tolerates typos. At most 100 characters.
           type: string
       type: object
     PayloadsDataCatalogTable:
       properties:
         databaseName:
+          description: The database the table is in.
           type: string
         name:
+          description: The table name.
           type: string
         schemaName:
+          description: The schema the table is in.
           type: string
       required:
       - name
@@ -8214,6 +8309,8 @@ components:
     PayloadsDatabaseListItem:
       properties:
         name:
+          description: The database name, to pass as databaseName to the other connector_fetch_*
+            tools.
           type: string
       required:
       - name
@@ -8319,18 +8416,25 @@ components:
     PayloadsFullConnector:
       properties:
         companyUUID:
+          description: The company that owns the connector.
           format: uuid
           type: string
         connectionLabel:
+          description: A short summary of where the connector points, such as its
+            host, built from the config. Empty if the config is incomplete.
           type: string
         createdAt:
+          description: When the connector was created.
           format: date-time
           type: string
         dataPlaneName:
+          description: The data plane that connects to this database. Unset means
+            the company's default data plane.
           type:
           - "null"
           - string
         defaultDatabase:
+          description: The database to connect to when a request doesn't name one.
           type: string
         draftPipelineUUID:
           description: The draft pipeline this connector was created for. Unset once
@@ -8340,13 +8444,20 @@ components:
           - "null"
           - string
         environmentUUID:
+          description: The environment the connector belongs to.
           format: uuid
           type: string
         isValid:
+          description: Whether the saved config passes validation, such as having
+            every required field.
           type: boolean
         label:
+          description: 'Display name: the connector''s name, or for an unnamed Snowflake
+            connector its type and account.'
           type: string
         privateLinkUUID:
+          description: The PrivateLink connection used to reach the database, if any.
+            Its DNS entry replaces the configured host.
           format: uuid
           type:
           - "null"
@@ -8354,21 +8465,27 @@ components:
         sharedConfig:
           $ref: '#/components/schemas/PayloadsJSONValue'
         snapshotPrivateLinkUUID:
+          description: The PrivateLink connection used to reach the snapshot (read
+            replica) host, if any.
           format: uuid
           type:
           - "null"
           - string
         sshTunnelUUID:
+          description: The SSH tunnel used to reach the database, if any.
           format: uuid
           type:
           - "null"
           - string
         type:
           $ref: '#/components/schemas/EnumsConnectorSlug'
+          description: The connector type.
         updatedAt:
+          description: When the connector was last changed.
           format: date-time
           type: string
         uuid:
+          description: The connector's UUID, used as {uuid} in the connector_* tools.
           format: uuid
           type: string
       required:
@@ -9548,14 +9665,20 @@ components:
     PayloadsLightConnector:
       properties:
         companyUUID:
+          description: The company that owns the connector.
           format: uuid
           type: string
         connectionLabel:
+          description: A short summary of where the connector points, such as its
+            host, built from the config. Empty if the config is incomplete.
           type: string
         createdAt:
+          description: When the connector was created.
           format: date-time
           type: string
         dataPlaneName:
+          description: The data plane that connects to this database. Unset means
+            the company's default data plane.
           type:
           - "null"
           - string
@@ -9567,33 +9690,46 @@ components:
           - "null"
           - string
         environmentUUID:
+          description: The environment the connector belongs to.
           format: uuid
           type: string
         isValid:
+          description: Whether the saved config passes validation, such as having
+            every required field.
           type: boolean
         label:
+          description: 'Display name: the connector''s name, or for an unnamed Snowflake
+            connector its type and account.'
           type: string
         privateLinkUUID:
+          description: The PrivateLink connection used to reach the database, if any.
+            Its DNS entry replaces the configured host.
           format: uuid
           type:
           - "null"
           - string
         snapshotPrivateLinkUUID:
+          description: The PrivateLink connection used to reach the snapshot (read
+            replica) host, if any.
           format: uuid
           type:
           - "null"
           - string
         sshTunnelUUID:
+          description: The SSH tunnel used to reach the database, if any.
           format: uuid
           type:
           - "null"
           - string
         type:
           $ref: '#/components/schemas/EnumsConnectorSlug'
+          description: The connector type.
         updatedAt:
+          description: When the connector was last changed.
           format: date-time
           type: string
         uuid:
+          description: The connector's UUID, used as {uuid} in the connector_* tools.
           format: uuid
           type: string
       required:
@@ -10106,23 +10242,36 @@ components:
     PayloadsPostgresReplicationSlot:
       properties:
         active:
+          description: Whether a client is connected to the slot and consuming it.
           type: boolean
         database:
+          description: The database the slot belongs to. Null for a physical slot.
           type:
           - "null"
           - string
         hotStandbyFeedback:
+          description: The replica's hot_standby_feedback setting (on or off), which
+            must be on to stream from a replica. Empty on a primary.
           type: string
         isReplica:
+          description: Whether the server is a read replica. Only detected on Postgres
+            16 and newer.
           type: boolean
         name:
+          description: The replication slot name, to pass as slotName to connector_drop_postgres_replication_slot.
           type: string
         notFound:
+          description: Whether a looked-up slot doesn't exist. Always false in a list
+            of slots.
           type: boolean
         retainedWALBytes:
+          description: 'Bytes of WAL the slot holds back: the distance from its restart_lsn
+            to the current WAL position (the last replayed position on a replica).'
           minimum: 0
           type: integer
         walStatus:
+          description: The slot's wal_status from pg_replication_slots, such as reserved,
+            extended, unreserved or lost; N/A on Postgres 12 and older.
           type: string
       required:
       - name
@@ -10137,14 +10286,19 @@ components:
     PayloadsPostgresSetting:
       properties:
         category:
+          description: The pg_settings category the setting belongs to.
           type: string
         description:
+          description: Postgres's own explanation of the setting, from pg_settings.
           type: string
         name:
+          description: The setting name, as in pg_settings.
           type: string
         unit:
+          description: The value's unit, such as kB or ms. Empty for unitless settings.
           type: string
         value:
+          description: The current value, in the unit given by unit.
           type: string
       required:
       - name
@@ -10409,10 +10563,14 @@ components:
     PayloadsSchemaResponse:
       properties:
         name:
+          description: The schema name, to pass as schemaName to connector_fetch_tables.
           type: string
         unreadable:
+          description: True when the connector's user can't use the schema (for Postgres,
+            no USAGE privilege), so its tables can't be read.
           type: boolean
         unreadableReason:
+          description: Why the schema is unreadable, when the source says.
           type: string
       required:
       - name
@@ -10553,48 +10711,74 @@ components:
     PayloadsSourceReader:
       properties:
         apiBaseURL:
+          description: For API sources, the URL to send records to. Empty for other
+            sources.
           type: string
         archiveConnectorUUID:
+          description: 'SQL Server trn_log_backup only: the SMB share connector holding
+            the log backups, when settings.archiveLocationType is smb_share. Sending
+            archiveLocationType without it clears it.'
           format: uuid
           type:
           - "null"
           - string
         companyUUID:
+          description: The company that owns the source reader.
           format: uuid
           type: string
         connectorUUID:
+          description: The source connector it reads from, from connector_list with
+            includeSourceConnectors=true.
           format: uuid
           type: string
         containerName:
+          description: 'Oracle only: the container to connect to. Empty uses the connector''s
+            CDB.'
           type: string
         createdAt:
+          description: When the source reader was created.
           format: date-time
           type: string
         dataPlaneName:
+          description: The data plane the reader runs in. Empty on update keeps the
+            current one.
           type: string
         database:
+          description: 'The database to read from: the service name for Oracle, the
+            bucket for S3, the keyspace for Keyspaces.'
           type: string
         environmentUUID:
+          description: The environment the source reader belongs to.
           format: uuid
           type: string
         isShared:
+          description: Whether several pipelines can share this source reader.
           type:
           - "null"
           - boolean
         isValid:
+          description: Whether the source reader and its connector pass validation.
           type: boolean
         name:
+          description: The source reader's display name.
           type: string
         settings:
           $ref: '#/components/schemas/PayloadsSourceReaderSettingsPayload'
+          description: Source-specific reader settings.
         status:
           $ref: '#/components/schemas/EnumsSourceReaderStatus'
+          description: The source reader's lifecycle state.
         tablesConfig:
           $ref: '#/components/schemas/PayloadsSourceReaderTablesConfig'
+          description: 'Shared source readers only: the tables it reads, keyed by
+            schema.table (or the collection name for MongoDB and DocumentDB), with
+            their column filters.'
         updatedAt:
+          description: When the source reader was last changed.
           format: date-time
           type: string
         uuid:
+          description: The source reader's UUID, from pipeline_detail.sourceReaderUUID.
           format: uuid
           type: string
       required:
@@ -10614,83 +10798,127 @@ components:
       properties:
         archiveLocationType:
           $ref: '#/components/schemas/EnumsMSSQLArchiveLocationType'
+          description: 'SQL Server trn_log_backup only: where the transaction log
+            backups are stored. Empty means a local directory on the reader.'
         archiveLogPassword:
+          description: 'SQL Server trn_log_backup only: the SAS token for an Azure
+            blob folder. Write-only: responses return a placeholder when one is saved,
+            and sending the placeholder keeps it.'
           type:
           - "null"
           - string
         archiveLogPath:
+          description: 'SQL Server trn_log_backup only: the folder holding the transaction
+            log backups, such as an Azure blob folder URL. An SMB share''s path is
+            on its connector instead.'
           type:
           - "null"
           - string
         archiveLogPrivateLinkUUID:
           deprecated: true
+          description: 'No longer used: an SMB share''s PrivateLink is on its connector
+            (archiveConnectorUUID).'
           format: uuid
           type:
           - "null"
           - string
         archiveLogUsername:
           deprecated: true
+          description: 'No longer used: an SMB share''s login is on its connector
+            (archiveConnectorUUID).'
           type:
           - "null"
           - string
         backfillBatchSize:
+          description: Rows read per batch during backfills, also used as the Postgres
+            streaming batch size. At most 50,000; new source readers start at 25,000.
           minimum: 0
           type:
           - "null"
           - integer
         backfillDefaults:
           $ref: '#/components/schemas/PayloadsBackfillDefaultsPayload'
+          description: Default backfill tuning for this source reader's tables; a
+            table's own backfill settings take precedence.
         collectionScopedMode:
+          description: 'MongoDB only: open one change stream per collection. Order
+            is kept within each collection but not across them.'
           type:
           - "null"
           - boolean
         compositeTypesAsText:
+          description: 'Postgres only: replicate composite (row) type columns as their
+            text form, such as (book,abc123), instead of base64-encoded bytes.'
           type:
           - "null"
           - boolean
         databasesToSync:
+          description: The databases to merge tables from when unifyAcrossDatabases
+            is on.
           items:
             type: string
           type:
           - "null"
           - array
         deploymentScopedMode:
+          description: 'MongoDB only: stream every table from one change stream for
+            the whole deployment; each table''s schema holds its database, so one
+            pipeline can cover several databases.'
           type:
           - "null"
           - boolean
         disableAutoFetchTables:
+          description: 'Dashboard only: require picking a schema before tables are
+            listed, instead of listing every table up front.'
           type:
           - "null"
           - boolean
         disableFullDocumentBeforeChange:
+          description: 'MongoDB/DocumentDB only: don''t request the pre-image (fullDocumentBeforeChange)
+            on change streams, which DocumentDB doesn''t support.'
           type:
           - "null"
           - boolean
         disableNoCursorTimeout:
+          description: 'MongoDB/DocumentDB only: don''t set noCursorTimeout on the
+            backfill cursor.'
           type:
           - "null"
           - boolean
         enableClientSideFullDocumentLookup:
+          description: 'MongoDB/DocumentDB only: look up the full document for update
+            events with a separate query instead of updateLookup, avoiding BSONObjectTooLarge
+            errors past 16 MB.'
           type:
           - "null"
           - boolean
         enableHeartbeats:
+          description: 'Postgres only: write to Artie''s heartbeat table every 5 minutes
+            so the replication slot keeps advancing when the captured tables are quiet.'
           type:
           - "null"
           - boolean
         enableRelationMessageCaching:
+          description: 'Postgres only: cache relation messages and skip the schema
+            change check on each one.'
           type:
           - "null"
           - boolean
         enableSchemaHistoryCompaction:
+          description: 'MySQL only: on startup, rebuild the schema history from the
+            source and replace the append-only history file with the compacted version.'
           type:
           - "null"
           - boolean
         maxConnIdleTimeSeconds:
+          description: 'Postgres only: close pooled connections idle this many seconds,
+            up to 86400. 0 uses the driver default.'
           type:
           - "null"
           - integer
         messageCompression:
+          description: Set to gzip to gzip-compress each whole Kafka message value.
+            Can't be combined with column-level compression.
           enum:
           - gzip
           - ""
@@ -10699,87 +10927,129 @@ components:
           - "null"
           - string
         mssqlChangeTrackingConcurrency:
+          description: 'SQL Server change tracking only: how many tables are processed
+            in parallel. 0 uses the default of 10.'
           type:
           - "null"
           - integer
         mssqlChangeTrackingMaxIdleConns:
+          description: 'SQL Server change tracking only: the most idle database connections
+            to keep. 0 uses the default of 10.'
           type:
           - "null"
           - integer
         mssqlChangeTrackingPollIntervalMs:
+          description: 'SQL Server change tracking only: milliseconds to wait before
+            polling again when there are no new changes. 0 uses the default of 2500.'
           minimum: 0
           type:
           - "null"
           - integer
         mssqlReplicationMethod:
+          description: 'SQL Server only: how changes are captured. Empty uses CDC
+            capture instances.'
           type:
           - "null"
           - string
         oneTopicPerSchema:
+          description: 'Oracle only: send every table in a schema to a single Kafka
+            topic.'
           type:
           - "null"
           - boolean
         publicationAutoCreateMode:
+          description: 'Postgres only: empty lets Artie create the publication FOR
+            ALL TABLES if it''s missing; filtered means Artie won''t create it, so
+            you manage which tables it covers.'
           type:
           - "null"
           - string
         publicationNameOverride:
+          description: 'Postgres only: the publication to read from. Empty uses dbz_publication.'
           type:
           - "null"
           - string
         publishViaPartitionRoot:
+          description: 'Postgres only: create the publication with publish_via_partition_root,
+            so changes to partitions are published as the parent table.'
           type:
           - "null"
           - boolean
         replicationSlotOverride:
+          description: 'Postgres only: the replication slot to read from. Empty uses
+            artie.'
           type:
           - "null"
           - string
         rescaleTimestampsPastYear9999:
+          description: 'Postgres only: read a timestamp (without time zone) past year
+            9999 as an epoch stored at 1000x precision and scale it back down.'
           type:
           - "null"
           - boolean
         s3PathMappings:
+          description: 'S3 sources only: which objects in the bucket feed which destination
+            table.'
           items:
             $ref: '#/components/schemas/PayloadsS3PathMapping'
           type:
           - "null"
           - array
         unifyAcrossDatabases:
+          description: Merge tables with the same schema and name from several databases
+            (databasesToSync or unifyAcrossDatabasesRegex) into one destination table.
           type:
           - "null"
           - boolean
         unifyAcrossDatabasesRegex:
+          description: Regex matching the databases or keyspaces to merge tables from.
+            Where supported it replaces databasesToSync.
           type:
           - "null"
           - string
         unifyAcrossSchemas:
+          description: Merge tables with the same name from every schema matching
+            unifyAcrossSchemasRegex into one destination table. Applies to tables
+            that also turn it on.
           type:
           - "null"
           - boolean
         unifyAcrossSchemasMaxParallelism:
+          description: How many schemas a unified table backfills at once. 0 uses
+            the default of 1 (serial).
           maximum: 3
           minimum: 0
           type:
           - "null"
           - integer
         unifyAcrossSchemasRegex:
+          description: Regex matching the schemas whose same-named tables are merged
+            when unifyAcrossSchemas is on.
           type:
           - "null"
           - string
         useAdvanceOnPrimaryKeepAlive:
+          description: 'Postgres only: advance the slot''s position on primary keepalive
+            messages. Suited to dev or staging, since long-running transactions can
+            make the WAL position jump.'
           type:
           - "null"
           - boolean
         useFailoverReplicationSlot:
+          description: 'Postgres 17+ only: create the logical replication slot as
+            a failover slot, synchronized to physical standbys.'
           type:
           - "null"
           - boolean
         useNumericTypesForMoney:
+          description: 'SQL Server only: read MONEY as NUMERIC(19,4) and SMALLMONEY
+            as NUMERIC(10,4).'
           type:
           - "null"
           - boolean
         useReaderForOracleStreaming:
+          description: 'Oracle only: stream changes with Artie Reader (LogMiner) instead
+            of Debezium.'
           type:
           - "null"
           - boolean
@@ -10787,20 +11057,31 @@ components:
     PayloadsSourceReaderTable:
       properties:
         excludeColumns:
+          description: Columns the reader drops at the source, overriding each pipeline
+            table's own list when set.
           items:
             type: string
           type: array
         includeColumns:
+          description: The only columns to read, overriding each pipeline table's
+            own list when set.
           items:
             type: string
           type: array
         name:
+          description: The table (or collection) name in the source.
           type: string
         schema:
+          description: The table's schema. For MongoDB in deploymentScopedMode, its
+            database.
           type: string
         unifyAcrossDatabases:
+          description: Merge this table across databases, when the source reader's
+            unifyAcrossDatabases setting is on. Only PlanetScale checks it per table.
           type: boolean
         unifyAcrossSchemas:
+          description: Merge this table across schemas, when the source reader's unifyAcrossSchemas
+            setting is on.
           type: boolean
       type: object
     PayloadsSourceReaderTablesConfig:
@@ -12186,6 +12467,8 @@ components:
     RouterConnectorDropReplicationSlotRequest:
       properties:
         slotName:
+          description: Name of the replication slot to drop, from connector_fetch_postgres_replication_slots.
+            Must be inactive or lost.
           type: string
       required:
       - slotName
@@ -12229,8 +12512,11 @@ components:
     RouterConnectorGenerateShadowScriptRequest:
       properties:
         database:
+          description: The Oracle database (service name) the tables are in. Must
+            not be empty.
           type: string
         tables:
+          description: The tables to create shadow tables for, 1 to 10 per request.
           items:
             $ref: '#/components/schemas/RouterConnectorShadowScriptTable'
           type: array
@@ -12249,9 +12535,17 @@ components:
       properties:
         connectionRole:
           $ref: '#/components/schemas/RouterConnectorConnectionRole'
+          description: Whether the connector is being set up as a source or a destination.
+            Only labels the connection-test event; the test itself is the same. Omit
+            if unknown.
         dataPlaneName:
+          description: The data plane to connect from. Empty uses the company's default
+            data plane.
           type: string
         defaultDatabase:
+          description: The database to connect to when a request doesn't name one.
+            Required to test a Postgres (database), Oracle (service name) or S3 (bucket)
+            connection. Omit on update to keep the saved value.
           type:
           - "null"
           - string
@@ -12262,35 +12556,51 @@ components:
           - "null"
           - string
         environmentUUID:
+          description: 'On create only: the environment for the new connector. Required
+            for company-wide API keys and MCP grants; ignored for environment-bound
+            credentials.'
           format: uuid
           type:
           - "null"
           - string
         label:
+          description: The connector's display name.
           type: string
         privateLinkUUID:
+          description: The PrivateLink connection to reach the database through; its
+            DNS entry replaces the host. Omit or null for none.
           format: uuid
           type:
           - "null"
           - string
         sharedConfig:
           additionalProperties: {}
+          description: The type-specific connection settings. To keep a saved secret,
+            send back the masked placeholder with the saved connector's uuid.
           type:
           - object
           - "null"
         snapshotPrivateLinkUUID:
+          description: The PrivateLink connection for the snapshot (read replica)
+            host; its DNS entry replaces the snapshot host. Omit or null for none.
           format: uuid
           type:
           - "null"
           - string
         sshTunnelUUID:
+          description: The SSH tunnel to reach the database through. Omit or null
+            for none.
           format: uuid
           type:
           - "null"
           - string
         type:
+          description: The connector type slug, matched case-insensitively.
           type: string
         uuid:
+          description: The saved connector's UUID, from connector_list. Send it when
+            testing or reusing a saved connector so masked secrets in sharedConfig
+            are filled from it; omit for a new connector.
           type: string
       type: object
     RouterConnectorPingResponse:
@@ -12303,12 +12613,16 @@ components:
     RouterConnectorShadowScriptTable:
       properties:
         columns:
+          description: The table's columns, used to build the shadow table. Must not
+            be empty.
           items:
             $ref: '#/components/schemas/PayloadsSeenTableColumn'
           type: array
         name:
+          description: The table name.
           type: string
         schema:
+          description: The Oracle schema (owner) of the table.
           type: string
       required:
       - schema
@@ -12318,6 +12632,7 @@ components:
     RouterConnectorStartDynamoDBExportRequest:
       properties:
         s3Bucket:
+          description: Name of the S3 bucket DynamoDB exports the table to.
           type: string
         s3BucketOwner:
           description: AWS account ID that owns the S3 bucket. Required when the bucket
@@ -12326,6 +12641,8 @@ components:
           - "null"
           - string
         s3Prefix:
+          description: Key prefix for the export files within the bucket. Null uses
+            no prefix.
           type:
           - "null"
           - string
@@ -12347,30 +12664,45 @@ components:
           - "null"
           - string
         columns:
+          description: The table's columns. Only filled in by connector_fetch_table_detail,
+            not when listing tables.
           items:
             $ref: '#/components/schemas/PayloadsConnectorColumn'
           type: array
         createdAt:
+          description: When the table was created. Null when the source doesn't report
+            it.
           format: date-time
           type:
           - "null"
           - string
         isView:
+          description: Whether this is a view rather than a table.
           type: boolean
         metadata:
+          description: Source-specific table properties, such as creation time or
+            a Postgres table's internal ID.
           items:
             $ref: '#/components/schemas/PayloadsCatalogTableProperty'
           type: array
         modifiedAt:
+          description: When the table was last modified. Null when the source doesn't
+            report it.
           format: date-time
           type:
           - "null"
           - string
         name:
+          description: The table name, to pass as tableName to connector_fetch_table_detail.
           type: string
         schema:
+          description: The table's schema (or namespace). Empty for sources without
+            schemas.
           type: string
         unreadable:
+          description: True when Artie can't read the table, such as a Postgres table
+            the connector's user can't select from or a Keyspaces table without a
+            stream.
           type: boolean
       required:
       - schema
@@ -13267,12 +13599,16 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/RouterAnalyticsDatasetData'
+          description: The dataset's scalar or timeseries values. Null when err is
+            set.
         err:
+          description: Why the query failed. Null on success.
           type:
           - "null"
           - string
         unit:
           $ref: '#/components/schemas/PayloadsAnalyticsUnit'
+          description: The unit of the values in data.
       required:
       - unit
       - data
