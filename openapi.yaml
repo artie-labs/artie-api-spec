@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.237
+  version: v1.0.238
 servers:
 - url: https://api.artie.com
 paths:
@@ -9970,6 +9970,11 @@ components:
           description: When true, rows are always appended instead of merged into
             the destination table. Use for append-only data such as event tracking.
           type: boolean
+        artieUpdatedAtColumnName:
+          description: Name for the column includeArtieUpdatedAtColumn adds, instead
+            of __artie_updated_at. Always lowercase, as every column name is written.
+            Can't change once the pipeline is deployed. Not supported for ClickHouse.
+          type: string
         autoEnableHistoryForNewTables:
           description: When true, new source tables are added with history mode on;
             without autoReplicateNewTables they are added history-only.
