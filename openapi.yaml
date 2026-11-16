@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.239
+  version: v1.0.240
 servers:
 - url: https://api.artie.com
 paths:
@@ -7354,10 +7354,12 @@ components:
           - "null"
           - boolean
         artieUpdatedAtColumnName:
-          description: Name for the column includeArtieUpdatedAtColumn adds, instead
+          description: 'Name for the column includeArtieUpdatedAtColumn adds, instead
             of __artie_updated_at; empty goes back to __artie_updated_at. Saved in
-            lowercase, as every column name is written. Can't change once the pipeline
-            is deployed. Not supported for ClickHouse.
+            lowercase, as every column name is written. To change it, pause the pipeline
+            and rename the column in the destination tables before resuming: Artie
+            doesn''t rename columns in tables it already created. Not supported for
+            ClickHouse.'
           type:
           - "null"
           - string
@@ -9979,9 +9981,11 @@ components:
             the destination table. Use for append-only data such as event tracking.
           type: boolean
         artieUpdatedAtColumnName:
-          description: Name for the column includeArtieUpdatedAtColumn adds, instead
+          description: 'Name for the column includeArtieUpdatedAtColumn adds, instead
             of __artie_updated_at. Always lowercase, as every column name is written.
-            Can't change once the pipeline is deployed. Not supported for ClickHouse.
+            To change it, pause the pipeline and rename the column in the destination
+            tables before resuming: Artie doesn''t rename columns in tables it already
+            created. Not supported for ClickHouse.'
           type: string
         autoEnableHistoryForNewTables:
           description: When true, new source tables are added with history mode on;
