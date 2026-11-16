@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.236
+  version: v1.0.237
 servers:
 - url: https://api.artie.com
 paths:
@@ -7033,6 +7033,18 @@ webhooks:
       responses:
         "200":
           description: Acknowledge delivery
+  trn.file_processed:
+    post:
+      description: Transaction log backup processed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayloadsWebhookTrnFile_processed'
+        required: true
+      responses:
+        "200":
+          description: Acknowledge delivery
 components:
   schemas:
     EnumsBackfillStage:
@@ -12291,6 +12303,7 @@ components:
           replication.failed: '#/components/schemas/PayloadsWebhookReplicationFailed'
           replication.started: '#/components/schemas/PayloadsWebhookReplicationStarted'
           row.skipped: '#/components/schemas/PayloadsWebhookRowSkipped'
+          trn.file_processed: '#/components/schemas/PayloadsWebhookTrnFile_processed'
         propertyName: event
       oneOf:
       - $ref: '#/components/schemas/PayloadsWebhookBackfillCompleted'
@@ -12311,6 +12324,7 @@ components:
       - $ref: '#/components/schemas/PayloadsWebhookReplicationFailed'
       - $ref: '#/components/schemas/PayloadsWebhookReplicationStarted'
       - $ref: '#/components/schemas/PayloadsWebhookRowSkipped'
+      - $ref: '#/components/schemas/PayloadsWebhookTrnFile_processed'
     PayloadsWebhookPipelineInfo:
       properties:
         name:
@@ -12493,6 +12507,50 @@ components:
       - warning
       - error
       type: string
+    PayloadsWebhookTrnFile_processed:
+      allOf:
+      - $ref: '#/components/schemas/PayloadsWebhookEnvelope'
+      - properties:
+          event:
+            enum:
+            - trn.file_processed
+            type: string
+          properties:
+            properties:
+              last_processed_file:
+                description: Last SQL Server transaction log backup file read to its
+                  end. Omitted when Reader has no position yet.
+                type: string
+              restart_file:
+                description: First transaction log backup file a restart reads again,
+                  because a transaction in it is still open. Omitted when none is
+                  open.
+                type: string
+            type: object
+        required:
+        - event
+        - properties
+        type: object
+      description: Transaction log backup processed
+      examples:
+      - delivery_metadata:
+          attempt: 1
+        destination: snowflake
+        environment_name: Production
+        environment_uuid: 33333333-3333-3333-3333-333333333333
+        event: trn.file_processed
+        message: Transaction log backup processed
+        pipelines:
+        - name: Production Postgres → Snowflake
+          uuid: 22222222-2222-2222-2222-222222222222
+        properties:
+          last_processed_file: AdventureWorks_log_20260620_1145.trn
+          restart_file: AdventureWorks_log_20260620_1130.trn
+        severity: info
+        source: postgresql
+        source_reader_uuid: 11111111-1111-1111-1111-111111111111
+        timestamp: "2026-06-20T12:00:00Z"
+      title: trn.file_processed
     RouterAnalyticsDatasetData:
       anyOf:
       - items:
