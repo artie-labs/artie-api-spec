@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.242
+  version: v1.0.243
 servers:
 - url: https://api.artie.com
 paths:
@@ -11185,6 +11185,14 @@ components:
         useNumericTypesForMoney:
           description: 'SQL Server only: read MONEY as NUMERIC(19,4) and SMALLMONEY
             as NUMERIC(10,4).'
+          type:
+          - "null"
+          - boolean
+        useOracleRowIDRanges:
+          description: 'Oracle only: backfill eligible tables in ROWID ranges, in
+            storage order, instead of paging by primary key. Needs Oracle 19c+ and
+            SELECT on V$DATABASE, DBA_EXTENTS, DBA_OBJECTS and DBA_SEGMENTS; without
+            them backfills fail.'
           type:
           - "null"
           - boolean
