@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.240
+  version: v1.0.241
 servers:
 - url: https://api.artie.com
 paths:
@@ -7437,6 +7437,20 @@ components:
           type:
           - "null"
           - boolean
+        databricksUseZerobus:
+          description: 'Databricks only: append to history tables and appendOnly tables
+            through Zerobus Ingest instead of COPY INTO. Needs a connector that signs
+            in with a service principal (OAuth M2M) and databricksZerobusEndpoint.'
+          type:
+          - "null"
+          - boolean
+        databricksZerobusEndpoint:
+          description: 'Databricks only: the workspace''s Zerobus endpoint, https://<workspace
+            id>.zerobus.<region>.cloud.databricks.com. Required when databricksUseZerobus
+            is on.'
+          type:
+          - "null"
+          - string
         defaultSourceSchema:
           description: Source schema whose tables aren't prefixed with the schema
             name in the destination.
@@ -10037,6 +10051,16 @@ components:
           description: 'Databricks only: turn off variant shredding on new tables
             and, after each deploy, existing ones. Already shredded data isn''t rewritten.'
           type: boolean
+        databricksUseZerobus:
+          description: 'Databricks only: append to history tables and appendOnly tables
+            through Zerobus Ingest instead of COPY INTO. Needs a connector that signs
+            in with a service principal (OAuth M2M) and databricksZerobusEndpoint.'
+          type: boolean
+        databricksZerobusEndpoint:
+          description: 'Databricks only: the workspace''s Zerobus endpoint, https://<workspace
+            id>.zerobus.<region>.cloud.databricks.com. Required when databricksUseZerobus
+            is on.'
+          type: string
         defaultSourceSchema:
           description: Source schema whose tables aren't prefixed with the schema
             name in the destination.
