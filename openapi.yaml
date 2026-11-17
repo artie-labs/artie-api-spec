@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.241
+  version: v1.0.242
 servers:
 - url: https://api.artie.com
 paths:
@@ -7693,15 +7693,16 @@ components:
           description: Postgres CTID backfill settings for this table; omitted uses
             the source reader's backfill defaults.
         dynamicTableTargetLag:
-          description: Snowflake TARGET_LAG for the dynamic table, such as 1 minute;
-            empty uses Transfer's default. Only used with enableDynamicTable.
+          description: How often the latest rows refresh, such as 1 minute (Snowflake
+            TARGET_LAG, Databricks TRIGGER ON UPDATE interval); empty uses Transfer's
+            default. Only used with enableDynamicTable.
           type:
           - "null"
           - string
         enableDynamicTable:
-          description: 'Snowflake only: stream changes into <table>__artie_changes,
-            keep the latest row per key in a dynamic table, and make <table> a view
-            over it.'
+          description: 'Snowflake and Databricks only: stream changes into <table>__artie_changes,
+            keep the latest row per key in a Snowflake dynamic table or Databricks
+            streaming table, and make <table> a view over it.'
           type:
           - "null"
           - boolean
@@ -11420,13 +11421,14 @@ components:
           description: Postgres CTID backfill settings for this table; omitted uses
             the source reader's backfill defaults.
         dynamicTableTargetLag:
-          description: Snowflake TARGET_LAG for the dynamic table, such as 1 minute;
-            empty uses Transfer's default. Only used with enableDynamicTable.
+          description: How often the latest rows refresh, such as 1 minute (Snowflake
+            TARGET_LAG, Databricks TRIGGER ON UPDATE interval); empty uses Transfer's
+            default. Only used with enableDynamicTable.
           type: string
         enableDynamicTable:
-          description: 'Snowflake only: stream changes into <table>__artie_changes,
-            keep the latest row per key in a dynamic table, and make <table> a view
-            over it.'
+          description: 'Snowflake and Databricks only: stream changes into <table>__artie_changes,
+            keep the latest row per key in a Snowflake dynamic table or Databricks
+            streaming table, and make <table> a view over it.'
           type: boolean
         encryptJSONBColumns:
           description: When true, the table's JSONB columns are encrypted with the
