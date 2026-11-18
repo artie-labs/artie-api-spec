@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.244
+  version: v1.0.246
 servers:
 - url: https://api.artie.com
 paths:
@@ -7412,6 +7412,13 @@ components:
           type:
           - "null"
           - boolean
+        autoStopDroppedTables:
+          description: When true, tables that no longer exist in the source stop streaming
+            automatically. Destination tables and their data are kept. On sources
+            other than Postgres, a table Artie lost access to also counts as dropped.
+          type:
+          - "null"
+          - boolean
         backfillMySQLFloatsAsShortestDecimal:
           description: 'MySQL and PlanetScale sources only: backfills write FLOAT
             columns as their shortest decimal, as replication does, instead of the
@@ -10038,6 +10045,11 @@ components:
         autoReplicateNewTables:
           description: When true, new tables found in the source are added to the
             pipeline automatically.
+          type: boolean
+        autoStopDroppedTables:
+          description: When true, tables that no longer exist in the source stop streaming
+            automatically. Destination tables and their data are kept. On sources
+            other than Postgres, a table Artie lost access to also counts as dropped.
           type: boolean
         backfillMySQLFloatsAsShortestDecimal:
           description: 'MySQL and PlanetScale sources only: backfills write FLOAT
@@ -13751,6 +13763,15 @@ components:
       type: object
     RouterPipelineValidateUnsavedSourceRequest:
       properties:
+        allowDroppedTablesPipelineUUID:
+          description: 'Set it to a pipeline with autoStopDroppedTables on: that pipeline''s
+            already deployed tables pass validation if they no longer exist in the
+            source, since the table changes check stops them. Every other table and
+            check is validated as usual. Only Postgres sources honor it.'
+          format: uuid
+          type:
+          - "null"
+          - string
         dataPlaneName:
           type: string
         dynamoDBBackfillConfig:
