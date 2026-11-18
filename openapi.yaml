@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.246
+  version: v1.0.248
 servers:
 - url: https://api.artie.com
 paths:
@@ -2564,6 +2564,58 @@ paths:
         title: Change a Managed Kafka cluster's allowlist
         triggerDescription: Use when you need to change a Managed Kafka cluster's
           allowlist.
+  /kafka-clusters/{uuid}/broker-defaults:
+    get:
+      description: Retrieves the broker configs an active Managed Kafka cluster leaves
+        at Kafka's default, each with that default, sorted by name. The configs Artie
+        sets are in the cluster's own payload. Returns 400 for other clusters, and
+        409 if the cluster isn't active or is still being set up.
+      operationId: kafka_cluster_broker_defaults
+      parameters:
+      - description: The UUID of the Kafka cluster, as returned by its list or create
+          endpoint.
+        in: path
+        name: uuid
+        required: true
+        schema:
+          description: The UUID of the Kafka cluster, as returned by its list or create
+            endpoint.
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayloadsKafkaBrokerDefaults'
+          description: OK
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: List the Kafka defaults a Managed Kafka cluster runs with
+      tags:
+      - Kafka clusters
+      x-artie-mcp:
+        destructiveHint: false
+        exposure: exposed
+        idempotentHint: true
+        inputSensitivity: none
+        openWorldHint: false
+        operationId: kafka_cluster_broker_defaults
+        outputSensitivity: none
+        readOnlyHint: true
+        requiredScopes:
+        - kafka:read
+        retrySemantics: safe
+        title: List the Kafka defaults a Managed Kafka cluster runs with
+        triggerDescription: Managed clusters only, and the cluster must be active
+          (400 or 409 otherwise). The broker configs Artie doesn't set, each with
+          Kafka's default value. Use for what a broker config is when Artie leaves
+          it alone; for the ones Artie sets use kafka_cluster_detail.
   /kafka-clusters/{uuid}/broker-settings:
     put:
       description: 'Changes an active Managed Kafka cluster''s broker settings: only
@@ -7852,9 +7904,9 @@ components:
           - "null"
           - boolean
         unifyAcrossSchemas:
-          description: 'Postgres and MySQL: when the source reader unifies across
-            schemas, this table is read from every matching schema into one destination
-            table.'
+          description: 'Postgres, MySQL and Oracle: when the source reader unifies
+            across schemas, this table is read from every matching schema into one
+            destination table.'
           type:
           - "null"
           - boolean
@@ -8828,6 +8880,17 @@ components:
       required:
       - name
       - value
+      type: object
+    PayloadsKafkaBrokerDefaults:
+      properties:
+        configs:
+          description: Each config the brokers leave at Kafka's default, with that
+            default, sorted by name.
+          items:
+            $ref: '#/components/schemas/PayloadsKafkaBrokerConfig'
+          type: array
+      required:
+      - configs
       type: object
     PayloadsKafkaCluster:
       properties:
@@ -11588,9 +11651,9 @@ components:
             PlanetScale reads it per table.
           type: boolean
         unifyAcrossSchemas:
-          description: 'Postgres and MySQL: when the source reader unifies across
-            schemas, this table is read from every matching schema into one destination
-            table.'
+          description: 'Postgres, MySQL and Oracle: when the source reader unifies
+            across schemas, this table is read from every matching schema into one
+            destination table.'
           type: boolean
       type: object
     PayloadsTablePayload:
@@ -12594,14 +12657,18 @@ components:
             type: string
           properties:
             properties:
+              file:
+                description: Transaction log backup file Reader is reading. Omitted
+                  when it isn't reading one.
+                type: string
               last_processed_file:
                 description: Last SQL Server transaction log backup file read to its
-                  end. Omitted when Reader has no position yet.
+                  end. Omitted until Reader finishes its first file after a start.
                 type: string
               restart_file:
-                description: First transaction log backup file a restart reads again,
-                  because a transaction in it is still open. Omitted when none is
-                  open.
+                description: 'Sent by older Readers only: first transaction log backup
+                  file a restart reads again, because a transaction in it is still
+                  open.'
                 type: string
             type: object
         required:
@@ -12621,8 +12688,8 @@ components:
         - name: Production Postgres → Snowflake
           uuid: 22222222-2222-2222-2222-222222222222
         properties:
+          file: AdventureWorks_log_20260620_1150.trn
           last_processed_file: AdventureWorks_log_20260620_1145.trn
-          restart_file: AdventureWorks_log_20260620_1130.trn
         severity: info
         source: postgresql
         source_reader_uuid: 11111111-1111-1111-1111-111111111111
