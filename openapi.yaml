@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.248
+  version: v1.0.249
 servers:
 - url: https://api.artie.com
 paths:
@@ -7863,6 +7863,10 @@ components:
           $ref: '#/components/schemas/PayloadsRangeSettings'
           description: Range backfill settings for this table; omitted uses the source
             reader's backfill defaults.
+        rowIDSettings:
+          $ref: '#/components/schemas/PayloadsRowIDSettings'
+          description: Oracle ROWID backfill settings for this table; omitted uses
+            the source reader's backfill defaults.
         shouldBackfillHistoryTable:
           description: When true, the history table is backfilled too; otherwise only
             the regular table is.
@@ -8058,11 +8062,13 @@ components:
           type: string
         readMode:
           description: How backfills read each table; range and ctid split it into
-            chunks read in parallel.
+            chunks read in parallel, and rowID (Oracle only) reads it in ROWID ranges,
+            in storage order.
           enum:
           - primaryKey
           - range
           - ctid
+          - rowID
           type: string
       type: object
     PayloadsBackfillStageEvent:
@@ -10618,6 +10624,16 @@ components:
           minimum: 0
           type: integer
       type: object
+    PayloadsRowIDSettings:
+      properties:
+        enabled:
+          description: When true, the backfill reads the table in ROWID ranges, in
+            storage order, instead of paging by primary key. Needs Oracle 19c+ and
+            SELECT on V$DATABASE, DBA_EXTENTS, DBA_OBJECTS and DBA_SEGMENTS; without
+            them the backfill fails. Tables that can't be read by ROWID (index-organized,
+            row movement, a standby, ...) are still paged by key.
+          type: boolean
+      type: object
     PayloadsS3CSVParser:
       properties:
         commentPrefix:
@@ -11275,14 +11291,6 @@ components:
           type:
           - "null"
           - boolean
-        useOracleRowIDRanges:
-          description: 'Oracle only: backfill eligible tables in ROWID ranges, in
-            storage order, instead of paging by primary key. Needs Oracle 19c+ and
-            SELECT on V$DATABASE, DBA_EXTENTS, DBA_OBJECTS and DBA_SEGMENTS; without
-            them backfills fail.'
-          type:
-          - "null"
-          - boolean
         useReaderForOracleStreaming:
           description: 'Oracle only: stream changes with Artie Reader (LogMiner) instead
             of Debezium.'
@@ -11612,6 +11620,10 @@ components:
           $ref: '#/components/schemas/PayloadsRangeSettings'
           description: Range backfill settings for this table; omitted uses the source
             reader's backfill defaults.
+        rowIDSettings:
+          $ref: '#/components/schemas/PayloadsRowIDSettings'
+          description: Oracle ROWID backfill settings for this table; omitted uses
+            the source reader's backfill defaults.
         shouldBackfillHistoryTable:
           description: When true, the history table is backfilled too; otherwise only
             the regular table is.
