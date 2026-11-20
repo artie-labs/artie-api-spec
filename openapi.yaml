@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.251
+  version: v1.0.252
 servers:
 - url: https://api.artie.com
 paths:
@@ -11149,12 +11149,6 @@ components:
         enableRelationMessageCaching:
           description: 'Postgres only: cache relation messages and skip the schema
             change check on each one.'
-          type:
-          - "null"
-          - boolean
-        enableSchemaHistoryCompaction:
-          description: 'MySQL only: on startup, rebuild the schema history from the
-            source and replace the append-only history file with the compacted version.'
           type:
           - "null"
           - boolean
