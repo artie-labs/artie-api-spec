@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.253
+  version: v1.0.255
 servers:
 - url: https://api.artie.com
 paths:
@@ -7763,6 +7763,13 @@ components:
           $ref: '#/components/schemas/PayloadsCTIDSettings'
           description: Postgres CTID backfill settings for this table; omitted uses
             the source reader's backfill defaults.
+        cursorColumn:
+          description: 'ClickHouse only: the column a MergeTree table is streamed
+            by, an integer, DateTime or DateTime64 that grows with every insert. Leave
+            empty for a ReplacingMergeTree with a version column.'
+          type:
+          - "null"
+          - string
         dynamicTableTargetLag:
           description: How often the latest rows refresh, such as 1 minute (Snowflake
             TARGET_LAG, Databricks TRIGGER ON UPDATE interval); empty uses Transfer's
@@ -7908,9 +7915,9 @@ components:
           - "null"
           - boolean
         unifyAcrossSchemas:
-          description: 'Postgres, MySQL and Oracle: when the source reader unifies
-            across schemas, this table is read from every matching schema into one
-            destination table.'
+          description: 'Postgres, MySQL, Oracle and CockroachDB: when the source reader
+            unifies across schemas, this table is read from every matching schema
+            into one destination table.'
           type:
           - "null"
           - boolean
@@ -11521,6 +11528,11 @@ components:
           $ref: '#/components/schemas/PayloadsCTIDSettings'
           description: Postgres CTID backfill settings for this table; omitted uses
             the source reader's backfill defaults.
+        cursorColumn:
+          description: 'ClickHouse only: the column a MergeTree table is streamed
+            by, an integer, DateTime or DateTime64 that grows with every insert. Leave
+            empty for a ReplacingMergeTree with a version column.'
+          type: string
         dynamicTableTargetLag:
           description: How often the latest rows refresh, such as 1 minute (Snowflake
             TARGET_LAG, Databricks TRIGGER ON UPDATE interval); empty uses Transfer's
@@ -11661,9 +11673,9 @@ components:
             PlanetScale reads it per table.
           type: boolean
         unifyAcrossSchemas:
-          description: 'Postgres, MySQL and Oracle: when the source reader unifies
-            across schemas, this table is read from every matching schema into one
-            destination table.'
+          description: 'Postgres, MySQL, Oracle and CockroachDB: when the source reader
+            unifies across schemas, this table is read from every matching schema
+            into one destination table.'
           type: boolean
       type: object
     PayloadsTablePayload:
