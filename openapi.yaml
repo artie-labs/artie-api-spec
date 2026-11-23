@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.253
+  version: v1.0.257
 servers:
 - url: https://api.artie.com
 paths:
@@ -7154,6 +7154,11 @@ components:
       - smb_share
       - snowflake
       type: string
+    EnumsEncryptionKeyType:
+      enum:
+      - passphrase
+      - kms
+      type: string
     EnumsKafkaACLOperation:
       enum:
       - Read
@@ -7212,6 +7217,14 @@ components:
       - paused
       - transfer paused
       - running
+      type: string
+    EnumsPrivateLinkConnectionStatus:
+      enum:
+      - under review
+      - pending acceptance
+      - available
+      - errored
+      - declined
       type: string
     EnumsSourceReaderStatus:
       enum:
@@ -7763,6 +7776,13 @@ components:
           $ref: '#/components/schemas/PayloadsCTIDSettings'
           description: Postgres CTID backfill settings for this table; omitted uses
             the source reader's backfill defaults.
+        cursorColumn:
+          description: 'ClickHouse only: the column a MergeTree table is streamed
+            by, an integer, DateTime or DateTime64 that grows with every insert. Leave
+            empty for a ReplacingMergeTree with a version column.'
+          type:
+          - "null"
+          - string
         dynamicTableTargetLag:
           description: How often the latest rows refresh, such as 1 minute (Snowflake
             TARGET_LAG, Databricks TRIGGER ON UPDATE interval); empty uses Transfer's
@@ -7908,9 +7928,9 @@ components:
           - "null"
           - boolean
         unifyAcrossSchemas:
-          description: 'Postgres, MySQL and Oracle: when the source reader unifies
-            across schemas, this table is read from every matching schema into one
-            destination table.'
+          description: 'Postgres, MySQL, Oracle and CockroachDB: when the source reader
+            unifies across schemas, this table is read from every matching schema
+            into one destination table.'
           type:
           - "null"
           - boolean
@@ -8509,9 +8529,9 @@ components:
           description: Display name for the key.
           type: string
         type:
+          $ref: '#/components/schemas/EnumsEncryptionKeyType'
           description: 'How the key was made: passphrase for an Artie-generated passphrase,
             kms for a data key generated with the customer''s AWS KMS key.'
-          type: string
         updatedAt:
           description: When the key was last changed.
           format: date-time
@@ -8549,9 +8569,9 @@ components:
           description: Display name for the key.
           type: string
         type:
+          $ref: '#/components/schemas/EnumsEncryptionKeyType'
           description: 'How the key was made: passphrase for an Artie-generated passphrase,
             kms for a data key generated with the customer''s AWS KMS key.'
-          type: string
         updatedAt:
           description: When the key was last changed.
           format: date-time
@@ -9024,29 +9044,19 @@ components:
     PayloadsKafkaClusterChange:
       properties:
         field:
+          $ref: '#/components/schemas/PayloadsKafkaClusterChangeField'
           description: The setting the change is to. The other fields already show
             its new value.
-          enum:
-          - allowedCIDRs
-          - storageGiB
-          - brokers
-          - instanceType
-          - tieredStorage
-          - brokerSettings
-          type: string
         startedAt:
           description: When the change was saved.
           format: date-time
           type: string
         state:
+          $ref: '#/components/schemas/PayloadsKafkaClusterChangeState'
           description: 'Applying until the apply''s time limit after the save has
             passed (15 minutes plus a broker roll per broker, plus 5 minutes), then
             failed: the apply failed or was lost. Saving the same value again retries
             it.'
-          enum:
-          - applying
-          - failed
-          type: string
         summary:
           description: What the change does, as the Activity feed says it, such as
             "Grew broker storage from 50 GiB to 80 GiB".
@@ -9057,6 +9067,20 @@ components:
       - summary
       - startedAt
       type: object
+    PayloadsKafkaClusterChangeField:
+      enum:
+      - allowedCIDRs
+      - storageGiB
+      - brokers
+      - instanceType
+      - tieredStorage
+      - brokerSettings
+      type: string
+    PayloadsKafkaClusterChangeState:
+      enum:
+      - applying
+      - failed
+      type: string
     PayloadsKafkaClusterManaged:
       properties:
         allowedCIDRs:
@@ -10569,8 +10593,8 @@ components:
             name on AWS, the data plane''s region on Azure.'
           type: string
         status:
+          $ref: '#/components/schemas/EnumsPrivateLinkConnectionStatus'
           description: Where the connection is in review and provisioning.
-          type: string
         updatedAt:
           description: When the connection was last changed.
           format: date-time
@@ -11521,6 +11545,11 @@ components:
           $ref: '#/components/schemas/PayloadsCTIDSettings'
           description: Postgres CTID backfill settings for this table; omitted uses
             the source reader's backfill defaults.
+        cursorColumn:
+          description: 'ClickHouse only: the column a MergeTree table is streamed
+            by, an integer, DateTime or DateTime64 that grows with every insert. Leave
+            empty for a ReplacingMergeTree with a version column.'
+          type: string
         dynamicTableTargetLag:
           description: How often the latest rows refresh, such as 1 minute (Snowflake
             TARGET_LAG, Databricks TRIGGER ON UPDATE interval); empty uses Transfer's
@@ -11661,9 +11690,9 @@ components:
             PlanetScale reads it per table.
           type: boolean
         unifyAcrossSchemas:
-          description: 'Postgres, MySQL and Oracle: when the source reader unifies
-            across schemas, this table is read from every matching schema into one
-            destination table.'
+          description: 'Postgres, MySQL, Oracle and CockroachDB: when the source reader
+            unifies across schemas, this table is read from every matching schema
+            into one destination table.'
           type: boolean
       type: object
     PayloadsTablePayload:
