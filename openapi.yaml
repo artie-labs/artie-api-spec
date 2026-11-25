@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: External API endpoints for Artie
   title: Artie API
-  version: v1.0.253
+  version: v1.0.263
 servers:
 - url: https://api.artie.com
 paths:
@@ -6537,9 +6537,18 @@ paths:
     post:
       description: Turns a dedicated source reader into a shared one that other pipelines
         can use, without a backfill. Its tables are taken from its pipeline, and a
-        running pipeline is redeployed, which restarts the reader once. The source
-        reader can't be shared while its pipeline publishes to a Kafka destination,
-        is deploying, is backfilling a table or is being migrated.
+        running pipeline is redeployed, which restarts the reader once. A source reader
+        whose UUID differs from its pipeline's keeps its position on the pipeline's
+        volume, so its pipeline must be paused, with its reader stopped, and the shared
+        reader starts once it's next deployed, such as when the pipeline resumes or
+        another pipeline joins it; one on a draft pipeline can't be shared until the
+        pipeline is deployed and paused. Once shared, it can't be unshared or moved
+        to another data plane, and pipelines on it can't switch to another source
+        reader, except a draft whose source is replaced, since it keeps its offsets
+        on its pipeline's volume. The source reader can't be shared while its pipeline
+        publishes to a Kafka destination, is deploying, is backfilling a table, is
+        being migrated or runs on another chart than its data plane's, nor when it
+        reads from S3 or ClickHouse.
       operationId: source_reader_share
       parameters:
       - description: The UUID of the source reader, as returned by its list or create
@@ -7141,6 +7150,7 @@ components:
       - iceberg
       - kafka
       - keyspaces
+      - kinesis
       - mongodb
       - motherduck
       - mssql
@@ -7153,6 +7163,11 @@ components:
       - s3
       - smb_share
       - snowflake
+      type: string
+    EnumsEncryptionKeyType:
+      enum:
+      - passphrase
+      - kms
       type: string
     EnumsKafkaACLOperation:
       enum:
@@ -7201,6 +7216,18 @@ components:
       - "on"
       - paused
       type: string
+    EnumsKafkaUserAccessProfile:
+      enum:
+      - producer_consumer
+      - admin
+      - managed
+      type: string
+    EnumsKafkaUserStatus:
+      enum:
+      - pending
+      - active
+      - deleting
+      type: string
     EnumsMSSQLArchiveLocationType:
       enum:
       - azure_blob
@@ -7212,6 +7239,14 @@ components:
       - paused
       - transfer paused
       - running
+      type: string
+    EnumsPrivateLinkConnectionStatus:
+      enum:
+      - under review
+      - pending acceptance
+      - available
+      - errored
+      - declined
       type: string
     EnumsSourceReaderStatus:
       enum:
@@ -7546,7 +7581,9 @@ components:
             DynamoDB export to S3.'
         enableSoftDelete:
           description: When true, rows deleted in the source are kept and marked in
-            an __artie_delete column instead of being deleted.
+            an __artie_delete column instead of being deleted. Not supported for S3,
+            GCS, Delta Lake, ClickHouse or Kafka destinations, which still delete
+            the rows.
           type:
           - "null"
           - boolean
@@ -7763,6 +7800,13 @@ components:
           $ref: '#/components/schemas/PayloadsCTIDSettings'
           description: Postgres CTID backfill settings for this table; omitted uses
             the source reader's backfill defaults.
+        cursorColumn:
+          description: 'ClickHouse only: the column a MergeTree table is streamed
+            by, an integer, DateTime or DateTime64 that grows with every insert. Leave
+            empty for a ReplacingMergeTree with a version column.'
+          type:
+          - "null"
+          - string
         dynamicTableTargetLag:
           description: How often the latest rows refresh, such as 1 minute (Snowflake
             TARGET_LAG, Databricks TRIGGER ON UPDATE interval); empty uses Transfer's
@@ -7908,9 +7952,9 @@ components:
           - "null"
           - boolean
         unifyAcrossSchemas:
-          description: 'Postgres, MySQL and Oracle: when the source reader unifies
-            across schemas, this table is read from every matching schema into one
-            destination table.'
+          description: 'Postgres, MySQL, Oracle and CockroachDB: when the source reader
+            unifies across schemas, this table is read from every matching schema
+            into one destination table.'
           type:
           - "null"
           - boolean
@@ -8509,9 +8553,9 @@ components:
           description: Display name for the key.
           type: string
         type:
+          $ref: '#/components/schemas/EnumsEncryptionKeyType'
           description: 'How the key was made: passphrase for an Artie-generated passphrase,
             kms for a data key generated with the customer''s AWS KMS key.'
-          type: string
         updatedAt:
           description: When the key was last changed.
           format: date-time
@@ -8549,9 +8593,9 @@ components:
           description: Display name for the key.
           type: string
         type:
+          $ref: '#/components/schemas/EnumsEncryptionKeyType'
           description: 'How the key was made: passphrase for an Artie-generated passphrase,
             kms for a data key generated with the customer''s AWS KMS key.'
-          type: string
         updatedAt:
           description: When the key was last changed.
           format: date-time
@@ -9024,29 +9068,19 @@ components:
     PayloadsKafkaClusterChange:
       properties:
         field:
+          $ref: '#/components/schemas/PayloadsKafkaClusterChangeField'
           description: The setting the change is to. The other fields already show
             its new value.
-          enum:
-          - allowedCIDRs
-          - storageGiB
-          - brokers
-          - instanceType
-          - tieredStorage
-          - brokerSettings
-          type: string
         startedAt:
           description: When the change was saved.
           format: date-time
           type: string
         state:
+          $ref: '#/components/schemas/PayloadsKafkaClusterChangeState'
           description: 'Applying until the apply''s time limit after the save has
             passed (15 minutes plus a broker roll per broker, plus 5 minutes), then
             failed: the apply failed or was lost. Saving the same value again retries
             it.'
-          enum:
-          - applying
-          - failed
-          type: string
         summary:
           description: What the change does, as the Activity feed says it, such as
             "Grew broker storage from 50 GiB to 80 GiB".
@@ -9057,6 +9091,20 @@ components:
       - summary
       - startedAt
       type: object
+    PayloadsKafkaClusterChangeField:
+      enum:
+      - allowedCIDRs
+      - storageGiB
+      - brokers
+      - instanceType
+      - tieredStorage
+      - brokerSettings
+      type: string
+    PayloadsKafkaClusterChangeState:
+      enum:
+      - applying
+      - failed
+      type: string
     PayloadsKafkaClusterManaged:
       properties:
         allowedCIDRs:
@@ -9778,8 +9826,9 @@ components:
     PayloadsKafkaUser:
       properties:
         accessProfile:
-          description: 'What the user can do: producer_consumer or admin.'
-          type: string
+          $ref: '#/components/schemas/EnumsKafkaUserAccessProfile'
+          description: 'What the user can do: producer_consumer or admin. Never managed,
+            since Managed Kafka clusters'' users come from the managed user endpoints.'
         consumerGroupPrefix:
           description: The prefix a producer_consumer user's consumer group IDs must
             start with to read. Admin users can read any group.
@@ -9789,9 +9838,9 @@ components:
           format: date-time
           type: string
         status:
+          $ref: '#/components/schemas/EnumsKafkaUserStatus'
           description: pending until the user is ready, then active; deleting while
             it's being removed.
-          type: string
         username:
           description: The Kafka username clients log in with.
           type: string
@@ -10569,8 +10618,8 @@ components:
             name on AWS, the data plane''s region on Azure.'
           type: string
         status:
+          $ref: '#/components/schemas/EnumsPrivateLinkConnectionStatus'
           description: Where the connection is in review and provisioning.
-          type: string
         updatedAt:
           description: When the connection was last changed.
           format: date-time
@@ -11087,7 +11136,9 @@ components:
         backfillDefaults:
           $ref: '#/components/schemas/PayloadsBackfillDefaultsPayload'
           description: Default backfill tuning for this source reader's tables; a
-            table's own backfill settings take precedence.
+            table's own backfill settings take precedence. CockroachDB, Keyspaces,
+            Snowflake and ClickHouse sources ignore it, since their backfills always
+            read in primary key order.
         collectionScopedMode:
           description: 'MongoDB only: open one change stream per collection. Order
             is kept within each collection but not across them.'
@@ -11521,6 +11572,11 @@ components:
           $ref: '#/components/schemas/PayloadsCTIDSettings'
           description: Postgres CTID backfill settings for this table; omitted uses
             the source reader's backfill defaults.
+        cursorColumn:
+          description: 'ClickHouse only: the column a MergeTree table is streamed
+            by, an integer, DateTime or DateTime64 that grows with every insert. Leave
+            empty for a ReplacingMergeTree with a version column.'
+          type: string
         dynamicTableTargetLag:
           description: How often the latest rows refresh, such as 1 minute (Snowflake
             TARGET_LAG, Databricks TRIGGER ON UPDATE interval); empty uses Transfer's
@@ -11661,9 +11717,9 @@ components:
             PlanetScale reads it per table.
           type: boolean
         unifyAcrossSchemas:
-          description: 'Postgres, MySQL and Oracle: when the source reader unifies
-            across schemas, this table is read from every matching schema into one
-            destination table.'
+          description: 'Postgres, MySQL, Oracle and CockroachDB: when the source reader
+            unifies across schemas, this table is read from every matching schema
+            into one destination table.'
           type: boolean
       type: object
     PayloadsTablePayload:
@@ -13260,9 +13316,9 @@ components:
     RouterCreateKafkaUserRequest:
       properties:
         accessProfile:
+          $ref: '#/components/schemas/EnumsKafkaUserAccessProfile'
           description: Must be producer_consumer; create admin-profile users with
             POST /kafka-clusters/{uuid}/admin-users.
-          type: string
         username:
           description: Lowercase letters, digits, '.' and '-', at most 64 characters.
             Each '.'-separated part starts and ends with a letter or digit. admin,
@@ -13588,7 +13644,8 @@ components:
         backfillDefaults:
           $ref: '#/components/schemas/PayloadsBackfillDefaultsPayload'
           description: Optional backfill speed. Saved as the pipeline's backfill speed
-            before the backfill starts, so later backfills use it too.
+            before the backfill starts, so later backfills use it too. CockroachDB,
+            Keyspaces, Snowflake and ClickHouse sources ignore it.
         backfillFromDatabases:
           description: Optional source databases to backfill for regular-table backfills.
             Requires beforeBackfill to be the empty-string do-nothing option.
